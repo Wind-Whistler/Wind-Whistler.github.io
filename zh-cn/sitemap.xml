@@ -3,7 +3,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://Wind-Whistler.github.io/</loc>
-    <lastmod>2026-04-15T22:23:44+08:00</lastmod>
+    <lastmod>2026-04-15T23:48:12+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -15,11 +15,8 @@
                 href="https://Wind-Whistler.github.io/"
                 />
   </url><url>
-    <loc>https://Wind-Whistler.github.io/p/myfirstblog/</loc>
-    <lastmod>2026-04-15T22:23:44+08:00</lastmod>
-  </url><url>
     <loc>https://Wind-Whistler.github.io/post/</loc>
-    <lastmod>2026-04-15T22:23:44+08:00</lastmod>
+    <lastmod>2026-04-15T23:48:12+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -30,6 +27,12 @@
                 hreflang="en-us"
                 href="https://Wind-Whistler.github.io/post/"
                 />
+  </url><url>
+    <loc>https://Wind-Whistler.github.io/p/test/</loc>
+    <lastmod>2026-04-15T23:48:12+08:00</lastmod>
+  </url><url>
+    <loc>https://Wind-Whistler.github.io/p/myfirstblog/</loc>
+    <lastmod>2026-04-15T22:23:44+08:00</lastmod>
   </url><url>
     <loc>https://Wind-Whistler.github.io/page/</loc>
     <lastmod>2019-05-28T00:00:00+00:00</lastmod>

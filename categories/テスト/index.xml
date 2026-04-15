@@ -2,10 +2,10 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>テスト on Wind Whistler&#39;s Blog</title>
-        <link>https://Wind-Whistler.github.io/categories/%E3%83%86%E3%82%B9%E3%83%88/</link>
+        <link>https://example.com/categories/%E3%83%86%E3%82%B9%E3%83%88/</link>
         <description>Recent content in テスト on Wind Whistler&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <copyright>Wind Whistler</copyright><atom:link href="https://Wind-Whistler.github.io/categories/%E3%83%86%E3%82%B9%E3%83%88/index.xml" rel="self" type="application/rss+xml" />
+        <copyright>Wind Whistler</copyright><atom:link href="https://example.com/categories/%E3%83%86%E3%82%B9%E3%83%88/index.xml" rel="self" type="application/rss+xml" />
     </channel>
 </rss>

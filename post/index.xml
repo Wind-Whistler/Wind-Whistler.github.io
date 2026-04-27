@@ -15,14 +15,32 @@
         <guid>https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-01/</guid>
         <description>&lt;img src="https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-01/marepile.jpg" alt="Featured image of post 计量经济学 01" /&gt;&lt;h2 id=&#34;写在前面&#34;&gt;写在前面
 &lt;/h2&gt;&lt;p&gt;这是我在博客中创建的第一个系列——“计量经济学”。本系列主要记录我在本学期学习计量经济学过程中的一些心得与体会，希望能为大家的学习提供一些参考与帮助。&lt;/p&gt;
-&lt;p&gt;文章主要会以Q&amp;amp;A的形式进行呈现，方便大家更好的理清文章脉络。&lt;/p&gt;
+&lt;p&gt;关于文章形式，文章主要会以Q&amp;amp;A的方式进行呈现，方便大家更好的理清文章脉络。&lt;/p&gt;
+&lt;p&gt;关于文章内容，作者更希望能够从思维的角度帮助同学们理解计量经济学，至于数学部分的内容可能会有少部分涉及，但不会作为主要内容&lt;/p&gt;
 &lt;h2 id=&#34;本期内容&#34;&gt;本期内容
 &lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;什么是计量经济学？&lt;/li&gt;
 &lt;li&gt;计量经济学与数据科学的区别是什么？&lt;/li&gt;
 &lt;li&gt;怎么学习计量经济学？&lt;/li&gt;
 &lt;/ul&gt;
-</description>
+&lt;h2 id=&#34;part-i-什么是计量经济学&#34;&gt;Part I 什么是计量经济学？
+&lt;/h2&gt;&lt;p&gt;&lt;img src=&#34;https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-01/marepile.jpg&#34;
+	width=&#34;1000&#34;
+	height=&#34;563&#34;
+	srcset=&#34;https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-01/marepile_hu_9b012099f769076a.jpg 480w, https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-01/marepile_hu_b59832a25d7215ca.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;‘图片无法显示‘&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;177&#34;
+		data-flex-basis=&#34;426px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;h2 id=&#34;part-ii-计量经济学与数据科学的区别是什么&#34;&gt;Part II 计量经济学与数据科学的区别是什么？
+&lt;/h2&gt;&lt;h2 id=&#34;part-iii-怎么学习计量经济学&#34;&gt;Part III 怎么学习计量经济学？
+&lt;/h2&gt;</description>
         </item>
         <item>
         <title>Markdown Syntax Guide</title>

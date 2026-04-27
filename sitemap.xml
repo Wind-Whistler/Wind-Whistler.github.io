@@ -65,8 +65,6 @@
     <loc>https://example.com/p/emoji-support/</loc>
     <lastmod>2019-03-05T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://example.com/links/</loc>
-  </url><url>
     <loc>https://example.com/categories/%D8%AA%D8%AC%D8%B1%D8%A8%D8%A9/</loc>
   </url><url>
     <loc>https://example.com/categories/%D8%AA%D8%AC%D8%B1%D8%A8%D8%A9-%D9%85%D8%B9-%D9%81%D8%B1%D8%A7%D8%BA%D8%A7%D8%AA/</loc>
@@ -76,6 +74,8 @@
     <loc>https://example.com/tags/%D9%86%D8%B5/</loc>
   </url><url>
     <loc>https://example.com/tags/%D9%88%D8%B3%D9%85-%D9%85%D8%B9-%D9%81%D8%B1%D8%A7%D8%BA%D8%A7%D8%AA/</loc>
+  </url><url>
+    <loc>https://example.com/%E4%B8%AA%E4%BA%BA%E9%93%BE%E6%8E%A5/</loc>
   </url><url>
     <loc>https://example.com/%E5%85%B3%E4%BA%8E/</loc>
   </url><url>

@@ -3,16 +3,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://example.com/</loc>
-    <lastmod>2026-04-15T23:48:12+08:00</lastmod>
-  </url><url>
-    <loc>https://example.com/post/</loc>
-    <lastmod>2026-04-15T23:48:12+08:00</lastmod>
-  </url><url>
-    <loc>https://example.com/p/test/</loc>
-    <lastmod>2026-04-15T23:48:12+08:00</lastmod>
-  </url><url>
-    <loc>https://example.com/p/myfirstblog/</loc>
-    <lastmod>2026-04-15T22:23:44+08:00</lastmod>
+    <lastmod>2019-05-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://example.com/page/</loc>
     <lastmod>2019-05-28T00:00:00+00:00</lastmod>
@@ -33,6 +24,9 @@
     <lastmod>2019-03-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://example.com/p/markdown-syntax-guide/</loc>
+    <lastmod>2019-03-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://example.com/post/</loc>
     <lastmod>2019-03-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://example.com/categories/syntax/</loc>

@@ -13,7 +13,25 @@
         <pubDate>Wed, 29 Apr 2026 22:44:14 +0800</pubDate>
         
         <guid>https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-02/</guid>
-        <description>&lt;img src="https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-02/marepile.png" alt="Featured image of post 计量经济学 02" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-02/marepile.png" alt="Featured image of post 计量经济学 02" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;什么是线性回归？&lt;/li&gt;
+&lt;li&gt;为什么计量经济学要使用线性回归？&lt;/li&gt;
+&lt;li&gt;G-M假设&lt;/li&gt;
+&lt;li&gt;一元线性回归&lt;/li&gt;
+&lt;li&gt;多元线性回归&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;1-什么是线性回归&#34;&gt;1. 什么是线性回归？
+&lt;/h2&gt;&lt;h3 id=&#34;11-情景引入&#34;&gt;1.1 情景引入
+&lt;/h3&gt;&lt;p&gt;作为统计学专业的学生，我们平时处理数据时，经常会遇到这样的问题：“X和Y之间有没有关系？”比如说，“一个人的工资和教育年限有关系吗？”你当然可以凭直觉说“教育年限越高，工资可能越高”，但光靠感觉是说不服人的。更靠谱的做法是：我们去收集一些真实数据，然后通过数据来验证、论证我们的想法。这样出来的结论才更有说服力，也更贴近实际。由此我们可自然而然会提出一个问题：如何使用数据来证明我们的想法呢？&lt;/p&gt;
+&lt;h3 id=&#34;12-函数关系和统计关系&#34;&gt;1.2 函数关系和统计关系
+&lt;/h3&gt;&lt;p&gt;一个直观的回答是我们可以直接构建不同变量间的函数从而来确定变量之间的关系，比如说，我们将工资记为&lt;em&gt;Salary&lt;/em&gt;，教育年限记为&lt;em&gt;edu&lt;/em&gt;，然后得到下述函数关系式：
+&lt;/p&gt;
+$$
+ Salary = 1000 \times edu + 500 \tag{1}
+$$&lt;p&gt;
+那么根据函数关系式(1)，我们可以得知一个人的工资等于其教育年限乘以1000然后再加上500，如果教育年限是9年，那么对应工资就是9500元。这看上去似乎很完美，但是现实场景往往会更加复杂，&lt;/p&gt;
+</description>
         </item>
         
     </channel>

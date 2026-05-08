@@ -13,7 +13,19 @@
         <pubDate>Wed, 06 May 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-05/</guid>
-        <description>&lt;img src="https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-05/marepile.png" alt="Featured image of post 计量经济学 05" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-05/marepile.png" alt="Featured image of post 计量经济学 05" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;时间序列模型的序列相关性&lt;/li&gt;
+&lt;li&gt;时间序列的平稳性&lt;/li&gt;
+&lt;li&gt;协整检验与误差修正模型&lt;/li&gt;
+&lt;li&gt;格兰杰因果关系检验&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;时间序列模型的序列相关性&#34;&gt;时间序列模型的序列相关性
+&lt;/h2&gt;&lt;h3 id=&#34;为什么会有序列相关性&#34;&gt;为什么会有序列相关性？
+&lt;/h3&gt;&lt;h3 id=&#34;序列相关性会导致什么后果&#34;&gt;序列相关性会导致什么后果？
+&lt;/h3&gt;&lt;h3 id=&#34;如何检验序列相关性&#34;&gt;如何检验序列相关性？
+&lt;/h3&gt;&lt;h3 id=&#34;如何应对序列相关性&#34;&gt;如何应对序列相关性？
+&lt;/h3&gt;</description>
         </item>
         
     </channel>

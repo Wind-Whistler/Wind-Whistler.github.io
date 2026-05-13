@@ -426,24 +426,24 @@ $$</li>
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// 自动实现</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nx">reg</span><span class="w"> </span><span class="nx">lnY</span><span class="w"> </span><span class="nx">lnX</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nx">dwstat</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="c1">// 手动实现</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nx">reg</span><span class="w"> </span><span class="nx">lnY</span><span class="w"> </span><span class="nx">lnX</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nx">predict</span><span class="w"> </span><span class="nx">e</span><span class="p">,</span><span class="nx">res</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nx">gen</span><span class="w"> </span><span class="nx">d1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">L</span><span class="p">.</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">^</span><span class="w"> </span><span class="mi">2</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nx">gen</span><span class="w"> </span><span class="nx">d2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">e</span><span class="w"> </span><span class="p">^</span><span class="w"> </span><span class="mi">2</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nf">sum</span><span class="p">(</span><span class="nx">d1</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nx">scalar</span><span class="w"> </span><span class="nx">s1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nf">r</span><span class="p">(</span><span class="nx">sum</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nf">sum</span><span class="p">(</span><span class="nx">d2</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nx">scalar</span><span class="w"> </span><span class="nx">s2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nf">r</span><span class="p">(</span><span class="nx">sum</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nx">scalar</span><span class="w"> </span><span class="nx">dw</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">s1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nx">s2</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nx">display</span><span class="w"> </span><span class="nx">dw</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 自动实现
+</span></span><span class="line"><span class="cl">reg lnY lnX
+</span></span><span class="line"><span class="cl">dwstat
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// 手动实现
+</span></span><span class="line"><span class="cl">reg lnY lnX
+</span></span><span class="line"><span class="cl">predict e,res
+</span></span><span class="line"><span class="cl">gen d1 = (e - L.e) ^ 2
+</span></span><span class="line"><span class="cl">gen d2 = e ^ 2
+</span></span><span class="line"><span class="cl">sum(d1)
+</span></span><span class="line"><span class="cl">scalar s1 = r(sum)
+</span></span><span class="line"><span class="cl">sum(d2)
+</span></span><span class="line"><span class="cl">scalar s2 = r(sum)
+</span></span><span class="line"><span class="cl">scalar dw = s1 / s2
+</span></span><span class="line"><span class="cl">display dw
+</span></span></code></pre></td></tr></table>
 </div>
-</div>
-<h4 id="gb-test">GB Test
+</div><h4 id="gb-test">GB Test
 </h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1

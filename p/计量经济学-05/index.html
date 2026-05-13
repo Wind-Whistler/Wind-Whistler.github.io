@@ -255,13 +255,18 @@
         <li><a href="#序列相关性会导致什么后果">序列相关性会导致什么后果？</a></li>
         <li><a href="#如何检验序列相关性">如何检验序列相关性？</a>
           <ol>
-            <li><a href="#画图法">画图法</a></li>
-            <li><a href="#回归法">回归法</a></li>
-            <li><a href="#dw-test">DW Test</a></li>
+            <li><a href="#图示法">图示法</a></li>
+            <li><a href="#回归检验法">回归检验法</a></li>
+            <li><a href="#dw-test">D.W. Test</a></li>
             <li><a href="#gb-test">GB Test</a></li>
           </ol>
         </li>
-        <li><a href="#如何应对序列相关性">如何应对序列相关性？</a></li>
+        <li><a href="#如何应对序列相关性">如何应对序列相关性？</a>
+          <ol>
+            <li><a href="#广义差分法">广义差分法</a></li>
+            <li><a href="#稳健标准误">稳健标准误</a></li>
+          </ol>
+        </li>
       </ol>
     </li>
     <li><a href="#时间序列的平稳性">时间序列的平稳性</a>
@@ -388,12 +393,153 @@
 </h2><h3 id="为什么会有序列相关性">为什么会有序列相关性？
 </h3><h3 id="序列相关性会导致什么后果">序列相关性会导致什么后果？
 </h3><h3 id="如何检验序列相关性">如何检验序列相关性？
-</h3><h4 id="画图法">画图法
-</h4><h4 id="回归法">回归法
-</h4><h4 id="dw-test">DW Test
-</h4><h4 id="gb-test">GB Test
-</h4><h3 id="如何应对序列相关性">如何应对序列相关性？
-</h3><h2 id="时间序列的平稳性">时间序列的平稳性
+</h3><h4 id="图示法">图示法
+</h4><h4 id="回归检验法">回归检验法
+</h4><h4 id="dw-test">D.W. Test
+</h4><p>D.W. Test 是Durbin和Waston提出的一种检验序列自相关的方法，该方法有如下假设：</p>
+<ul>
+<li>解释变量严格外生</li>
+<li>随机误差项$\mu_t$为一阶自回归形式：
+
+$$
+\mu_t = \rho \mu_t + \epsilon_t
+$$</li>
+<li></li>
+<li></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 自动实现
+</span></span><span class="line"><span class="cl">reg lnY lnX
+</span></span><span class="line"><span class="cl">dwstat
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// 手动实现
+</span></span><span class="line"><span class="cl">reg lnY lnX
+</span></span><span class="line"><span class="cl">predict e,res
+</span></span><span class="line"><span class="cl">gen d1 = (e - L.e) ^ 2
+</span></span><span class="line"><span class="cl">gen d2 = e ^ 2
+</span></span><span class="line"><span class="cl">sum(d1)
+</span></span><span class="line"><span class="cl">scalar s1 = r(sum)
+</span></span><span class="line"><span class="cl">sum(d2)
+</span></span><span class="line"><span class="cl">scalar s2 = r(sum)
+</span></span><span class="line"><span class="cl">scalar dw = s1 / s2
+</span></span><span class="line"><span class="cl">display dw
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="gb-test">GB Test
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">reg e lnX L.e 
+</span></span><span class="line"><span class="cl">scalar R1 = e(r2)
+</span></span><span class="line"><span class="cl">display (_N - 1)* R1
+</span></span><span class="line"><span class="cl">display chiprob(1,(_N - 1)* R1)
+</span></span><span class="line"><span class="cl">reg e lnX L.e L2.e
+</span></span><span class="line"><span class="cl">scalar R2 = e(r2)
+</span></span><span class="line"><span class="cl">display (_N - 2)* R1
+</span></span><span class="line"><span class="cl">display chiprob(2,(_N - 2) * R2)
+</span></span><span class="line"><span class="cl">reg e lnX L.e L2.e L3.e
+</span></span><span class="line"><span class="cl">scalar R3 = e(r2)
+</span></span><span class="line"><span class="cl">display chiprob(3,(_N - 3) * R3)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="如何应对序列相关性">如何应对序列相关性？
+</h3><h4 id="广义差分法">广义差分法
+</h4><p>广义差分法是将原模型转换为满足普通最小二乘的差分模型，再进行普通最小二乘估计</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 自动实现
+</span></span><span class="line"><span class="cl">prais lnY lnX
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// 手动实现
+</span></span><span class="line"><span class="cl">reg lnY lnX
+</span></span><span class="line"><span class="cl">dwstat
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ret list
+</span></span><span class="line"><span class="cl">gen rho = 1 - 0.5 * r(dw)  // 用DW统计量来近似估计相关系数
+</span></span><span class="line"><span class="cl">gen c = 1
+</span></span><span class="line"><span class="cl">gen lnY_new = lnY - rho * L.lnY
+</span></span><span class="line"><span class="cl">gen lnX_new = lnX - rho * L.lnX
+</span></span><span class="line"><span class="cl">gen c_new = c - rho * L.c  // 注意常数项也要做差分
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">replace lnY_new = sqrt(1 - rho ^ 2) * lnY in 1/1  // 普莱斯 - 温斯顿变换，补充第一行数据
+</span></span><span class="line"><span class="cl">replace lnX_new = sqrt(1 - rho ^ 2) * lnX in 1/1
+</span></span><span class="line"><span class="cl">replace c_new = sqrt(1 - rho ^ 2) * c in 1/1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reg lnY_new c_new lnX_new, nocon  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">predict es,res  // 接下来检验是否还存在相关性
+</span></span><span class="line"><span class="cl">est store PW
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reg es c_new lnX_new L.es L2.es   //如果没有序列相关性了就可以不往下做，如果还有序列相关性就进行再一次迭代
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="稳健标准误">稳健标准误
+</h4><p>在大样本情况下，稳健标准误得到的结果是相对可靠的。但是值得注意的是，稳健标准误并不能消除序列自相关问题，他只能得到参数估计量的正确标准误，从而使后续的各类检验与预测得以顺利进行。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">newey lnY lnX, lag(3)  // 自相关阶数（阶段参数p)的选择，p = _N ^ (1/4)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="时间序列的平稳性">时间序列的平稳性
 </h2><h3 id="为什么要进行平稳性检验">为什么要进行平稳性检验？
 </h3><h3 id="如何检验时间序列的平稳性">如何检验时间序列的平稳性？
 </h3><h3 id="单整的概念">单整的概念

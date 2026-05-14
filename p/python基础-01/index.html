@@ -466,8 +466,45 @@
 </div><h2 id="python数据结构简介">Python数据结构简介
 </h2><p>数据结构的核心在于解决批量数据的组织问题，它避免了为每个数据单独定义变量（如处理100个数据需100个变量）的低效做法，而是将大量数据有机组织起来，方便编程时统一操作。不同的数据组织方式形成了多样的数据结构，每种结构都有自身特点和适用场景，以此提升数据处理的效率和便捷性。</p>
 <h3 id="tuple元组">Tuple(元组)
-</h3><h3 id="list列表">List(列表)
-</h3><h3 id="set集合">Set(集合)
+</h3><p>元组本质上也是一种序列，但它与列表最大的区别在于<strong>不可修改</strong>，这一点和字符串类似。</p>
+<p>在创建元组时，最核心的语法是<strong>逗号</strong>，只要用逗号分隔多个值，Python就会自动将其识别为元组。虽然大部分时候我们会用圆括号<code>()</code>把元素括起来，但这并非强制要求。</p>
+<p>关于创建元组，有几个特殊的细节需要注意：</p>
+<ul>
+<li>如果想创建一个空元组，直接用空的圆括号<code>()</code>即可。</li>
+<li>如果元组里只有一个元素，<strong>必须在元素后面加一个逗号</strong>，例如<code>t5=(1,)</code>，否则Python会把它当作普通的变量处理。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"></code></pre></td></tr></table>
+</div>
+</div><h3 id="list列表">List(列表)
+</h3><p>列表是Python中一种重要的数据结构，它由写在方括号<code>[]</code>内、并用逗号分隔的一系列元素组成。列表具有极大的灵活性，其核心特点包括：</p>
+<ul>
+<li>列表中的元素类型可以不相同，既可以是数字、字符串，甚至可以包含其他列表，即支持嵌套。</li>
+<li>列表是可变的，这意味着列表中的元素可以被修改、添加或删除，这是它与字符串和元组最根本的区别。<br>
+下面展示了一些常见的列表操作：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Python&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">str</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>  <span class="c1"># 字符串转列表</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">,</span><span class="s1">&#39;l&#39;</span><span class="p">,</span><span class="s1">&#39;e&#39;</span><span class="p">,</span><span class="s1">&#39;e&#39;</span><span class="p">,</span><span class="s1">&#39;p&#39;</span><span class="p">]</span>  <span class="c1"># 直接创建列表</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>  <span class="c1"># 为列表增加元素&#39;k&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span>  <span class="c1"># 修改列表元素</span>
+</span></span><span class="line"><span class="cl"><span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>  <span class="c1"># 将列表拼接为字符串</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="set集合">Set(集合)
 </h3><h3 id="dictionary字典">Dictionary(字典)
 </h3><h2 id="python特殊语句简介">Python特殊语句简介
 </h2><h3 id="判断语句">判断语句

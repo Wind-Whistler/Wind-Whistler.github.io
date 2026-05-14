@@ -13,7 +13,7 @@
         <pubDate>Wed, 06 May 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/python%E5%9F%BA%E7%A1%80-01/</guid>
-        <description>&lt;img src="https://example.com/p/python%E5%9F%BA%E7%A1%80-01/Star.png" alt="Featured image of post Python基础 01" /&gt;&lt;h2 id=&#34;内容概览&#34;&gt;内容概览
+        <description>&lt;img src="https://example.com/p/python%E5%9F%BA%E7%A1%80-01/Garden.png" alt="Featured image of post Python基础 01" /&gt;&lt;h2 id=&#34;内容概览&#34;&gt;内容概览
 &lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;变量&lt;/li&gt;
 &lt;/ul&gt;
@@ -39,14 +39,14 @@
 &lt;/div&gt;&lt;p&gt;在Python中，等号&amp;rsquo;=&amp;lsquo;是赋值语句，可将任意数据类型赋值给变量，同一个变量可反复赋值且能是不同类型；变量本身类型不固定的语言叫动态语言，与之对应的静态语言（如Java）定义变量时必须指定类型，赋值时类型不匹配会报错。&lt;/p&gt;
 &lt;h3 id=&#34;常见变量类型&#34;&gt;常见变量类型
 &lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;int (整型)
-定义：即整数，包含正整数和负整数，不带小数点。
+&lt;li&gt;int (整型)&lt;br&gt;
+定义：即整数，包含正整数和负整数，不带小数点。&lt;br&gt;
 特性：Python 3 中的整型没有大小限制（相当于 Python 2 的 Long 类型），因此Python 3 不再区分 int 和 long。&lt;/li&gt;
-&lt;li&gt;float (浮点型)
-定义：由整数部分与小数部分组成。
-表示法：支持科学计数法 (如$2.5e2 = 2.5 \times 10^2 = 250$）。&lt;/li&gt;
-&lt;li&gt;string(字符串)
-定义：使用单引号、双引号、三单引号或三双引号创建，三引号支持多行字符串。
+&lt;li&gt;float (浮点型)&lt;br&gt;
+定义：由整数部分与小数部分组成。&lt;br&gt;
+表示法：支持科学计数法 (如$2.5e2 = 2.5 \times 10^2 = 250$)。&lt;/li&gt;
+&lt;li&gt;string(字符串)&lt;br&gt;
+定义：使用单引号、双引号、三单引号或三双引号创建，三引号支持多行字符串。&lt;br&gt;
 特性：Python 无单字符类型，单字符也作为字符串处理。&lt;/li&gt;
 &lt;/ul&gt;
 </description>

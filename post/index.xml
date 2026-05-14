@@ -8,6 +8,50 @@
         <language>en-us</language>
         <copyright>Wind Whistler</copyright>
         <lastBuildDate>Wed, 06 May 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Python基础 01</title>
+        <link>https://example.com/p/python%E5%9F%BA%E7%A1%80-01/</link>
+        <pubDate>Wed, 06 May 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/p/python%E5%9F%BA%E7%A1%80-01/</guid>
+        <description>&lt;img src="https://example.com/p/python%E5%9F%BA%E7%A1%80-01/Star.png" alt="Featured image of post Python基础 01" /&gt;&lt;h2 id=&#34;内容概览&#34;&gt;内容概览
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;变量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;变量&#34;&gt;变量
+&lt;/h2&gt;&lt;h3 id=&#34;变量的概念&#34;&gt;变量的概念
+&lt;/h3&gt;&lt;p&gt;变量源自数学，是计算机语言中用于储存计算结果或表示值的抽象概念，可被多次赋值并始终保留最新值。其命名规则为：仅能由字母、数字和下划线组合，首字符不能是数字，区分大小写，且不能使用特殊关键字。&lt;/p&gt;
+&lt;h3 id=&#34;变量赋值&#34;&gt;变量赋值
+&lt;/h3&gt;&lt;p&gt;在Python中，变量无需声明，必须先赋值后使用，赋值时才会创建变量；变量本身没有类型，我们所说的“类型”是指变量所指向的内存中对象的类型。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;3.0&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# float&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;three&amp;#39;&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# string&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# bool&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在Python中，等号&amp;rsquo;=&amp;lsquo;是赋值语句，可将任意数据类型赋值给变量，同一个变量可反复赋值且能是不同类型；变量本身类型不固定的语言叫动态语言，与之对应的静态语言（如Java）定义变量时必须指定类型，赋值时类型不匹配会报错。&lt;/p&gt;
+&lt;h3 id=&#34;常见变量类型&#34;&gt;常见变量类型
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;int (整型)
+定义：即整数，包含正整数和负整数，不带小数点。
+特性：Python 3 中的整型没有大小限制（相当于 Python 2 的 Long 类型），因此Python 3 不再区分 int 和 long。&lt;/li&gt;
+&lt;li&gt;float (浮点型)
+定义：由整数部分与小数部分组成。
+表示法：支持科学计数法 (如$2.5e2 = 2.5 \times 10^2 = 250$）。&lt;/li&gt;
+&lt;li&gt;string(字符串)
+定义：使用单引号、双引号、三单引号或三双引号创建，三引号支持多行字符串。
+特性：Python 无单字符类型，单字符也作为字符串处理。&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
         <title>计量经济学 05</title>
         <link>https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-05/</link>
         <pubDate>Wed, 06 May 2026 00:00:00 +0000</pubDate>

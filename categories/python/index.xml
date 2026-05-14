@@ -15,9 +15,11 @@
         <guid>https://example.com/p/python%E5%9F%BA%E7%A1%80-01/</guid>
         <description>&lt;img src="https://example.com/p/python%E5%9F%BA%E7%A1%80-01/Garden.png" alt="Featured image of post Python基础 01" /&gt;&lt;h2 id=&#34;内容概览&#34;&gt;内容概览
 &lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;变量&lt;/li&gt;
+&lt;li&gt;Python变量简介&lt;/li&gt;
+&lt;li&gt;Python数据结构简介&lt;/li&gt;
+&lt;li&gt;Python特殊语句简介&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;变量&#34;&gt;变量
+&lt;h2 id=&#34;python变量简介&#34;&gt;Python变量简介
 &lt;/h2&gt;&lt;h3 id=&#34;变量的概念&#34;&gt;变量的概念
 &lt;/h3&gt;&lt;p&gt;变量源自数学，是计算机语言中用于储存计算结果或表示值的抽象概念，可被多次赋值并始终保留最新值。其命名规则为：仅能由字母、数字和下划线组合，首字符不能是数字，区分大小写，且不能使用特殊关键字。&lt;/p&gt;
 &lt;h3 id=&#34;变量赋值&#34;&gt;变量赋值
@@ -49,7 +51,16 @@
 定义：使用单引号、双引号、三单引号或三双引号创建，三引号支持多行字符串。&lt;br&gt;
 特性：Python 无单字符类型，单字符也作为字符串处理。&lt;/li&gt;
 &lt;/ul&gt;
-</description>
+&lt;h3 id=&#34;常见字符串操作&#34;&gt;常见字符串操作
+&lt;/h3&gt;&lt;h2 id=&#34;python数据结构简介&#34;&gt;Python数据结构简介
+&lt;/h2&gt;&lt;h3 id=&#34;tuple元组&#34;&gt;Tuple(元组)
+&lt;/h3&gt;&lt;h3 id=&#34;list列表&#34;&gt;List(列表)
+&lt;/h3&gt;&lt;h3 id=&#34;set集合&#34;&gt;Set(集合)
+&lt;/h3&gt;&lt;h3 id=&#34;dictionary字典&#34;&gt;Dictionary(字典)
+&lt;/h3&gt;&lt;h2 id=&#34;python特殊语句简介&#34;&gt;Python特殊语句简介
+&lt;/h2&gt;&lt;h3 id=&#34;判断语句&#34;&gt;判断语句
+&lt;/h3&gt;&lt;h3 id=&#34;循环语句&#34;&gt;循环语句
+&lt;/h3&gt;</description>
         </item>
         
     </channel>

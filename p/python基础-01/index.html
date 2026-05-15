@@ -10,7 +10,7 @@
 <meta property='og:description' content="本章节介绍Python一些基础的语法和数据类型">
 <meta property='og:url' content='https://example.com/p/python%E5%9F%BA%E7%A1%80-01/'>
 <meta property='og:site_name' content='Wind Whistler&#39;s Blog'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-06T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-06T00:00:00&#43;00:00'/><meta property='og:image' content='https://example.com/p/python%E5%9F%BA%E7%A1%80-01/Garden.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-14T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-14T00:00:00&#43;00:00'/><meta property='og:image' content='https://example.com/p/python%E5%9F%BA%E7%A1%80-01/Garden.png' />
 <meta name="twitter:title" content="Python基础 01">
 <meta name="twitter:description" content="本章节介绍Python一些基础的语法和数据类型"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://example.com/p/python%E5%9F%BA%E7%A1%80-01/Garden.png' />
@@ -273,8 +273,21 @@
     </li>
     <li><a href="#python特殊语句简介">Python特殊语句简介</a>
       <ol>
-        <li><a href="#判断语句">判断语句</a></li>
-        <li><a href="#循环语句">循环语句</a></li>
+        <li><a href="#条件结构">条件结构</a>
+          <ol>
+            <li><a href="#条件结构简介">条件结构简介</a></li>
+            <li><a href="#逻辑运算符与惰性求值">逻辑运算符与“惰性求值”</a></li>
+            <li><a href="#惰性求值">惰性求值</a></li>
+          </ol>
+        </li>
+        <li><a href="#循环结构">循环结构</a>
+          <ol>
+            <li><a href="#循环结构简介">循环结构简介</a></li>
+            <li><a href="#for-循环遍历循环">For 循环（遍历循环）</a></li>
+            <li><a href="#while-循环条件循环">While 循环（条件循环）</a></li>
+            <li><a href="#循环控制break-与-continue">循环控制：Break 与 Continue</a></li>
+          </ol>
+        </li>
       </ol>
     </li>
   </ol>
@@ -352,7 +365,7 @@
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published" datetime='2026-05-06T00:00:00Z'>2026-05-06</time>
+                <time class="article-time--published" datetime='2026-05-14T00:00:00Z'>2026-05-14</time>
             </div>
         
 
@@ -417,6 +430,7 @@
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
+</span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Python&#39;</span>
@@ -425,11 +439,12 @@
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># 返回&#39;Pto&#39;</span>
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># 返回&#39;n&#39;</span>
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:])</span>  <span class="c1"># 返回&#39;hon&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># 将str反向</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="查找">查找
-</h4><p>字符串的 find() 方法主要用于检测一个字符串中是否包含指定的子字符串。如果找到了子字符串，它会返回子字符串首次出现的索引值；如果没找到，则返回 -1。</p>
-<p>使用时可以指定查找的起始位置（beg）和结束位置（end）来限定范围，如果不指定这两个参数，默认会在整个字符串范围内进行查找。简单来说，它的逻辑就是：找到返回索引，找不到返回 -1。</p>
+</h4><p>字符串的 find() 方法主要用于检测一个字符串中是否包含指定的子字符串。如果找到了子字符串，它会返回子字符串首次出现的索引值；如果没找到，则返回 <code>-1</code>。</p>
+<p>使用时可以指定查找的起始位置（beg）和结束位置（end）来限定范围，如果不指定这两个参数，默认会在整个字符串范围内进行查找。简单来说，它的逻辑就是：找到返回索引，找不到返回 <code>-1</code>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -475,9 +490,15 @@
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code></code></pre></td>
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">l</span> <span class="o">=</span> <span class="s1">&#39;Python&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">t1</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>  <span class="c1"># 使用tuple()创建元组</span>
+</span></span><span class="line"><span class="cl"><span class="n">t2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># 直接创建一个元组</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="list列表">List(列表)
 </h3><p>列表是Python中一种重要的数据结构，它由写在方括号<code>[]</code>内、并用逗号分隔的一系列元素组成。列表具有极大的灵活性，其核心特点包括：</p>
@@ -488,12 +509,31 @@
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Python&#39;</span>
@@ -502,14 +542,255 @@
 </span></span><span class="line"><span class="cl"><span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>  <span class="c1"># 为列表增加元素&#39;k&#39;</span>
 </span></span><span class="line"><span class="cl"><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span>  <span class="c1"># 修改列表元素</span>
 </span></span><span class="line"><span class="cl"><span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>  <span class="c1"># 将列表拼接为字符串</span>
+</span></span><span class="line"><span class="cl"><span class="n">lt</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span> <span class="o">+=</span> <span class="n">lt</span> <span class="c1"># 更新l，将列表lt元素添加到l中</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span> <span class="o">*=</span> <span class="mi">3</span>  <span class="c1"># 更新l，将列表l中的元素重复3次</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># 在l的第i位置插入x</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">lt</span><span class="p">)</span>  <span class="c1"># 将列表lt的所有元素追加到l尾部</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>  <span class="c1"># 将列表l中第i位置的元素取出并删除</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1">#  将列表l中第一个出现的元素&#39;x&#39;删除</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span><span class="o">.</span><span class="n">clear</span>  <span class="c1">#  删除l中的所有元素</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reverse</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>  <span class="c1">#  列表元素排序，Key用于指定排序规则，reverse = False则升序，reverse = True则降序</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># 将l的元素反转 </span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>  <span class="c1"># 返回列表长度</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>  <span class="c1"># 返回列表的最大值</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>  <span class="c1"># 返回列表的最小值</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;P&#39;</span> <span class="ow">in</span> <span class="n">l</span><span class="p">)</span>  <span class="c1"># 返回True/False, 列表中存在&#39;P&#39;为True，反之为False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Tips:使用list(dictionary)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">list</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>  <span class="c1"># 将字典的key转换为列表</span>
+</span></span><span class="line"><span class="cl"><span class="nb">list</span><span class="p">(</span><span class="n">dic</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>  <span class="c1">#  将key-values转换为列表，一对key-values用元组形式存储</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="set集合">Set(集合)
-</h3><h3 id="dictionary字典">Dictionary(字典)
-</h3><h2 id="python特殊语句简介">Python特殊语句简介
-</h2><h3 id="判断语句">判断语句
-</h3><h3 id="循环语句">循环语句
-</h3>
+</h3><p>集合是Python中一种无序且不包含重复元素的数据结构，它由写在大括号<code>{}</code>内、用逗号分隔的一系列元素组成，或者通过<code>set()</code>函数创建。其核心特点包括：</p>
+<ul>
+<li>集合中的元素必须是不可变类型（如数字、字符串、元组），且集合本身是无序的，这意味着集合不支持索引或切片操作。</li>
+<li>集合是可变的，这意味着集合中的元素可以被添加或删除，这是它与元组最根本的区别。注意：创建一个空集合必须用<code>set()</code>而不是<code>{}</code>，因为<code>{}</code>是用来创建一个空字典。</li>
+</ul>
+<p>下面展示了一些常见的集合操作：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">A</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">}</span>  <span class="c1"># 使用{}来创建集合</span>
+</span></span><span class="line"><span class="cl"><span class="n">B</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="s1">&#39;bcd&#39;</span><span class="p">)</span>  <span class="c1">#  使用set()来创建集合</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">B</span><span class="p">))</span>  <span class="c1">#A∪B</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">B</span><span class="p">))</span>  <span class="c1">#A∩B </span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">B</span><span class="p">))</span>  <span class="c1">#A-B</span>
+</span></span><span class="line"><span class="cl"><span class="n">A</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># 如果x不在集合中，将x增加到A</span>
+</span></span><span class="line"><span class="cl"><span class="n">A</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>  <span class="c1"># 将B的元素添加到A中，并自动去除重复元素</span>
+</span></span><span class="line"><span class="cl"><span class="n">A</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># 移除A中的元素x，如果不存在x会报错</span>
+</span></span><span class="line"><span class="cl"><span class="n">A</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># 移除A中的元素x，如果不存在x不会报错</span>
+</span></span><span class="line"><span class="cl"><span class="n">A</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># 移除A中的所有元素</span>
+</span></span><span class="line"><span class="cl"><span class="n">A</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>  <span class="c1"># 随机返回A中的一个元素并更新A</span>
+</span></span><span class="line"><span class="cl"><span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># 返回A的一个副本</span>
+</span></span><span class="line"><span class="cl"><span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>  <span class="c1"># 返回A的元素个数</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="dictionary字典">Dictionary(字典)
+</h3><p>字典是Python中唯一的内置映射类型，也常被称为散列表，它由写在大括号<code>{}</code>内、用逗号分隔的一系列键值对组成。其核心特点包括：</p>
+<ul>
+<li>字典中的每个元素都有一个对应的“键”（Key），键必须是不可变类型（如数字、字符串、元组），且在同一个字典中不能重复。</li>
+<li>字典是可变的，这意味着字典中的键值对可以被修改、添加或删除，这是它与元组最根本的区别。注意：创建一个空字典必须用<code>{}</code>。</li>
+</ul>
+<p>下面展示了一些常见的字典操作：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="mi">56</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="mi">78</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="mi">99</span><span class="p">}</span>  <span class="c1"># 创建一个简单的字典</span>
+</span></span><span class="line"><span class="cl"><span class="k">del</span> <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>                    <span class="c1"># 删除字典d中键k所对应的数值</span>
+</span></span><span class="line"><span class="cl"><span class="n">k</span> <span class="ow">in</span> <span class="n">d</span>                      <span class="c1"># 判断键k是否在字典d中</span>
+</span></span><span class="line"><span class="cl"><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>                    <span class="c1"># 返回d中所有键的信息</span>
+</span></span><span class="line"><span class="cl"><span class="n">d</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>                  <span class="c1"># 返回d中所有值的信息</span>
+</span></span><span class="line"><span class="cl"><span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>                   <span class="c1"># 返回d中所有键值对的信息</span>
+</span></span><span class="line"><span class="cl"><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>           <span class="c1"># 键k存在，则返回相应值，不在则返回default值</span>
+</span></span><span class="line"><span class="cl"><span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>           <span class="c1"># 键k存在，则取出相应值，不在则返回default</span>
+</span></span><span class="line"><span class="cl"><span class="n">d</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>                 <span class="c1"># 随机从d中取出一个键值对，以元组形式返回</span>
+</span></span><span class="line"><span class="cl"><span class="n">d</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>                   <span class="c1"># 删除所有键值对</span>
+</span></span><span class="line"><span class="cl"><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>                      <span class="c1"># 返回字典d中元素的个数</span>
+</span></span><span class="line"><span class="cl"><span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>                 <span class="c1"># 将字典e中的“键:值”一次性添加到d中，如果存在相同键则以最新为准</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="python特殊语句简介">Python特殊语句简介
+</h2><h3 id="条件结构">条件结构
+</h3><p>条件结构（也叫选择结构或分支结构）是编程中控制程序流程的核心逻辑，它允许代码根据特定条件的真假来决定执行哪一部分逻辑。</p>
+<h4 id="条件结构简介">条件结构简介
+</h4><p>在 Python 中，条件结构主要通过 <code>if</code>、<code>elif</code>（else if 的缩写）和 <code>else</code> 关键字来实现。</p>
+<ul>
+<li><strong>基本逻辑</strong>：如果（if）某个条件成立，就执行代码块 A；否则（else），执行代码块 B。</li>
+<li><strong>语法特点</strong>：Python 使用<strong>缩进</strong>（通常是 4 个空格）来划分代码块，而不是像其他语言那样使用大括号 <code>{}</code>。</li>
+<li><strong>常用比较运算符</strong>：
+<ul>
+<li><code>==</code> (等于)</li>
+<li><code>!=</code> (不等于)</li>
+<li><code>&gt;</code> (大于), <code>&lt;</code> (小于)</li>
+<li><code>&gt;=</code> (大于等于), <code>&lt;=</code> (小于等于)</li>
+</ul>
+</li>
+</ul>
+<p>下面给出使用条件结构进行投资决策的示例代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">cf_0</span> <span class="o">=</span> <span class="o">-</span><span class="mi">300</span>
+</span></span><span class="line"><span class="cl"><span class="n">cf_1</span> <span class="o">=</span> <span class="mi">45</span>
+</span></span><span class="line"><span class="cl"><span class="n">cf_2</span> <span class="o">=</span> <span class="mi">80</span>
+</span></span><span class="line"><span class="cl"><span class="n">cf_3</span> <span class="o">=</span> <span class="mi">200</span>
+</span></span><span class="line"><span class="cl"><span class="n">r</span> <span class="o">=</span> <span class="mf">0.1</span>  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">npv</span> <span class="o">=</span> <span class="n">cf_0</span> <span class="o">+</span> <span class="n">cf_1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="n">cf_2</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">r</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">cf_3</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">r</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;计算出的净现值(NPV)为: </span><span class="si">{</span><span class="n">npv</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">npv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;决策建议：NPV 大于 0，该项目具有盈利潜力，建议投资。&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">elif</span> <span class="n">npv</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;决策建议：NPV 等于 0，该项目盈亏平衡。&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;决策建议：NPV 小于 0，该项目预计亏损，不建议投资。&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="逻辑运算符与惰性求值">逻辑运算符与“惰性求值”
+</h4><p>在 Python 的条件结构中，我们经常需要组合多个条件，这时就需要用到逻辑运算符：<code>and</code>、<code>or</code> 和 <code>not</code>。</p>
+<ul>
+<li><code>and</code> (与)：只有当<strong>所有</strong>条件都为真（True）时，结果才为真。</li>
+<li><code>or</code> (或)：只要<strong>任意一个</strong>条件为真（True），结果就为真。</li>
+<li><code>not</code> (非)：对条件取反，真变假，假变真。</li>
+</ul>
+<h4 id="惰性求值">惰性求值
+</h4><p>Python 在处理逻辑运算符时采用<strong>惰性求值</strong>（也叫短路求值）策略，这意味着解释器会从左到右评估表达式，一旦结果确定，就会立即停止计算剩余部分，以提高效率。</p>
+<ul>
+<li><code>and</code> 的惰性：如果第一个条件为假（False），Python 知道整个表达式肯定为假，因此<strong>不会</strong>再去检查后面的条件。</li>
+<li><code>or</code> 的惰性：如果第一个条件为真（True），Python 知道整个表达式肯定为真，因此<strong>不会</strong>再去检查后面的条件。</li>
+</ul>
+<h3 id="循环结构">循环结构
+</h3><p>循环结构是编程中用于处理重复性任务的核心逻辑，它允许代码根据特定条件或遍历序列来反复执行某一段程序块，从而极大地提高了代码的效率和简洁性。</p>
+<h4 id="循环结构简介">循环结构简介
+</h4><p>在 Python 中，循环主要通过 <code>for</code> 循环和 <code>while</code> 循环两种形式来实现，它们分别适用于不同的场景。</p>
+<ul>
+<li><strong>基本逻辑</strong>：只要满足设定的条件（<code>while</code>）或者序列中还有元素未遍历（<code>for</code>），就重复执行缩进的代码块。</li>
+<li><strong>语法特点</strong>：与条件结构一样，Python 使用<strong>缩进</strong>来划分循环体，且通常配合 <code>break</code>（跳出整个循环）和 <code>continue</code>（跳过本次循环）来控制流程。</li>
+</ul>
+<h4 id="for-循环遍历循环">For 循环（遍历循环）
+</h4><p><code>for</code> 循环主要用于遍历序列（如列表、字符串、元组）或其他可迭代对象。当你明确知道需要处理哪些数据，或者需要按顺序访问集合中的每个元素时，<code>for</code> 循环是首选。</p>
+<ul>
+<li><strong>适用场景</strong>：已知循环次数，或需要遍历数据结构中的所有元素。</li>
+<li><strong>核心机制</strong>：自动从序列中取出元素赋值给变量，直到序列为空。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 遍历列表中的每一个数字</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">numbers</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">total</span> <span class="o">+=</span> <span class="n">num</span>  <span class="c1"># 累加</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">total</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 如果总和超过5，演示 break：直接跳出整个循环</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;最终的总和是: </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="while-循环条件循环">While 循环（条件循环）
+</h4><p><code>while</code> 循环则是在条件为真（True）时不断重复执行代码块。它更关注“何时停止”，而不是“遍历什么”。</p>
+<ul>
+<li><strong>适用场景</strong>：未知循环次数，仅知道结束条件的场景（如用户验证、游戏主循环）。</li>
+<li><strong>核心机制</strong>：每次执行前判断条件，若条件始终为真且内部没有改变条件的语句，极易导致<strong>死循环</strong>。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 只要 count 小于 5，就一直执行</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 当数字是3时，演示 continue：跳过本次打印，直接进入下一次循环</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span> 
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;当前计数: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="循环控制break-与-continue">循环控制：Break 与 Continue
+</h4><p>在循环执行过程中，我们经常需要根据具体情况调整流程，这时就需要用到 <code>break</code> 和 <code>continue</code>。</p>
+<ul>
+<li><strong><code>break</code> (终止)</strong>：用于完全<strong>跳出</strong>当前所在的循环结构。一旦执行 <code>break</code>，循环立即结束，程序继续执行循环后面的代码。常用于找到目标后提前退出，以节省资源。</li>
+<li><strong><code>continue</code> (跳过)</strong>：用于<strong>跳过</strong>当前这一次循环中剩余的代码，直接进入下一次循环的判断或取值。它不会终止整个循环，只是忽略当下的这一轮操作。</li>
+</ul>
+
 </section>
 
 

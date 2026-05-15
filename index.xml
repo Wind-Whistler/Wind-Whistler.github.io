@@ -416,7 +416,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;当前计数: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h4 id=&#34;循环控制break-与-continue&#34;&gt;循环控制：Break 与 Continue
+&lt;/div&gt;&lt;h4 id=&#34;循环控制&#34;&gt;循环控制
 &lt;/h4&gt;&lt;p&gt;在循环执行过程中，我们经常需要根据具体情况调整流程，这时就需要用到 &lt;code&gt;break&lt;/code&gt; 和 &lt;code&gt;continue&lt;/code&gt;。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;&lt;code&gt;break&lt;/code&gt; (终止)&lt;/strong&gt;：用于完全&lt;strong&gt;跳出&lt;/strong&gt;当前所在的循环结构。一旦执行 &lt;code&gt;break&lt;/code&gt;，循环立即结束，程序继续执行循环后面的代码。常用于找到目标后提前退出，以节省资源。&lt;/li&gt;

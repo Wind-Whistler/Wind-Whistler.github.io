@@ -118,6 +118,20 @@ $$&lt;/li&gt;
 &lt;p&gt;&lt;strong&gt;直接后果&lt;/strong&gt;：这会导致算出来的残差看起来异常“干净”，使得 &lt;strong&gt;DW 统计量虚假地趋近于 2&lt;/strong&gt;（伪装成无自相关的样子），从而让你误判模型没有问题。&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;DW检验形式&lt;/strong&gt;
+杜宾和瓦森针对原假设 $H_0: \rho=0$，即 $\mu_t$ 不存在一阶自回归，构造如下统计量：
+&lt;/p&gt;
+$$
+\text{D.W.} = \frac{\sum_{t=2}^{n} (e_t - e_{t-1})^2}{\sum_{t=1}^{n} e_t^2}
+$$&lt;p&gt;将分子部分展开，可以得到：&lt;/p&gt;
+$$
+\text{D.W.} = \frac{\sum_{t=2}^{n} e_t^2 + \sum_{t=2}^{n} e_{t-1}^2 - 2\sum_{t=2}^{n} e_t e_{t-1}}{\sum_{t=1}^{n} e_t^2}
+$$&lt;p&gt;当样本量 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^{n} e_{t-1}^2$ 和 $\sum_{t=1}^{n} e_t^2$ 大致相等，则上式可以化简为：&lt;/p&gt;
+$$
+\text{D.W.} \approx 2 \left( 1 - \frac{\sum_{t=2}^{n} e_t e_{t-1}}{\sum_{t=1}^{n} e_t^2} \right) = 2(1 - \hat{\rho})
+$$&lt;p&gt;这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^{n} e_{t-1}^2$、$\sum_{t=1}^{n} e_t^2$ 大致相等。&lt;br&gt;
+在模型残差的序列相关性分析中，DW统计量与自相关系数存在明确的对应关系：若残差存在明显的&lt;strong&gt;正自相关&lt;/strong&gt;，自相关系数趋近于1，DW统计量则接近0；若存在明显的&lt;strong&gt;负自相关&lt;/strong&gt;，自相关系数趋近于-1，DW统计量则接近4；仅在&lt;strong&gt;无自相关&lt;/strong&gt;的情况下，DW统计量才会在2左右。因此，我们可以通过观察DW值是否接近0、2或4来初步判断相关性的方向，但为了进行准确的统计推断，具体的临界值判断仍需查阅DW检验表。&lt;br&gt;
+下面给出DW检验的Stata实现:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1

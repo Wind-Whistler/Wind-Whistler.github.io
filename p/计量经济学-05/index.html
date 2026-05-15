@@ -419,7 +419,7 @@
 </ol>
 <h3 id="序列相关性会导致什么后果">序列相关性会导致什么后果？
 </h3><h4 id="打破的假设">打破的假设
-</h4><p>在高斯-马尔可夫假设中，序列相关性打破了关于**“无序列相关”**的假设。</p>
+</h4><p>在高斯-马尔可夫假设中，序列相关性打破了关于“无序列相关”的假设。</p>
 <ul>
 <li><strong>原假设</strong>：随机扰动项之间互不相关，即 $Cov(\mu_i, \mu_j) = 0$ ($i \neq j$)。</li>
 <li><strong>后果</strong>：这意味着扰动项的协方差矩阵不再是<strong>对角阵</strong>，其非对角线元素不再为0。</li>
@@ -444,7 +444,23 @@
 </ul>
 <h3 id="如何检验序列相关性">如何检验序列相关性？
 </h3><h4 id="图示法">图示法
-</h4><h4 id="回归检验法">回归检验法
+</h4><p>一种比较直观的方法是直接绘制残差图来判断是否存在序列相关性。
+<img src="/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-05/%E6%AE%8B%E5%B7%AE%E5%9B%BE.png"
+	width="1031"
+	height="636"
+	srcset="/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-05/%E6%AE%8B%E5%B7%AE%E5%9B%BE_hu_34ba9230f1507ce1.png 480w, /p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-05/%E6%AE%8B%E5%B7%AE%E5%9B%BE_hu_2cd36fceec0fe66b.png 1024w"
+	loading="lazy"
+	
+		alt="残差图"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="162"
+		data-flex-basis="389px"
+	
+>
+尽管这种方法简单且直观，但是由于其缺乏明确的判别标准，主观性较强，因此需要引入更加客观的判断方法来检测序列相关性。</p>
+<h4 id="回归检验法">回归检验法
 </h4><h4 id="dw-test">D.W. Test
 </h4><p>D.W. Test 是Durbin和Waston提出的一种检验序列自相关的方法，该方法有如下假设：</p>
 <ul>

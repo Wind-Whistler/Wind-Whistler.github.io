@@ -43,7 +43,7 @@
 &lt;/ol&gt;
 &lt;h3 id=&#34;序列相关性会导致什么后果&#34;&gt;序列相关性会导致什么后果？
 &lt;/h3&gt;&lt;h4 id=&#34;打破的假设&#34;&gt;打破的假设
-&lt;/h4&gt;&lt;p&gt;在高斯-马尔可夫假设中，序列相关性打破了关于**“无序列相关”**的假设。&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;在高斯-马尔可夫假设中，序列相关性打破了关于“无序列相关”的假设。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;原假设&lt;/strong&gt;：随机扰动项之间互不相关，即 $Cov(\mu_i, \mu_j) = 0$ ($i \neq j$)。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;后果&lt;/strong&gt;：这意味着扰动项的协方差矩阵不再是&lt;strong&gt;对角阵&lt;/strong&gt;，其非对角线元素不再为0。&lt;/li&gt;
@@ -68,7 +68,23 @@
 &lt;/ul&gt;
 &lt;h3 id=&#34;如何检验序列相关性&#34;&gt;如何检验序列相关性？
 &lt;/h3&gt;&lt;h4 id=&#34;图示法&#34;&gt;图示法
-&lt;/h4&gt;&lt;h4 id=&#34;回归检验法&#34;&gt;回归检验法
+&lt;/h4&gt;&lt;p&gt;一种比较直观的方法是直接绘制残差图来判断是否存在序列相关性。
+&lt;img src=&#34;https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-05/%E6%AE%8B%E5%B7%AE%E5%9B%BE.png&#34;
+	width=&#34;1031&#34;
+	height=&#34;636&#34;
+	srcset=&#34;https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-05/%E6%AE%8B%E5%B7%AE%E5%9B%BE_hu_34ba9230f1507ce1.png 480w, https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-05/%E6%AE%8B%E5%B7%AE%E5%9B%BE_hu_2cd36fceec0fe66b.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;残差图&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;162&#34;
+		data-flex-basis=&#34;389px&#34;
+	
+&gt;
+尽管这种方法简单且直观，但是由于其缺乏明确的判别标准，主观性较强，因此需要引入更加客观的判断方法来检测序列相关性。&lt;/p&gt;
+&lt;h4 id=&#34;回归检验法&#34;&gt;回归检验法
 &lt;/h4&gt;&lt;h4 id=&#34;dw-test&#34;&gt;D.W. Test
 &lt;/h4&gt;&lt;p&gt;D.W. Test 是Durbin和Waston提出的一种检验序列自相关的方法，该方法有如下假设：&lt;/p&gt;
 &lt;ul&gt;

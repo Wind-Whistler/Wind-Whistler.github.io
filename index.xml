@@ -16,6 +16,14 @@
         <description>&lt;img src="https://example.com/p/python%E5%9F%BA%E7%A1%80-04/Garden.png" alt="Featured image of post Python基础 04" /&gt;</description>
         </item>
         <item>
+        <title>分布式计算 01</title>
+        <link>https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/</link>
+        <pubDate>Thu, 14 May 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/</guid>
+        <description>&lt;img src="https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/Mojo.png" alt="Featured image of post 分布式计算 01" /&gt;</description>
+        </item>
+        <item>
         <title>Python基础 03</title>
         <link>https://example.com/p/python%E5%9F%BA%E7%A1%80-03/</link>
         <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>

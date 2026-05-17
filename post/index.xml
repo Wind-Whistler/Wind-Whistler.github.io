@@ -462,7 +462,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;读取结果展示:&lt;br&gt;
-         &lt;img src=&#34;https://example.com/p/python%E5%9F%BA%E7%A1%80-03/result01.png&#34;
+                                                  &lt;img src=&#34;https://example.com/p/python%E5%9F%BA%E7%A1%80-03/result01.png&#34;
 	width=&#34;446&#34;
 	height=&#34;237&#34;
 	srcset=&#34;https://example.com/p/python%E5%9F%BA%E7%A1%80-03/result01_hu_d3ebbd09470ff4da.png 480w, https://example.com/p/python%E5%9F%BA%E7%A1%80-03/result01_hu_379def86da28ce90.png 1024w&#34;

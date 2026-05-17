@@ -570,7 +570,7 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="其他常见操作">其他常见操作
-</h4><p><strong>缺失值处理</strong>
+</h4><p><strong>缺失值处理</strong><br>
 重新读取数据，新读取一列&rsquo;RSI&rsquo;,RSI全称相对强弱指标，能够从一定程度上反映出市场的景气程度，是技术分析中常用的指标.</p>
 <div align="center">
   <img src="result04.png" alt="数据表" width="600">
@@ -590,7 +590,7 @@
 </span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;RSI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;RSI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;bfill&#39;</span><span class="p">)</span>  <span class="c1"># 向后填充</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><strong>排序</strong>
+</div><p><strong>排序</strong><br>
 另外在数据分析中排序也是常见操作之一，下面给出Pandas进行排序的代码示例：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -608,7 +608,7 @@
 <div align="center">
   <img src="result05.png" alt="排序结果" width="600">
 </div>
-<p><strong>移动平均</strong>
+<p><strong>移动平均</strong><br>
 移动平均(MA)是金融数据中的常见指标之一，在Pandas中我们可以通过rolling函数来求取移动平均，代码示例如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -621,7 +621,7 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>注意，如果采用5日移动平均，那么DataFrame前四行的MA(5)将为NAN，这是由于没有更早的数据来支持计算这些样本的MA(5).MA(10)也是同理。</p>
-<p><strong>分组统计</strong>
+<p><strong>分组统计</strong><br>
 接下来看分组统计，分组统计是我们日常分析数据的常见要求之一，在Pandas中我们可以通过groupby操作来实现这一点。下面给出一些代码示例：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -647,7 +647,7 @@
 <div align="center">
   <img src="result06.png" alt="多组聚合结果" width="300">
 </div>
-<p><strong>日期生成</strong>
+<p><strong>日期生成</strong><br>
 下一个介绍data_range()函数，这个函数主要用于生成日期序列，下面给出一些代码示例：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -663,7 +663,7 @@
 </span></span><span class="line"><span class="cl"><span class="c1"># 关于参数freq：&#39;B&#39;交易日，&#39;D&#39;日历日，&#39;W&#39;周，&#39;M&#39;每月底，&#39;MS&#39;每月初，&#39;BM&#39;每月最后一个交易日</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><strong>DataFrame生成</strong>
+</div><p><strong>DataFrame生成</strong><br>
 下面演示如何生成一个标准的DataFrame：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -704,7 +704,7 @@
   <img src="result07.png" alt="生成结果" width="400">
 </div>
 可见字典的Key会被作为列名，字典的Values会作为Series存入DataFrame。  
-<p><strong>Bool索引</strong>
+<p><strong>Bool索引</strong><br>
 我们可以通过Bool索引来取出符合条件的样本。下面给出代码示例：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -716,7 +716,7 @@
 </span></span><span class="line"><span class="cl"><span class="n">data</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;Income &gt;= 10000 &amp; Age &lt; 50&#39;</span><span class="p">)</span>  <span class="c1"># query索引</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><strong>联接，连接和合并</strong>
+</div><p><strong>联接，连接和合并</strong><br>
 通过联接，连接和合并我们可以进行不同二维表直接的交互，下面给出一些代码示例：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

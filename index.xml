@@ -208,7 +208,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h4 id=&#34;其他常见操作&#34;&gt;其他常见操作
-&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;缺失值处理&lt;/strong&gt;
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;缺失值处理&lt;/strong&gt;&lt;br&gt;
 重新读取数据，新读取一列&amp;rsquo;RSI&amp;rsquo;,RSI全称相对强弱指标，能够从一定程度上反映出市场的景气程度，是技术分析中常用的指标.&lt;/p&gt;
 &lt;div align=&#34;center&#34;&gt;
   &lt;img src=&#34;result04.png&#34; alt=&#34;数据表&#34; width=&#34;600&#34;&gt;
@@ -228,7 +228,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;df&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;RSI&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;df&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;RSI&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fillna&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;method&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;bfill&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 向后填充&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;strong&gt;排序&lt;/strong&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;排序&lt;/strong&gt;&lt;br&gt;
 另外在数据分析中排序也是常见操作之一，下面给出Pandas进行排序的代码示例：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -246,7 +246,7 @@
 &lt;div align=&#34;center&#34;&gt;
   &lt;img src=&#34;result05.png&#34; alt=&#34;排序结果&#34; width=&#34;600&#34;&gt;
 &lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;移动平均&lt;/strong&gt;
+&lt;p&gt;&lt;strong&gt;移动平均&lt;/strong&gt;&lt;br&gt;
 移动平均(MA)是金融数据中的常见指标之一，在Pandas中我们可以通过rolling函数来求取移动平均，代码示例如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -259,7 +259,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;注意，如果采用5日移动平均，那么DataFrame前四行的MA(5)将为NAN，这是由于没有更早的数据来支持计算这些样本的MA(5).MA(10)也是同理。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;分组统计&lt;/strong&gt;
+&lt;p&gt;&lt;strong&gt;分组统计&lt;/strong&gt;&lt;br&gt;
 接下来看分组统计，分组统计是我们日常分析数据的常见要求之一，在Pandas中我们可以通过groupby操作来实现这一点。下面给出一些代码示例：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -285,7 +285,7 @@
 &lt;div align=&#34;center&#34;&gt;
   &lt;img src=&#34;result06.png&#34; alt=&#34;多组聚合结果&#34; width=&#34;300&#34;&gt;
 &lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;日期生成&lt;/strong&gt;
+&lt;p&gt;&lt;strong&gt;日期生成&lt;/strong&gt;&lt;br&gt;
 下一个介绍data_range()函数，这个函数主要用于生成日期序列，下面给出一些代码示例：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -301,7 +301,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 关于参数freq：&amp;#39;B&amp;#39;交易日，&amp;#39;D&amp;#39;日历日，&amp;#39;W&amp;#39;周，&amp;#39;M&amp;#39;每月底，&amp;#39;MS&amp;#39;每月初，&amp;#39;BM&amp;#39;每月最后一个交易日&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;strong&gt;DataFrame生成&lt;/strong&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;DataFrame生成&lt;/strong&gt;&lt;br&gt;
 下面演示如何生成一个标准的DataFrame：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -342,7 +342,7 @@
   &lt;img src=&#34;result07.png&#34; alt=&#34;生成结果&#34; width=&#34;400&#34;&gt;
 &lt;/div&gt;
 可见字典的Key会被作为列名，字典的Values会作为Series存入DataFrame。  
-&lt;p&gt;&lt;strong&gt;Bool索引&lt;/strong&gt;
+&lt;p&gt;&lt;strong&gt;Bool索引&lt;/strong&gt;&lt;br&gt;
 我们可以通过Bool索引来取出符合条件的样本。下面给出代码示例：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -354,7 +354,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;query&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;Income &amp;gt;= 10000 &amp;amp; Age &amp;lt; 50&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# query索引&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;strong&gt;联接，连接和合并&lt;/strong&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;联接，连接和合并&lt;/strong&gt;&lt;br&gt;
 通过联接，连接和合并我们可以进行不同二维表直接的交互，下面给出一些代码示例：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;

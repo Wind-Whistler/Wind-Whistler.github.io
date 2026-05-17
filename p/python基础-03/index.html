@@ -745,6 +745,8 @@
 </span><span class="lnt">23
 </span><span class="lnt">24
 </span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="s1">&#39;100&#39;</span><span class="p">,</span> <span class="s1">&#39;200&#39;</span><span class="p">,</span> <span class="s1">&#39;300&#39;</span><span class="p">,</span> <span class="s1">&#39;400&#39;</span><span class="p">],</span>
@@ -759,10 +761,12 @@
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">df2</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1"># 联接</span>
-</span></span><span class="line"><span class="cl"><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">df1</span><span class="p">,</span><span class="n">df2</span><span class="p">),</span><span class="n">ignore_index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sort</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">df1</span><span class="p">,</span><span class="n">df2</span><span class="p">),</span><span class="n">ignore_index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sort</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>  <span class="c1"># 参数join可设置为inner或outer,inner取交集,outer取并集</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># axis 参数可选0/1 0:纵向拼接 1:横向拼接</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ignore_index 表示要不要保留原来DataFrame的Index</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1"># 连接 (注意顺序)</span>
-</span></span><span class="line"><span class="cl"><span class="n">df1</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">df1</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df2</span><span class="p">)</span>  <span class="c1"># 列名重复会报错</span>
 </span></span><span class="line"><span class="cl"><span class="n">df2</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df1</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1"># 合并 (这里演示按照C进行合并)</span>
@@ -771,7 +775,7 @@
 </span></span><span class="line"><span class="cl"><span class="n">df2</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
 </span></span><span class="line"><span class="cl"><span class="n">df1</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">)</span>  <span class="c1"># 也可以手动指定left_in, right_on</span>
+</span></span><span class="line"><span class="cl"><span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">)</span>  <span class="c1"># 也可以手动指定left_in, right_on  # 参数how默认为inner,可以手动修改为outer</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>pd.merge()</code> 函数具备自动检测两个 DataFrame 公共列名的能力，并默认将其作为连接键（Key）执行合并操作，这在逻辑上等同于 SQL 中的内连接。此外，该函数的 <code>left_on</code> 与 <code>right_on</code> 参数设计与 SQL 的 <code>JOIN ... ON</code> 语法高度一致，允许用户在列名不一致的情况下，显式指定“左表列等于右表列”的匹配条件，从而实现精准的表关联。</p>

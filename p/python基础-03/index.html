@@ -272,7 +272,7 @@
           <ol>
             <li><a href="#series运算">Series运算</a></li>
             <li><a href="#统计函数">统计函数</a></li>
-            <li><a href="#实际应用中的常见操作">实际应用中的常见操作</a></li>
+            <li><a href="#其他常见操作">其他常见操作</a></li>
           </ol>
         </li>
       </ol>
@@ -569,8 +569,213 @@
 </span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;昨日收盘价&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># shift就是把原属性的position加1，当然可以根据需求自己修改参数</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="实际应用中的常见操作">实际应用中的常见操作
-</h4>
+</div><h4 id="其他常见操作">其他常见操作
+</h4><p><strong>缺失值处理</strong>
+重新读取数据，新读取一列&rsquo;RSI&rsquo;,RSI全称相对强弱指标，能够从一定程度上反映出市场的景气程度，是技术分析中常用的指标.</p>
+<div align="center">
+  <img src="result04.png" alt="数据表" width="600">
+</div>
+<p>读取新数据后发现&rsquo;RSI&rsquo;列存在缺失值，因此我们需要使用Pandas对缺失值进行处理。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 缺失数据处理</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;RSI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;RSI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;弱势&#39;</span><span class="p">)</span>  <span class="c1"># 统一用&#39;弱势&#39;填补缺失的RSI</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;RSI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;RSI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;ffill&#39;</span><span class="p">)</span>  <span class="c1"># 向前填充</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;RSI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;RSI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;bfill&#39;</span><span class="p">)</span>  <span class="c1"># 向后填充</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>排序</strong>
+另外在数据分析中排序也是常见操作之一，下面给出Pandas进行排序的代码示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 排序</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">ascending</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>  <span class="c1"># 按照date进行排序，ascending默认为True</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;RSI&#39;</span><span class="p">,</span><span class="s1">&#39;close&#39;</span><span class="p">])</span>  <span class="c1"># 两级排序</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>两级排序结果如下所示：</p>
+<div align="center">
+  <img src="result05.png" alt="排序结果" width="600">
+</div>
+<p><strong>移动平均</strong>
+移动平均(MA)是金融数据中的常见指标之一，在Pandas中我们可以通过rolling函数来求取移动平均，代码示例如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>  <span class="c1"># 5日移动平均</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>  <span class="c1"># 10日移动平均</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>注意，如果采用5日移动平均，那么DataFrame前四行的MA(5)将为NAN，这是由于没有更早的数据来支持计算这些样本的MA(5).MA(10)也是同理。</p>
+<p><strong>分组统计</strong>
+接下来看分组统计，分组统计是我们日常分析数据的常见要求之一，在Pandas中我们可以通过groupby操作来实现这一点。下面给出一些代码示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>  <span class="c1"># 将index转换为日期格式</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">month</span>  <span class="c1"># 生成month列</span>
+</span></span><span class="line"><span class="cl"><span class="n">groups</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">)</span>  <span class="c1">#使用groupby生成一个Groupby对象，这个对象必须通过聚合函数才能变回DataFrame</span>
+</span></span><span class="line"><span class="cl"><span class="n">groups</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>  <span class="c1"># 返回每一组的size</span>
+</span></span><span class="line"><span class="cl"><span class="n">groups</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>  <span class="c1"># 返回每一组close平均值</span>
+</span></span><span class="line"><span class="cl"><span class="n">groups</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>  <span class="c1"># 返回每一组close最大值</span>
+</span></span><span class="line"><span class="cl"><span class="n">groups</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">agg</span><span class="p">([</span><span class="nb">min</span><span class="p">,</span><span class="nb">max</span><span class="p">])</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># 同时返回两个聚合结果</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>多组聚合结果如下所示：</p>
+<div align="center">
+  <img src="result06.png" alt="多组聚合结果" width="300">
+</div>
+<p><strong>日期生成</strong>
+下一个介绍data_range()函数，这个函数主要用于生成日期序列，下面给出一些代码示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># date_range()函数</span>
+</span></span><span class="line"><span class="cl"><span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span> <span class="o">=</span> <span class="s1">&#39;2026-05-01&#39;</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># 从2026-05-01起生成5期</span>
+</span></span><span class="line"><span class="cl"><span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span> <span class="o">=</span> <span class="s1">&#39;2026-01-01&#39;</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="s1">&#39;2026-12-31&#39;</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;M&#39;</span><span class="p">)</span>  <span class="c1"># 生成每个月的月底数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 关于参数freq：&#39;B&#39;交易日，&#39;D&#39;日历日，&#39;W&#39;周，&#39;M&#39;每月底，&#39;MS&#39;每月初，&#39;BM&#39;每月最后一个交易日</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>DataFrame生成</strong>
+下面演示如何生成一个标准的DataFrame：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 生成一个裸表</span>
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># 形状为10 * 4</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 设置索引与列名</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NO1&#39;</span><span class="p">,</span><span class="s1">&#39;NO2&#39;</span><span class="p">,</span><span class="s1">&#39;NO3&#39;</span><span class="p">,</span><span class="s1">&#39;NO4&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;NO1&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 用字典生成DataFrame</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;Country&#39;</span><span class="p">:[</span><span class="s1">&#39;China&#39;</span><span class="p">,</span><span class="s1">&#39;China&#39;</span><span class="p">,</span> <span class="s1">&#39;India&#39;</span><span class="p">,</span> <span class="s1">&#39;India&#39;</span><span class="p">,</span> <span class="s1">&#39;America&#39;</span><span class="p">,</span> <span class="s1">&#39;Japan&#39;</span><span class="p">,</span> <span class="s1">&#39;China&#39;</span><span class="p">,</span> <span class="s1">&#39;India&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                   <span class="s1">&#39;Income&#39;</span><span class="p">:[</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">5002</span><span class="p">,</span> <span class="mi">40000</span><span class="p">,</span> <span class="mi">50000</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                   <span class="s1">&#39;Age&#39;</span><span class="p">:[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">32</span><span class="p">]})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>用字典生成DataFrame结果如下：</p>
+<div align="center">
+  <img src="result07.png" alt="生成结果" width="400">
+</div>
+可见字典的Key会被作为列名，字典的Values会作为Series存入DataFrame。  
+<p><strong>Bool索引</strong>
+我们可以通过Bool索引来取出符合条件的样本。下面给出代码示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Income&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">10000</span><span class="p">]</span>  <span class="c1"># 直接索引</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;Income &gt;= 10000 &amp; Age &lt; 50&#39;</span><span class="p">)</span>  <span class="c1"># query索引</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>联接，连接和合并</strong>
+通过联接，连接和合并我们可以进行不同二维表直接的交互，下面给出一些代码示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="s1">&#39;100&#39;</span><span class="p">,</span> <span class="s1">&#39;200&#39;</span><span class="p">,</span> <span class="s1">&#39;300&#39;</span><span class="p">,</span> <span class="s1">&#39;400&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                   <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                   <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">df2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="s1">&#39;200&#39;</span><span class="p">,</span> <span class="s1">&#39;50&#39;</span><span class="p">,</span> <span class="s1">&#39;150&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                   <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                   <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;B&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">df1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">df2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 联接</span>
+</span></span><span class="line"><span class="cl"><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">df1</span><span class="p">,</span><span class="n">df2</span><span class="p">),</span><span class="n">ignore_index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sort</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 连接 (注意顺序)</span>
+</span></span><span class="line"><span class="cl"><span class="n">df1</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">df2</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 合并 (这里演示按照C进行合并)</span>
+</span></span><span class="line"><span class="cl"><span class="n">c</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">250</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">df1</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+</span></span><span class="line"><span class="cl"><span class="n">df2</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+</span></span><span class="line"><span class="cl"><span class="n">df1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">)</span>  <span class="c1"># 也可以手动指定left_in, right_on</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>pd.merge()</code> 函数具备自动检测两个 DataFrame 公共列名的能力，并默认将其作为连接键（Key）执行合并操作，这在逻辑上等同于 SQL 中的内连接。此外，该函数的 <code>left_on</code> 与 <code>right_on</code> 参数设计与 SQL 的 <code>JOIN ... ON</code> 语法高度一致，允许用户在列名不一致的情况下，显式指定“左表列等于右表列”的匹配条件，从而实现精准的表关联。</p>
+
 </section>
 
 

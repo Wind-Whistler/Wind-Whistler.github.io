@@ -226,7 +226,41 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#pandas-简介">Pandas 简介</a></li>
+    <li><a href="#pandas-文件导入">Pandas 文件导入</a></li>
+    <li><a href="#dataframe和series基础">DataFrame和Series基础</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -316,7 +350,56 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>Pandas 简介</li>
+<li>Pandas 文件导入</li>
+<li>DataFrame和Series基础</li>
+</ul>
+<p><strong>说明：本期使用海康威视作为演示数据</strong></p>
+<h2 id="pandas-简介">Pandas 简介
+</h2><p>Pandas 是由量化专家 Wes McKinney 开发的 Python 数据分析库，其名称源于“面板数据”与“数据分析”的缩写组合。它在经济金融领域尤为重要，被视为处理以日期或时间为索引的时间序列数据的最佳利器。除了强大的时间序列功能外，Pandas 还提供了高性能、易于使用的数据结构（如 Series 和 DataFrame），能够极大地简化数据清洗、准备、处理和分析的复杂流程。其主要用途非常广泛，涵盖了从读取多种格式文件（如 CSV、Excel、SQL）开始，进行缺失值填补、数据筛选与对齐、合并重塑，到执行复杂的统计分析、分组聚合运算，最终辅助用户完成高质量的数据可视化，是进行数据挖掘、量化交易策略研究及各类商业智能分析不可或缺的基础工具。</p>
+<h2 id="pandas-文件导入">Pandas 文件导入
+</h2><p>在开始之前先简单区分一下，CSV本质上是一个纯文本文件，虽然它可以用Excel打开，但并不像XLSX那样包含复杂的格式、公式等额外信息；正因为CSV只单纯存储数据，所以在读取速度上通常比XLSX更快。接下来，我们就以这种常见的 CSV 文件格式为例，为大家演示如何使用 Pandas 读取数据并进行基础的数据分析。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;002415.csv&#39;</span><span class="p">,</span>   <span class="c1"># 这里输入文件的位置参数，一般会把数据文件放在工作文件夹下</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">encoding</span> <span class="o">=</span> <span class="s1">&#39;gbk&#39;</span><span class="p">,</span>   <span class="c1"># encoding参数可以设定编码方式，一些中文数据文件有时需要使用&#39;gbk&#39;编码</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">n_rows</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># 设定为读取前10行，默认为读取全部数据</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">index_col</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span>   <span class="c1"># 这里设定DataFrame的索引列，如果不设定pandas会自动生成0，1，2...作为DataFrame的索引</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">usecols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">,</span><span class="s1">&#39;open&#39;</span><span class="p">,</span><span class="s1">&#39;high&#39;</span><span class="p">,</span><span class="s1">&#39;close&#39;</span><span class="p">,</span><span class="s1">&#39;low&#39;</span><span class="p">,</span><span class="s1">&#39;volume&#39;</span><span class="p">],</span> <span class="c1"># 这里选定要读取的列</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">na_values</span> <span class="o">=</span> <span class="s1">&#39;NULL&#39;</span> <span class="p">)</span>  <span class="c1"># 这里是将&#39;NULL&#39;识别为缺失值，如果不设置read_csv会将&#39;NULL&#39;作为字符串读入</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>  <span class="c1"># 显示数据前几行，方便检查是否正确读入数据，默认显示前5行</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>读取结果展示:
+<img src="/p/python%E5%9F%BA%E7%A1%80-03/result01.png"
+	width="446"
+	height="237"
+	srcset="/p/python%E5%9F%BA%E7%A1%80-03/result01_hu_d3ebbd09470ff4da.png 480w, /p/python%E5%9F%BA%E7%A1%80-03/result01_hu_379def86da28ce90.png 1024w"
+	loading="lazy"
+	
+		alt="读取结果"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="188"
+		data-flex-basis="451px"
+	
+>
+以上是读取数据时一些常见的参数设置。通常读取完文件后，我们会得到一个 DataFrame 对象。但在处理超大数据量的文件时，可能无法一次性将其全部加载到内存中，这时就需要用到 <code>chunksize</code> 参数。一旦设置了该参数，<code>read_csv</code> 返回的就不再是普通的 DataFrame，而是一个迭代器。这个特性在分布式计算或大规模数据处理中非常实用，不过鉴于我们目前主要讲解 Python 基础，这里就不做深入展开了，感兴趣的同学可以进一步查阅分布式计算的相关资料。
+除了 CSV 文件之外，其实 Pandas 还支持读取多种类型的数据。包括我们刚才提到的 Excel，以及 SAS 等统计软件常用的数据格式；此外，像 Stata 的 .dta 文件，甚至 MySQL 等数据库中的数据，Pandas 也都能轻松读取。可以说，Pandas 在数据导入方面的兼容性和覆盖面是非常广泛的。</p>
+<h2 id="dataframe和series基础">DataFrame和Series基础
+</h2>
 </section>
 
 

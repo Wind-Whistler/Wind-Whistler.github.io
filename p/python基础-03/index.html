@@ -272,6 +272,7 @@
           <ol>
             <li><a href="#series运算">Series运算</a></li>
             <li><a href="#统计函数">统计函数</a></li>
+            <li><a href="#实际应用中的常见操作">实际应用中的常见操作</a></li>
           </ol>
         </li>
       </ol>
@@ -515,6 +516,60 @@
 </div>
 <p>不难发现&rsquo;volume&rsquo;列的数据并没有发生变化；此外，相较于原表更新后的数据多了&rsquo;Turnover&rsquo;这一列。</p>
 <h4 id="统计函数">统计函数
+</h4><p>在实际的数据分析工作中，我们经常需要对数据执行各类统计运算，例如计算最大值、最小值、均值以及方差等。为此，下面将列举一些 Pandas 中常用的函数，用于实现这些统计处理。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Pandas 统计函数</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>  <span class="c1"># 获取某一列的平均值</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;open&#39;</span><span class="p">,</span><span class="s1">&#39;close&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>  <span class="c1"># 当然也可以获取两列</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;open&#39;</span><span class="p">,</span><span class="s1">&#39;close&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># 按行取平均（默认）</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;open&#39;</span><span class="p">,</span><span class="s1">&#39;close&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># 当然也可以按列取平均，但需要手动设置参数axis = 1</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>  <span class="c1"># 返回非空样本数</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>  <span class="c1"># 返回Series最小值 max()可以返回最大值</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>  <span class="c1"># 返回最小值position argmax()返回最大值</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>  <span class="c1"># 返回最小值的对应索引 idxmax()返回最大值</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.75</span><span class="p">)</span>  <span class="c1"># 返回75%分位数</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>  <span class="c1"># 列求和</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>  <span class="c1"># 取中位数</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">var</span><span class="p">()</span>  <span class="c1"># 取方差 std()可以取标准差</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">skew</span><span class="p">()</span>  <span class="c1"># 取偏度  kurt()可以取峰度</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>  <span class="c1"># 求累加值  cummax()和cummin()取累计最大和累计最小</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cumprod</span><span class="p">()</span>  <span class="c1"># 求累计乘积</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># 求一阶差分</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pct_change</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1">#求一阶变化率</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 金融时间序列常见处理</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;涨跌幅&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;涨跌比例&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pct_change</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;昨日收盘价&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># shift就是把原属性的position加1，当然可以根据需求自己修改参数</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="实际应用中的常见操作">实际应用中的常见操作
 </h4>
 </section>
 

@@ -461,7 +461,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;df&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;head&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 显示数据前几行，方便检查是否正确读入数据，默认显示前5行&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;读取结果展示:
+&lt;/div&gt;&lt;p&gt;读取结果展示:&lt;br&gt;
 &lt;img src=&#34;https://example.com/p/python%E5%9F%BA%E7%A1%80-03/result01.png&#34;
 	width=&#34;446&#34;
 	height=&#34;237&#34;
@@ -475,7 +475,7 @@
 		data-flex-grow=&#34;188&#34;
 		data-flex-basis=&#34;451px&#34;
 	
-&gt;
+&gt;&lt;br&gt;
 以上是读取数据时一些常见的参数设置。通常读取完文件后，我们会得到一个 DataFrame 对象。但在处理超大数据量的文件时，可能无法一次性将其全部加载到内存中，这时就需要用到 &lt;code&gt;chunksize&lt;/code&gt; 参数。一旦设置了该参数，&lt;code&gt;read_csv&lt;/code&gt; 返回的就不再是普通的 DataFrame，而是一个迭代器。这个特性在分布式计算或大规模数据处理中非常实用，不过鉴于我们目前主要讲解 Python 基础，这里就不做深入展开了，感兴趣的同学可以进一步查阅分布式计算的相关资料。
 除了 CSV 文件之外，其实 Pandas 还支持读取多种类型的数据。包括我们刚才提到的 Excel，以及 SAS 等统计软件常用的数据格式；此外，像 Stata 的 .dta 文件，甚至 MySQL 等数据库中的数据，Pandas 也都能轻松读取。可以说，Pandas 在数据导入方面的兼容性和覆盖面是非常广泛的。&lt;/p&gt;
 &lt;h2 id=&#34;dataframe和series基础&#34;&gt;DataFrame和Series基础

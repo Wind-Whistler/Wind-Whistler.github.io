@@ -381,7 +381,7 @@
 </span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>  <span class="c1"># 显示数据前几行，方便检查是否正确读入数据，默认显示前5行</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>读取结果展示:
+</div><p>读取结果展示:<br>
 <img src="/p/python%E5%9F%BA%E7%A1%80-03/result01.png"
 	width="446"
 	height="237"
@@ -395,7 +395,7 @@
 		data-flex-grow="188"
 		data-flex-basis="451px"
 	
->
+><br>
 以上是读取数据时一些常见的参数设置。通常读取完文件后，我们会得到一个 DataFrame 对象。但在处理超大数据量的文件时，可能无法一次性将其全部加载到内存中，这时就需要用到 <code>chunksize</code> 参数。一旦设置了该参数，<code>read_csv</code> 返回的就不再是普通的 DataFrame，而是一个迭代器。这个特性在分布式计算或大规模数据处理中非常实用，不过鉴于我们目前主要讲解 Python 基础，这里就不做深入展开了，感兴趣的同学可以进一步查阅分布式计算的相关资料。
 除了 CSV 文件之外，其实 Pandas 还支持读取多种类型的数据。包括我们刚才提到的 Excel，以及 SAS 等统计软件常用的数据格式；此外，像 Stata 的 .dta 文件，甚至 MySQL 等数据库中的数据，Pandas 也都能轻松读取。可以说，Pandas 在数据导入方面的兼容性和覆盖面是非常广泛的。</p>
 <h2 id="dataframe和series基础">DataFrame和Series基础

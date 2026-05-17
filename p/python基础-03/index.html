@@ -251,7 +251,31 @@
     <li><a href="#本期内容">本期内容</a></li>
     <li><a href="#pandas-简介">Pandas 简介</a></li>
     <li><a href="#pandas-文件导入">Pandas 文件导入</a></li>
-    <li><a href="#dataframe和series基础">DataFrame和Series基础</a></li>
+    <li><a href="#dataframe和series基础">DataFrame和Series基础</a>
+      <ol>
+        <li><a href="#series">Series</a></li>
+        <li><a href="#dataframe">DataFrame</a>
+          <ol>
+            <li><a href="#核心定义">核心定义</a></li>
+            <li><a href="#三大组成部分">三大组成部分</a></li>
+            <li><a href="#核心特征">核心特征</a></li>
+            <li><a href="#总结">总结</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#pandas-常见操作">Pandas 常见操作</a>
+      <ol>
+        <li><a href="#pandas-取数">Pandas 取数</a></li>
+        <li><a href="#pandas-数据概览">Pandas 数据概览</a></li>
+        <li><a href="#pandas-数据运算">Pandas 数据运算</a>
+          <ol>
+            <li><a href="#series运算">Series运算</a></li>
+            <li><a href="#统计函数">统计函数</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -355,6 +379,7 @@
 <li>Pandas 简介</li>
 <li>Pandas 文件导入</li>
 <li>DataFrame和Series基础</li>
+<li>Pandas 常见操作</li>
 </ul>
 <p><strong>说明：本期使用海康威视作为演示数据</strong></p>
 <h2 id="pandas-简介">Pandas 简介
@@ -381,25 +406,116 @@
 </span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>  <span class="c1"># 显示数据前几行，方便检查是否正确读入数据，默认显示前5行</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>读取结果展示:<br>
-                                                  <img src="/p/python%E5%9F%BA%E7%A1%80-03/result01.png"
-	width="446"
-	height="237"
-	srcset="/p/python%E5%9F%BA%E7%A1%80-03/result01_hu_d3ebbd09470ff4da.png 480w, /p/python%E5%9F%BA%E7%A1%80-03/result01_hu_379def86da28ce90.png 1024w"
-	loading="lazy"
-	
-		alt="读取结果"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="188"
-		data-flex-basis="451px"
-	
-><br>
-以上是读取数据时一些常见的参数设置。通常读取完文件后，我们会得到一个 DataFrame 对象。但在处理超大数据量的文件时，可能无法一次性将其全部加载到内存中，这时就需要用到 <code>chunksize</code> 参数。一旦设置了该参数，<code>read_csv</code> 返回的就不再是普通的 DataFrame，而是一个迭代器。这个特性在分布式计算或大规模数据处理中非常实用，不过鉴于我们目前主要讲解 Python 基础，这里就不做深入展开了，感兴趣的同学可以进一步查阅分布式计算的相关资料。
-除了 CSV 文件之外，其实 Pandas 还支持读取多种类型的数据。包括我们刚才提到的 Excel，以及 SAS 等统计软件常用的数据格式；此外，像 Stata 的 .dta 文件，甚至 MySQL 等数据库中的数据，Pandas 也都能轻松读取。可以说，Pandas 在数据导入方面的兼容性和覆盖面是非常广泛的。</p>
+</div><p>读取结果展示:</p>
+<div align="center">
+  <img src="result01.png" alt="读取结果" width="600">
+</div>
+以上是读取数据时一些常见的参数设置。通常读取完文件后，我们会得到一个 DataFrame 对象。但在处理超大数据量的文件时，可能无法一次性将其全部加载到内存中，这时就需要用到 `chunksize` 参数。一旦设置了该参数，`read_csv` 返回的就不再是普通的 DataFrame，而是一个迭代器。这个特性在分布式计算或大规模数据处理中非常实用，不过鉴于我们目前主要讲解 Python 基础，这里就不做深入展开了，感兴趣的同学可以进一步查阅分布式计算的相关资料。
+除了 CSV 文件之外，其实 Pandas 还支持读取多种类型的数据。包括我们刚才提到的 Excel，以及 SAS 等统计软件常用的数据格式；此外，像 Stata 的 .dta 文件，甚至 MySQL 等数据库中的数据，Pandas 也都能轻松读取。可以说，Pandas 在数据导入方面的兼容性和覆盖面是非常广泛的。
 <h2 id="dataframe和series基础">DataFrame和Series基础
-</h2>
+</h2><h3 id="series">Series
+</h3><p>Series 非常类似于 Excel 表格中的单独一列，它能够存储大量的数据，且这些数据通常具有相同的数据类型。这一列数据并非孤立存在，而是与一个索引紧密绑定，我们在读取或创建数据时往往会直接设定好这个 Index，从而建立起数据与标签之间一一对应的关系。比如在我们刚才的例子中&rsquo;open&rsquo;就是一个Series.</p>
+<p>这种结构最大的优势在于它赋予了数据“自我描述”的能力。相比于 Python 原生的列表，Series 不仅仅是一堆数值的集合，它通过预设的索引将每个数值锚定在特定的位置或含义上。这使得我们在后续的数据分析中，可以直接通过索引标签来精准定位数据，而无需关心它在内存中的物理位置，极大地提升了代码的可读性和数据处理的效率。</p>
+<h3 id="dataframe">DataFrame
+</h3><h4 id="核心定义">核心定义
+</h4><p>DataFrame 是一个二维的表格型数据结构，你可以把它直接想象成一张完整的 Excel 表格或者数据库里的一张数据表。如果说 Series 是单列的一维数组，那么 DataFrame 就是由多个 Series（也就是多列）横向拼在一起组成的二维容器，它是 Pandas 中最常用、最核心的数据处理工具。</p>
+<h4 id="三大组成部分">三大组成部分
+</h4><p>一个标准的 DataFrame 包含三个关键要素：</p>
+<ul>
+<li><strong>行索引 (Index)</strong>：和 Series 一样，每一行都有一个对应的标签（比如日期、ID等），用于唯一标识这条记录。</li>
+<li><strong>列名 (Columns)</strong>：这是 DataFrame 独有的。每一列都有自己的名字（比如“姓名”、“年龄”、“销售额”），这些列名其实就是内部包含的各个 Series 的名字。</li>
+<li><strong>数据 (Data/Values)</strong>：表格中实际存储的具体数值矩阵。</li>
+</ul>
+<h4 id="核心特征">核心特征
+</h4><ul>
+<li><strong>异构数据类型</strong>：在同一个 DataFrame 里，不同的列可以存储不同类型的数据。比如，“姓名”列可以是字符串，“年龄”列是整数，“是否在职”列是布尔值，它们能完美地共存于同一张表中。</li>
+<li><strong>自动对齐</strong>：当你对两个 DataFrame 进行运算时，Pandas 会自动根据行索引和列名去匹配数据，完全不需要你手动去对齐位置。</li>
+<li><strong>强大的操作能力</strong>：它内置了极其丰富的功能，比如筛选特定的行或列、按某列排序、分组统计、处理缺失值以及合并多张表格等。</li>
+</ul>
+<h4 id="总结">总结
+</h4><p>简单来说，Series 是构成 DataFrame 的基本单元，而 DataFrame 就是多个共享同一套行索引的 Series 组成的字典。在日常的数据分析工作中，我们绝大部分时间都是在和 DataFrame 打交道，因为它最符合我们看报表和处理业务数据的直觉。</p>
+<h2 id="pandas-常见操作">Pandas 常见操作
+</h2><h3 id="pandas-取数">Pandas 取数
+</h3><p>Pandas取数可以大致分为Position取数和Index+Columns取数，下面给出一些代码示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 获取单一数据 iat,at</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="s1">&#39;2021/1/4&#39;</span><span class="p">,</span><span class="s1">&#39;open&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 切片  iolc,loc</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># positon取数</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;2021/1/4&#39;</span><span class="p">:</span><span class="s1">&#39;2021/1/8&#39;</span><span class="p">,</span><span class="s1">&#39;open&#39;</span><span class="p">:</span><span class="s1">&#39;close&#39;</span><span class="p">])</span>  <span class="c1"># 右闭，直接用列名和行索引进行取数</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 获取某一列数据</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">])</span>  <span class="c1"># 这种方式只能取列，不能取行</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;open&#39;</span><span class="p">,</span><span class="s1">&#39;close&#39;</span><span class="p">]])</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="pandas-数据概览">Pandas 数据概览
+</h3><p>Pandas提供了一些基础函数供用户查看数据的基本信息，下面给出一些代码示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Pandas 数据概览</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 随机抽取两个样本</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">)</span>  <span class="c1"># 随机取出40%的样本</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>  <span class="c1"># 描述性统计</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span>  <span class="c1"># 返回各列(Series)的数据类型</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">shape</span>  <span class="c1"># 返回数据形状</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">columns</span>  <span class="c1"># 返回各列(Series)的属性名称</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">index</span>  <span class="c1"># 返回所有索引</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>下面给出描述性统计的结果：</p>
+<div align="center">
+  <img src="result02.png" alt="描述性统计" width="600">
+</div>
+一般来讲Pandas自带的描述性统计会返回各列的样本数，均值，标准差，及各分位数。  
+<h3 id="pandas-数据运算">Pandas 数据运算
+</h3><h4 id="series运算">Series运算
+</h4><p>一般来讲DataFrame的运算都是以列为单位的，下面给出一些Series运算的代码示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Pandas Series运算</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;volume&#39;</span><span class="p">]</span>  <span class="c1"># 获取volume列的数据</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;volume&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>  <span class="c1"># 不会改变DataFrame中的数据</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Turnover&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;volume&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span>  <span class="c1"># 创建新的属性</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span>  <span class="c1"># 查看更新后数据</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>结果如下图所示：</p>
+<div align="center">
+  <img src="result03.png" alt="Series运算结果" width="600">
+</div>
+<p>不难发现&rsquo;volume&rsquo;列的数据并没有发生变化；此外，相较于原表更新后的数据多了&rsquo;Turnover&rsquo;这一列。</p>
+<h4 id="统计函数">统计函数
+</h4>
 </section>
 
 

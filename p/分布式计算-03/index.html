@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en-us" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本章节介绍分布式计算的一些基本概念">
-<title>分布式计算 01</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本章节介绍如何使用分布式计算高效求解线性方程组">
+<title>分布式计算 03</title>
 
-<link rel='canonical' href='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/'>
+<link rel='canonical' href='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-03/'>
 
-<link rel="stylesheet" href="/scss/style.min.86591c898bd806857815fbb8c47e8d3fed97c133b78e83d9bfc27b164dd0aa2b.css"><meta property='og:title' content="分布式计算 01">
-<meta property='og:description' content="本章节介绍分布式计算的一些基本概念">
-<meta property='og:url' content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/'>
+<link rel="stylesheet" href="/scss/style.min.86591c898bd806857815fbb8c47e8d3fed97c133b78e83d9bfc27b164dd0aa2b.css"><meta property='og:title' content="分布式计算 03">
+<meta property='og:description' content="本章节介绍如何使用分布式计算高效求解线性方程组">
+<meta property='og:url' content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-03/'>
 <meta property='og:site_name' content='Wind Whistler&#39;s Blog'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-14T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-14T00:00:00&#43;00:00'/><meta property='og:image' content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/Mojo.png' />
-<meta name="twitter:title" content="分布式计算 01">
-<meta name="twitter:description" content="本章节介绍分布式计算的一些基本概念"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/Mojo.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-18T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-18T00:00:00&#43;00:00'/><meta property='og:image' content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-03/Mojo.png' />
+<meta name="twitter:title" content="分布式计算 03">
+<meta name="twitter:description" content="本章节介绍如何使用分布式计算高效求解线性方程组"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-03/Mojo.png' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -232,13 +232,13 @@
     <article class="has-image main-article">
     <header class="article-header">
         <div class="article-image">
-            <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/">
-                <img src="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/Mojo_hu_8321cbe2ff492ae6.png"
-                        srcset="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/Mojo_hu_8321cbe2ff492ae6.png 800w, /p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/Mojo_hu_93dd8459a7034e.png 1600w"
+            <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-03/">
+                <img src="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-03/Mojo_hu_8321cbe2ff492ae6.png"
+                        srcset="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-03/Mojo_hu_8321cbe2ff492ae6.png 800w, /p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-03/Mojo_hu_93dd8459a7034e.png 1600w"
                         width="800" 
                         height="538" 
                         loading="lazy"
-                        alt="Featured image of post 分布式计算 01" />
+                        alt="Featured image of post 分布式计算 03" />
                 
             </a>
         </div>
@@ -281,12 +281,12 @@
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/">分布式计算 01</a>
+            <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-03/">分布式计算 03</a>
         </h2>
     
         
         <h3 class="article-subtitle">
-            本章节介绍分布式计算的一些基本概念
+            本章节介绍如何使用分布式计算高效求解线性方程组
         </h3>
         
     </div>
@@ -307,7 +307,7 @@
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published" datetime='2026-05-14T00:00:00Z'>2026-05-14</time>
+                <time class="article-time--published" datetime='2026-05-18T00:00:00Z'>2026-05-18</time>
             </div>
         
 
@@ -379,30 +379,6 @@
             
                 
 <article class="has-image">
-    <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-03/">
-        
-        
-            <div class="article-image">
-                <img src="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-03/Mojo.7b1cda79110afd9caea5c356ff252b0e_hu_3762f81852d963b.png" 
-                        width="250" 
-                        height="150" 
-                        loading="lazy"
-                        alt="Featured image of post 分布式计算 03"
-                        
-                        data-hash="md5-exzaeREK/ZyupcNW/yUrDg==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">分布式计算 03</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="has-image">
     <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-02/">
         
         
@@ -420,6 +396,30 @@
 
         <div class="article-details">
             <h2 class="article-title">分布式计算 02</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-01/Mojo.7b1cda79110afd9caea5c356ff252b0e_hu_3762f81852d963b.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 分布式计算 01"
+                        
+                        data-hash="md5-exzaeREK/ZyupcNW/yUrDg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">分布式计算 01</h2>
         </div>
     </a>
 </article>

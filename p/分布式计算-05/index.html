@@ -302,12 +302,19 @@
       <ol>
         <li><a href="#梯度下降法-1">梯度下降法</a>
           <ol>
-            <li><a href="#step1导入所需要的库">Step1:导入所需要的库</a></li>
-            <li><a href="#step2生成所需要的数据">Step2:生成所需要的数据</a></li>
-            <li><a href="#step3将数据分块上传到共享内存">Step3:将数据分块上传到共享内存</a></li>
-            <li><a href="#step4定义分布式计算函数">Step4:定义分布式计算函数</a></li>
-            <li><a href="#step5训练模型">Step5:训练模型</a></li>
-            <li><a href="#step6打印结果">Step6:打印结果</a></li>
+            <li><a href="#导入所需要的库">导入所需要的库</a></li>
+            <li><a href="#生成所需要的数据">生成所需要的数据</a></li>
+            <li><a href="#将数据分块上传到共享内存">将数据分块上传到共享内存</a></li>
+            <li><a href="#定义一阶分布式计算函数">定义一阶分布式计算函数</a></li>
+            <li><a href="#训练模型">训练模型</a></li>
+            <li><a href="#打印结果">打印结果</a></li>
+          </ol>
+        </li>
+        <li><a href="#牛顿法-1">牛顿法</a>
+          <ol>
+            <li><a href="#定义二阶分布式计算函数">定义二阶分布式计算函数</a></li>
+            <li><a href="#训练模型-1">训练模型</a></li>
+            <li><a href="#打印结果-1">打印结果</a></li>
           </ol>
         </li>
       </ol>
@@ -597,7 +604,7 @@ $$<p>其中 $p(x) = \sigma(x^T \beta)$，$f(z) = \log(1 + e^z)$。</p>
 </div><h2 id="代码实例">代码实例
 </h2><h3 id="梯度下降法-1">梯度下降法
 </h3><p>这里演示使用梯度下降法求解Logistic Regression</p>
-<h4 id="step1导入所需要的库">Step1:导入所需要的库
+<h4 id="导入所需要的库">导入所需要的库
 </h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -620,7 +627,7 @@ $$<p>其中 $p(x) = \sigma(x^T \beta)$，$f(z) = \log(1 + e^z)$。</p>
 </span></span><span class="line"><span class="cl"><span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="step2生成所需要的数据">Step2:生成所需要的数据
+</div><h4 id="生成所需要的数据">生成所需要的数据
 </h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -653,7 +660,7 @@ $$<p>其中 $p(x) = \sigma(x^T \beta)$，$f(z) = \log(1 + e^z)$。</p>
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;文件大小为: </span><span class="si">{</span><span class="n">file_size</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB&#34;</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="step3将数据分块上传到共享内存">Step3:将数据分块上传到共享内存
+</div><h4 id="将数据分块上传到共享内存">将数据分块上传到共享内存
 </h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -684,7 +691,7 @@ $$<p>其中 $p(x) = \sigma(x^T \beta)$，$f(z) = \log(1 + e^z)$。</p>
 </span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;已写入第</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">块数据&#39;</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="step4定义分布式计算函数">Step4:定义分布式计算函数
+</div><h4 id="定义一阶分布式计算函数">定义一阶分布式计算函数
 </h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -707,7 +714,7 @@ $$<p>其中 $p(x) = \sigma(x^T \beta)$，$f(z) = \log(1 + e^z)$。</p>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">n</span><span class="p">,</span><span class="n">loss</span><span class="p">,</span><span class="n">grad</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="step5训练模型">Step5:训练模型
+</div><h4 id="训练模型">训练模型
 </h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -744,7 +751,7 @@ $$<p>其中 $p(x) = \sigma(x^T \beta)$，$f(z) = \log(1 + e^z)$。</p>
 </span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Iteration:</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">  loss:</span><span class="si">{</span><span class="n">loss</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> 
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="step6打印结果">Step6:打印结果
+</div><h4 id="打印结果">打印结果
 </h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -767,6 +774,106 @@ $$<p>其中 $p(x) = \sigma(x^T \beta)$，$f(z) = \log(1 + e^z)$。</p>
 <div align="center">
   <img src="Pic01.png" alt="梯度下降" width="800">
 </div>
+<h3 id="牛顿法-1">牛顿法
+</h3><p>这里导入库，生成数据，上传共享内存的代码同上，故省略。</p>
+<h4 id="定义二阶分布式计算函数">定义二阶分布式计算函数
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@ray.remote</span>  <span class="c1"># 二阶分布式计算</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">sec_grad</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">beta</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">expit</span><span class="p">,</span> <span class="n">softplus</span>
+</span></span><span class="line"><span class="cl">    <span class="n">z</span> <span class="o">=</span> <span class="n">X</span> <span class="o">@</span> <span class="n">beta</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w</span> <span class="o">=</span> <span class="n">expit</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">expit</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="n">y</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">softplus</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">first_grad</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="p">(</span><span class="n">expit</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">second_grad</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">n</span><span class="p">,</span><span class="n">loss</span><span class="p">,</span><span class="n">first_grad</span><span class="p">,</span><span class="n">second_grad</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="训练模型-1">训练模型
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">scipy</span>
+</span></span><span class="line"><span class="cl"><span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">1</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">lr</span> <span class="o">=</span> <span class="mf">0.01</span>
+</span></span><span class="line"><span class="cl"><span class="n">L</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="n">iteration</span> <span class="o">=</span> <span class="mi">1000</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iteration</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">sec_grad</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">X_chunk</span><span class="p">,</span><span class="n">y_chunk</span><span class="p">,</span><span class="n">beta</span><span class="p">)</span> <span class="k">for</span> <span class="n">X_chunk</span><span class="p">,</span><span class="n">y_chunk</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X_ref</span><span class="p">,</span><span class="n">y_ref</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">results</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">N</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">loss</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span> <span class="o">/</span> <span class="n">N</span>
+</span></span><span class="line"><span class="cl">    <span class="n">F_grad</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span> <span class="o">/</span> <span class="n">N</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Hessian</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span> <span class="o">/</span> <span class="n">N</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 这里要计算方向，需要求解线性方程组</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Q</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">Hessian</span><span class="p">)</span>  <span class="c1"># 之所以使用QR分解是因为使用LU分解数值不稳定会报错</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve_triangular</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">Q</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">F_grad</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">-</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">d</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Iteration:</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">  loss:</span><span class="si">{</span><span class="n">loss</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="打印结果-1">打印结果
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="n">lw</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Iteration&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;BCE&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Result&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;Pic02.png&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最终损失函数下降曲线如下所示：</p>
+<div align="center">
+  <img src="Pic02.png" alt="牛顿下降" width="800">
+</div>
+可以看到使用牛顿法损失函数的下降速度要快于梯度下降，但是相应的也要付出计算Hessian矩阵的代价。
 <h2 id="拟顿法与l-bfgs">拟⽜顿法与L-BFGS
 </h2>
 </section>

@@ -284,8 +284,15 @@
             <li><a href="#二阶梯度">二阶梯度</a></li>
           </ol>
         </li>
+        <li><a href="#分布式求解损失函数梯度小结">分布式求解损失函数梯度小结</a>
+          <ol>
+            <li><a href="#一阶梯度分布式计算">一阶梯度分布式计算</a></li>
+            <li><a href="#二阶梯度分布式计算">二阶梯度分布式计算</a></li>
+          </ol>
+        </li>
       </ol>
     </li>
+    <li><a href="#数值稳定性">数值稳定性</a></li>
   </ol>
 </nav>
         </div>
@@ -396,6 +403,7 @@
 <li>Logistic Regression</li>
 <li>无约束优化基本方法</li>
 <li>梯度计算的并行性</li>
+<li>数值稳定性</li>
 </ul>
 <h2 id="logictic-regression-简介">Logictic Regression 简介
 </h2><p>在前面的内容里，我们借助分布式计算完成了线性回归的实现。在线性回归中，标签通常是连续变量；而现实生活中，同样存在大量分类问题，这类问题的标签是离散值。针对这种情况，我们引入 Logistic 回归来解决。</p>
@@ -406,7 +414,7 @@ $$ P(Y=1|x) = p(x) $$<p>
 由于概率值必须限制在 $(0, 1)$ 区间内，我们需要引入 Sigmoid 函数（Logistic 函数）将线性回归的输出 $x^T\beta$ 映射到该范围。</p>
 <h3 id="sigmoid-函数">Sigmoid 函数
 </h3>$$ p(x) = \sigma(x^T\beta) = \frac{1}{1 + e^{-x^T\beta}} $$<p>
-该函数不仅将实数映射到 $(0, 1)$，且具有良好的可导性($\sigma(x) = \sigma(x)(1-\sigma(x))$。</p>
+该函数不仅将实数映射到 $(0, 1)$，且具有良好的可导性($\sigma(x) = \sigma(x)(1-\sigma(x))$)。</p>
 <h3 id="构造似然函数">构造似然函数
 </h3><p>给定 $n$ 个独立观测样本，利用伯努利分布的性质写出似然函数：
 </p>
@@ -473,7 +481,31 @@ $$ \nabla^2 \ell_i(\beta) = x_i [\nabla p_i]^T  = x_i[p_i(1-p_i)x_i]^T = p_i(1-p
 </p>
 $$ \nabla^2 \ell(\beta) = X^T W X $$<p>
 其中$W$是一个对角权重矩阵，满足$W_{ii} = p_i(1-p_i)$.</p>
+<h3 id="分布式求解损失函数梯度小结">分布式求解损失函数梯度小结
+</h3><h4 id="一阶梯度分布式计算">一阶梯度分布式计算
+</h4><p>将大规模数据集 $X$ 按行（观测）切分为 $K$ 个数据块 $X_1, X_2, \dots, X_K$，对应的标签向量切分为 $y_1, y_2, \dots, y_K$。</p>
+<ol>
+<li>广播：头部节点将当前的参数 $\beta^{(t)}$ 广播给所有的 $K$ 个工作节点。</li>
+<li>Map-1：每个工作节点 $k$ 本地计算自己数据块的概率向量 $p_k = \sigma(X_k \beta^{(t)})$。</li>
+<li>Map-2：每个工作节点 $k$ 本地计算局部梯度 $G_k = X_k^T (p_k - y_k)$。</li>
+<li>Reduce：头部节点将所有 $G_k$ 相加，数学公式如下所示：</li>
+</ol>
+$$ \nabla \ell(\beta^{(t)}) = G_{global} = \sum_{k=1}^{K} G_k $$<h4 id="二阶梯度分布式计算">二阶梯度分布式计算
+</h4><p>同样的切分逻辑也适用于 Hessian 矩阵 $H = X^T W X$</p>
+<ol>
+<li>Map-1：工作节点 $k$ 基于当前 $p_k$ 计算本地的对角权重向量
 
+$$ W_k = p_k \odot (1 - p_k) $$</li>
+<li>Map-2：每个工作节点 $k$ 执行本地的高密度矩阵乘法，计算局部 Hessian 块
+
+$$ H_k = X_k^T W_k X_k $$</li>
+<li>Reduce：全局归约求和：
+
+$$ H_{global} = \sum_{k=1}^{K} H_k $$</li>
+<li>求解：在头部节点解线性方程组 $H_{global}(\Delta \beta) = G_{global}$，完成一次牛顿步更新。</li>
+</ol>
+<h2 id="数值稳定性">数值稳定性
+</h2>
 </section>
 
 

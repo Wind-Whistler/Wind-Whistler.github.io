@@ -21,7 +21,89 @@
         <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-05/</guid>
-        <description>&lt;img src="https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-05/Mojo.png" alt="Featured image of post 分布式计算 05" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-05/Mojo.png" alt="Featured image of post 分布式计算 05" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;Logistic Regression&lt;/li&gt;
+&lt;li&gt;无约束优化基本方法&lt;/li&gt;
+&lt;li&gt;梯度计算的并行性&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;logictic-regression-简介&#34;&gt;Logictic Regression 简介
+&lt;/h2&gt;&lt;p&gt;在前面的内容里，我们借助分布式计算完成了线性回归的实现。在线性回归中，标签通常是连续变量；而现实生活中，同样存在大量分类问题，这类问题的标签是离散值。针对这种情况，我们引入 Logistic 回归来解决。&lt;/p&gt;
+&lt;h3 id=&#34;预测概率&#34;&gt;预测概率
+&lt;/h3&gt;&lt;p&gt;Logistic 回归预测的是样本属于正类（$Y=1$）的概率：
+&lt;/p&gt;
+$$ P(Y=1|x) = p(x) $$&lt;p&gt;
+由于概率值必须限制在 $(0, 1)$ 区间内，我们需要引入 Sigmoid 函数（Logistic 函数）将线性回归的输出 $x^T\beta$ 映射到该范围。&lt;/p&gt;
+&lt;h3 id=&#34;sigmoid-函数&#34;&gt;Sigmoid 函数
+&lt;/h3&gt;$$ p(x) = \sigma(x^T\beta) = \frac{1}{1 + e^{-x^T\beta}} $$&lt;p&gt;
+该函数不仅将实数映射到 $(0, 1)$，且具有良好的可导性($\sigma(x) = \sigma(x)(1-\sigma(x))$。&lt;/p&gt;
+&lt;h3 id=&#34;构造似然函数&#34;&gt;构造似然函数
+&lt;/h3&gt;&lt;p&gt;给定 $n$ 个独立观测样本，利用伯努利分布的性质写出似然函数：
+&lt;/p&gt;
+$$ L(\beta) = \prod_{i=1}^n p(x_i)^{y_i} (1-p(x_i))^{1-y_i} $$&lt;p&gt;
+为了方便优化，取负对数似然（Negative Log-Likelihood, NLL）作为损失函数：
+&lt;/p&gt;
+$$ \ell(\beta) = -\sum_{i=1}^n \left[ y_i \ln p(x_i) + (1-y_i) \ln (1-p(x_i)) \right] $$&lt;p&gt;
+这里提一嘴这个负对数似然函数其实就是二元情况下的交叉熵损失函数。
+代入 Sigmoid 函数化简后得到：
+&lt;/p&gt;
+$$ \ell(\beta) = \sum_{i=1}^n \left[ -y_i(x_i^T\beta) + \ln(1 + e^{x_i^T\beta}) \right] $$&lt;h3 id=&#34;参数估计&#34;&gt;参数估计
+&lt;/h3&gt;&lt;p&gt;我们的目标是找到使损失函数最小的参数 $\hat{\beta}$：
+&lt;/p&gt;
+$$ \hat{\beta} = \mathop{\arg\min}_{\beta} \ell(\beta) $$&lt;p&gt;
+这是一个凸优化问题，但与线性回归不同，它没有显式解（解析解）。因此，必须使用迭代优化算法（如梯度下降法、牛顿法）来求解。&lt;/p&gt;
+&lt;h2 id=&#34;无约束基本优化方法&#34;&gt;无约束基本优化方法
+&lt;/h2&gt;&lt;h3 id=&#34;梯度下降法&#34;&gt;梯度下降法
+&lt;/h3&gt;&lt;h4 id=&#34;核心思想与微分阶数&#34;&gt;核心思想与微分阶数
+&lt;/h4&gt;&lt;p&gt;利用目标函数的一阶导数（梯度）信息。其核心在于沿着目标函数下降最快的方向（即负梯度方向）进行搜索。&lt;/p&gt;
+&lt;h4 id=&#34;更新公式&#34;&gt;更新公式
+&lt;/h4&gt;$$ \beta^{(t+1)} = \beta^{(t)} - \alpha \nabla \ell(\beta^{(t)}) $$&lt;p&gt;
+其中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$\nabla \ell(\beta)$ 是损失函数对 $\beta$ 的一阶导数，即梯度向量。&lt;/li&gt;
+&lt;li&gt;$\alpha &amp;gt; 0$ 是学习率（步长）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;特点&#34;&gt;特点
+&lt;/h4&gt;&lt;p&gt;单次迭代的计算代价较小，但在寻找最优解的过程中可能需要很多次迭代才能收敛。&lt;/p&gt;
+&lt;h3 id=&#34;牛顿法&#34;&gt;牛顿法
+&lt;/h3&gt;&lt;h4 id=&#34;核心思想与微分阶数-1&#34;&gt;核心思想与微分阶数
+&lt;/h4&gt;&lt;p&gt;利用目标函数的二阶导数信息。通过二阶泰勒展开，寻找一个二次曲面的极小值作为下一步的更新点。&lt;/p&gt;
+&lt;h4 id=&#34;更新公式-1&#34;&gt;更新公式
+&lt;/h4&gt;$$ \beta^{(t+1)} = \beta^{(t)} - \alpha [\nabla^2 \ell(\beta^{(t)})]^{-1} \nabla \ell(\beta^{(t)}) $$&lt;p&gt;
+其中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$\nabla^2 \ell(\beta)$ 是损失函数对 $\beta$ 的二阶导数矩阵，即 Hessian 矩阵。&lt;/li&gt;
+&lt;li&gt;$\alpha$ 在初期需要适当调整以防震荡或发散，后期通常可取 $\alpha = 1$。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;特点-1&#34;&gt;特点
+&lt;/h4&gt;&lt;p&gt;收敛速度极快（二阶收敛），通常几次迭代即可。但单次迭代需要计算 Hessian 矩阵并求解一个 $p \times p$ 的线性方程组，计算代价较大。&lt;/p&gt;
+&lt;h2 id=&#34;梯度计算的并行性&#34;&gt;梯度计算的并行性
+&lt;/h2&gt;&lt;h3 id=&#34;求导运算的可加性&#34;&gt;求导运算的可加性
+&lt;/h3&gt;&lt;p&gt;上一节中，我们利用损失函数的一阶与二阶导数信息来实现参数更新。然而，当样本规模较大时，直接计算整个损失函数的梯度会耗费大量时间。为此，我们计划引入分布式计算，以提升计算效率。&lt;/p&gt;
+&lt;p&gt;这里需要回顾一些线性代数的内容：求导运算本质上是一种线性映射，可以表示为矩阵形式。基于线性映射的可加性，求导与求和的顺序可以交换。因此，一个自然的思路是：将损失函数拆分为若干部分，分别在各部分上独立计算梯度，最后将结果合并，得到完整的梯度信息。写成数学公式的形式如下：&lt;br&gt;
+&lt;/p&gt;
+$$ \nabla \ell(\beta) = \sum_{k=1}^{K} \left( \sum_{i \in \text{block}_k} \nabla \ell_i(\beta) \right) $$&lt;h3 id=&#34;logistic回归损失函数梯度的矩阵形式&#34;&gt;Logistic回归损失函数梯度的矩阵形式
+&lt;/h3&gt;&lt;h4 id=&#34;一阶梯度&#34;&gt;一阶梯度
+&lt;/h4&gt;&lt;p&gt;之前得到Logistic回归的损失函数如下：
+&lt;/p&gt;
+$$ \ell(\beta) = \sum_{i=1}^n \left[ -y_i(x_i^T\beta) + \ln(1 + e^{x_i^T\beta}) \right] $$&lt;p&gt;
+对求和的每一项求导得：
+&lt;/p&gt;
+$$ \nabla \ell_i(\beta) = -y_ix_i + \frac{e^{x_i^T\beta}}{1 + e^{x_i^T\beta}}x_i = -y_ix_i + p_ix_i = (p_i - y_i)x_i $$&lt;p&gt;
+从而再汇总得到：
+&lt;/p&gt;
+$$ \nabla \ell(\beta) = \sum_{i=1}^{n} (p_i - y_i) x_i $$&lt;p&gt;
+为了方便后续的分布式计算，我们将其写成矩阵形式：
+&lt;/p&gt;
+$$ \nabla \ell(\beta) = X^T(p - y) $$&lt;h4 id=&#34;二阶梯度&#34;&gt;二阶梯度
+&lt;/h4&gt;&lt;p&gt;在得到一阶梯度之后，二阶梯度只要对一阶梯度再求一次梯度即可。同样的，我们从求和的每一项入手，得到下列结果：
+&lt;/p&gt;
+$$ \nabla^2 \ell_i(\beta) = x_i [\nabla p_i]^T  = x_i[p_i(1-p_i)x_i]^T = p_i(1-p_i)x_ix^T_i $$&lt;p&gt;
+从而再汇总得到：
+&lt;/p&gt;
+$$ \nabla^2 \ell(\beta) = X^T W X $$&lt;p&gt;
+其中$W$是一个对角权重矩阵，满足$W_{ii} = p_i(1-p_i)$.&lt;/p&gt;
+</description>
         </item>
         <item>
         <title>分布式计算 03</title>

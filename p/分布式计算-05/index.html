@@ -298,6 +298,20 @@
         <li><a href="#损失函数数值陷阱">损失函数数值陷阱</a></li>
       </ol>
     </li>
+    <li><a href="#代码实例">代码实例</a>
+      <ol>
+        <li><a href="#梯度下降法-1">梯度下降法</a>
+          <ol>
+            <li><a href="#step1导入所需要的库">Step1:导入所需要的库</a></li>
+            <li><a href="#step2生成所需要的数据">Step2:生成所需要的数据</a></li>
+            <li><a href="#step3将数据分块上传到共享内存">Step3:将数据分块上传到共享内存</a></li>
+            <li><a href="#step4定义分布式计算函数">Step4:定义分布式计算函数</a></li>
+            <li><a href="#step5训练模型">Step5:训练模型</a></li>
+            <li><a href="#step6打印结果">Step6:打印结果</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
     <li><a href="#拟顿法与l-bfgs">拟⽜顿法与L-BFGS</a></li>
   </ol>
 </nav>
@@ -410,6 +424,7 @@
 <li>无约束优化基本方法</li>
 <li>梯度计算的并行性</li>
 <li>数值稳定性</li>
+<li>代码实例</li>
 <li>拟⽜顿法与L-BFGS</li>
 </ul>
 <h2 id="logictic-regression-简介">Logictic Regression 简介
@@ -579,7 +594,180 @@ $$<p>其中 $p(x) = \sigma(x^T \beta)$，$f(z) = \log(1 + e^z)$。</p>
 </span></span><span class="line"><span class="cl"><span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">softplus</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="拟顿法与l-bfgs">拟⽜顿法与L-BFGS
+</div><h2 id="代码实例">代码实例
+</h2><h3 id="梯度下降法-1">梯度下降法
+</h3><p>这里演示使用梯度下降法求解Logistic Regression</p>
+<h4 id="step1导入所需要的库">Step1:导入所需要的库
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_classification</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">expit</span><span class="p">,</span><span class="n">softplus</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ray</span>
+</span></span><span class="line"><span class="cl"><span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step2生成所需要的数据">Step2:生成所需要的数据
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">X</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span>   <span class="c1"># make_classification返回一个Tuple  (X,y)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span>  <span class="c1"># 样本量</span>
+</span></span><span class="line"><span class="cl">    <span class="n">n_features</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>   <span class="c1"># 特征数</span>
+</span></span><span class="line"><span class="cl">    <span class="n">n_classes</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># 类别数</span>
+</span></span><span class="line"><span class="cl">    <span class="n">random_state</span> <span class="o">=</span> <span class="mi">123</span>  <span class="c1"># 随机种子</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># 会自动生成列名</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;Temp.csv&#39;</span><span class="p">,</span><span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>  <span class="c1"># 注意设置index= False， 否则会将索引设置为一列</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看文件大小</span>
+</span></span><span class="line"><span class="cl"><span class="n">file_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="s1">&#39;Temp.csv&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;文件大小为: </span><span class="si">{</span><span class="n">file_size</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step3将数据分块上传到共享内存">Step3:将数据分块上传到共享内存
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 把整个Data分X，Y上传到共享内存里</span>
+</span></span><span class="line"><span class="cl"><span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># 设定分块大小</span>
+</span></span><span class="line"><span class="cl"><span class="n">X_ref</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 创建代码表</span>
+</span></span><span class="line"><span class="cl"><span class="n">y_ref</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;Temp.csv&#39;</span><span class="p">,</span><span class="n">header</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">chunksize</span> <span class="o">=</span> <span class="n">chunk_size</span><span class="p">)):</span>  <span class="c1"># header = 0 设置第一行是列名，不读取</span>
+</span></span><span class="line"><span class="cl">    <span class="n">X</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:</span><span class="mi">50</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+</span></span><span class="line"><span class="cl">    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">1</span><span class="p">]),</span><span class="n">X</span><span class="p">])</span>  <span class="c1"># 添加截距</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">50</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">X_ref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ray</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y_ref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ray</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;已写入第</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">块数据&#39;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step4定义分布式计算函数">Step4:定义分布式计算函数
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@ray.remote</span>  <span class="c1"># 一阶，损失，样本量分布式计算</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">ray_compute</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">beta</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">expit</span><span class="p">,</span><span class="n">softplus</span>  <span class="c1"># 这里一定要在ray里导入函数，不然远程计算无法识别</span>
+</span></span><span class="line"><span class="cl">    <span class="n">z</span> <span class="o">=</span> <span class="n">X</span> <span class="o">@</span> <span class="n">beta</span>
+</span></span><span class="line"><span class="cl">    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="n">y</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">softplus</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">grad</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="p">(</span><span class="n">expit</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">n</span><span class="p">,</span><span class="n">loss</span><span class="p">,</span><span class="n">grad</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step5训练模型">Step5:训练模型
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">1</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">iteration</span> <span class="o">=</span> <span class="mi">1000</span>
+</span></span><span class="line"><span class="cl"><span class="n">lr</span> <span class="o">=</span> <span class="mf">0.01</span>
+</span></span><span class="line"><span class="cl"><span class="n">L</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iteration</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">ray_compute</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">X_chunk</span><span class="p">,</span> <span class="n">y_chunk</span><span class="p">,</span><span class="n">beta</span><span class="p">)</span> <span class="k">for</span> <span class="n">X_chunk</span><span class="p">,</span><span class="n">y_chunk</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X_ref</span><span class="p">,</span> <span class="n">y_ref</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">results</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">N</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">loss</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span> <span class="o">/</span> <span class="n">N</span>
+</span></span><span class="line"><span class="cl">    <span class="n">grad</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span> <span class="o">/</span> <span class="n">N</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">-</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">grad</span>  <span class="c1"># 这里使用梯度下降法进行更新</span>
+</span></span><span class="line"><span class="cl">    <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>  <span class="c1"># 记载这一轮的损失函数</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Iteration:</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">  loss:</span><span class="si">{</span><span class="n">loss</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step6打印结果">Step6:打印结果
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="n">lw</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Iteration&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;BCE&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Result&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;Pic01.png&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最终损失函数下降曲线如下所示：</p>
+<div align="center">
+  <img src="Pic01.png" alt="梯度下降" width="800">
+</div>
+<h2 id="拟顿法与l-bfgs">拟⽜顿法与L-BFGS
 </h2>
 </section>
 

@@ -292,7 +292,13 @@
         </li>
       </ol>
     </li>
-    <li><a href="#数值稳定性">数值稳定性</a></li>
+    <li><a href="#数值稳定性">数值稳定性</a>
+      <ol>
+        <li><a href="#sigmoid数值陷阱">Sigmoid数值陷阱</a></li>
+        <li><a href="#损失函数数值陷阱">损失函数数值陷阱</a></li>
+      </ol>
+    </li>
+    <li><a href="#拟顿法与l-bfgs">拟⽜顿法与L-BFGS</a></li>
   </ol>
 </nav>
         </div>
@@ -404,6 +410,7 @@
 <li>无约束优化基本方法</li>
 <li>梯度计算的并行性</li>
 <li>数值稳定性</li>
+<li>拟⽜顿法与L-BFGS</li>
 </ul>
 <h2 id="logictic-regression-简介">Logictic Regression 简介
 </h2><p>在前面的内容里，我们借助分布式计算完成了线性回归的实现。在线性回归中，标签通常是连续变量；而现实生活中，同样存在大量分类问题，这类问题的标签是离散值。针对这种情况，我们引入 Logistic 回归来解决。</p>
@@ -505,6 +512,74 @@ $$ H_{global} = \sum_{k=1}^{K} H_k $$</li>
 <li>求解：在头部节点解线性方程组 $H_{global}(\Delta \beta) = G_{global}$，完成一次牛顿步更新。</li>
 </ol>
 <h2 id="数值稳定性">数值稳定性
+</h2><h3 id="sigmoid数值陷阱">Sigmoid数值陷阱
+</h3><p>在计算Sigmoid函数时，由于涉及到指数项$e^z$，因此当$z$过大时很容易产生指数爆炸，从而使$e^z$超出Python最大数值范围，导致程序崩溃，因此我们需要一种稳定的数值计算方法来计算Sigmoid函数。</p>
+<p><strong>解决方案</strong></p>
+<p>由之前的定义，Sigmoid函数可写为如下两种形式：
+</p>
+$$
+\sigma(z)=\frac{1}{1 + e^{-z}} = \frac{e^z}{1 + e^z}
+$$<p>
+我们想要避免由于$e^z$过大造成的数值崩溃问题，只要在$z&gt;0$时选取第一种形式，在$z&gt;0$时选第二种形式即可。
+下面给出一段简单的代码实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">stable_sig</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>  <span class="c1"># 始终保持e&lt;1</span>
+</span></span><span class="line"><span class="cl">    <span class="n">numer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">z</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>  <span class="c1"># z&gt;0就取1，反之取e(这里的e不是自然数e)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">denom</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">e</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">numer</span> <span class="o">/</span> <span class="n">denom</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 或者直接调用scipy包中的下列函数</span>
+</span></span><span class="line"><span class="cl"><span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">expit</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="损失函数数值陷阱">损失函数数值陷阱
+</h3><p>我们之前曾将 Logistic 回归的损失函数从</p>
+$$
+\ell(\beta) = -\sum_{i=1}^n [y_i \log p(x_i) + (1 - y_i) \log(1 - p(x_i))]
+$$<p>改写为</p>
+$$
+\ell(\beta) = \sum_{i=1}^n [-y_i (x_i^T \beta) + f(x_i^T \beta)],
+$$<p>其中 $p(x) = \sigma(x^T \beta)$，$f(z) = \log(1 + e^z)$。</p>
+<p>这是因为 $p(x)$ 可能会非常接近 0 或 1，造成数值的不稳定，产生 $\log(0)$。</p>
+<p>前文中$f(z) = \log(1 + e^z)$也叫Softplus函数,是对ReLU函数得近似，主要解决ReLU函数不可导的问题。但是由于Softplus函数中也存在$e^z$，因此也需要解决数值上溢问题。</p>
+<p><strong>解决方案</strong></p>
+<p>数学技巧：$\log(1 + e^z) = \max(z, 0) + \log(1 + e^{-|z|})$</p>
+<ul>
+<li>当 $z &gt; 0$ 时，$\log(1 + e^z) =z + \log(1 + e^{-z})$</li>
+<li>当 $z \le 0$ 时，$\log(1 + e^z) =0 + \log(1 + e^z)$
+下面给出代码实现：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">stable_softplus</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 或者直接调用scipy包中的下列函数</span>
+</span></span><span class="line"><span class="cl"><span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">softplus</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="拟顿法与l-bfgs">拟⽜顿法与L-BFGS
 </h2>
 </section>
 

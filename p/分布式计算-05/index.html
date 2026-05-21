@@ -319,7 +319,23 @@
         </li>
       </ol>
     </li>
-    <li><a href="#拟顿法与l-bfgs">拟⽜顿法与L-BFGS</a></li>
+    <li><a href="#拟顿法与l-bfgs">拟⽜顿法与L-BFGS</a>
+      <ol>
+        <li><a href="#l-bfgs介绍">L-BFGS介绍</a></li>
+        <li><a href="#实践思路">实践思路</a>
+          <ol>
+            <li><a href="#核心架构主从分离">核心架构：主从分离</a></li>
+            <li><a href="#交互流程迭代式的问答">交互流程：迭代式的问答</a></li>
+          </ol>
+        </li>
+        <li><a href="#代码实例-1">代码实例</a>
+          <ol>
+            <li><a href="#定义分布式函数">定义分布式函数</a></li>
+            <li><a href="#训练模型-2">训练模型</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -875,7 +891,132 @@ $$<p>其中 $p(x) = \sigma(x^T \beta)$，$f(z) = \log(1 + e^z)$。</p>
 </div>
 可以看到使用牛顿法损失函数的下降速度要快于梯度下降，但是相应的也要付出计算Hessian矩阵的代价。
 <h2 id="拟顿法与l-bfgs">拟⽜顿法与L-BFGS
-</h2>
+</h2><h3 id="l-bfgs介绍">L-BFGS介绍
+</h3><p>在优化算法的演进过程中，梯度下降法与牛顿法分别代表了两个极端：前者仅依赖一阶导数信息，虽然单次迭代计算成本低，但收敛速度较慢，且对学习率敏感；后者利用二阶导数（Hessian 矩阵）实现极快的收敛速度，却因 $O(p^3)$ 的求逆复杂度和 $p \times p$ 的存储需求，在大规模参数场景下难以落地。</p>
+<p>为兼顾两者的优势，拟牛顿法（Quasi-Newton Methods）应运而生。其核心思想是不直接计算 Hessian 矩阵，而是通过迭代过程中梯度的变化来近似 Hessian 矩阵或其逆矩阵。其中，BFGS 算法是最成功的拟牛顿方法之一，它通过如下更新公式迭代近似矩阵 $B^{(t)}$：</p>
+$$
+B^{(t+1)} = B^{(t)} + \frac{y^{(t)}(y^{(t)})^T}{(y^{(t)})^T s^{(t)}} - \frac{B^{(t)} s^{(t)} (s^{(t)})^T (B^{(t)})^T}{(s^{(t)})^T B^{(t)} s^{(t)}}
+$$<p>其中 $s^{(t)} = \beta^{(t+1)} - \beta^{(t)}$ 表示参数位移，$y^{(t)} = \nabla \ell(\beta^{(t+1)}) - \nabla \ell(\beta^{(t)})$ 表示梯度变化。尽管 BFGS 将单次迭代复杂度降至 $O(p^2)$，但当参数维度 $p$ 极大时，存储完整的 $p \times p$ 矩阵仍会造成内存压力。</p>
+<p>为此，L-BFGS（Limited-memory BFGS）进一步优化了存储策略：它不再保存完整的近似矩阵 $B^{(t)}$，而是仅保留最近 $m$ 次迭代的位移序列 ${s^{(t)}}$ 和梯度变化序列 ${y^{(t)}}$（通常 $m = 5 \sim 10$），并通过“两步循环”算法直接利用这 $m$ 对向量计算搜索方向，使空间和时间复杂度均降至 $O(m \cdot p)$，从而在大规模优化问题中兼具高效性与可行性。</p>
+<p>在 Python 的 SciPy 库中，L-BFGS 已被封装为 <code>fmin_l_bfgs_b</code> 函数，用户只需提供目标函数及其梯度，即可高效求解带边界约束的大规模优化问题，无需手动实现复杂的矩阵更新逻辑。</p>
+<h3 id="实践思路">实践思路
+</h3><p>实现基于L-BFGS的分布式优化，其核心思路在于将计算密集型的梯度评估任务从优化算法中剥离，通过主从架构并行化执行。这种设计巧妙地利用了L-BFGS算法本身只需目标函数值和梯度信息的特性，将繁重的计算压力分摊到多个工作节点上。</p>
+<p>具体的实现逻辑如下：</p>
+<h4 id="核心架构主从分离">核心架构：主从分离
+</h4><p>整个系统被划分为两个角色：</p>
+<ul>
+<li><strong>头部节点</strong>：作为“大脑”，运行SciPy的L-BFGS优化器（如<code>fmin_l_bfgs_b</code>）。它不直接处理数据，而是负责控制优化的迭代流程。</li>
+<li><strong>工作节点</strong>：作为“手脚”，利用Ray等分布式框架（Map-Reduce模式）管理集群中的计算资源，负责实际的数据运算。</li>
+</ul>
+<h4 id="交互流程迭代式的问答">交互流程：迭代式的问答
+</h4><p>这是一个同步阻塞的迭代过程，每一轮迭代都包含以下步骤：</p>
+<p><strong>询问阶段</strong><br>
+头部节点的L-BFGS优化器根据当前的参数状态，生成一个新的参数向量 $\beta$，并向主程序发起请求：“请告诉我，在点 $\beta$ 处的全局损失函数值和梯度是多少？”</p>
+<p><strong>广播计算</strong><br>
+主程序接收到 $\beta$ 后，通过Map操作将其广播给所有工作节点。每个工作节点利用本地存储的数据分块，独立计算局部的损失值 $\ell_i(\beta)$ 和局部梯度 $\nabla \ell_i(\beta)$。这一步实现了数据并行，计算速度随节点数量线性提升。</p>
+<p><strong>汇总返回</strong><br>
+所有工作节点计算完成后，主程序通过Reduce操作将各节点的局部结果进行累加（$\sum \ell_i(\beta)$ 和 $\sum \nabla \ell_i(\beta)$），得到全局的精确损失和梯度。最后，主程序将这两个汇总后的数值返回给头部节点的优化器。</p>
+<p><strong>更新与循环</strong><br>
+L-BFGS优化器利用收到的精确梯度和损失值，更新参数 $\beta$ 并决定下一步的搜索方向，然后重复上述“询问-计算-汇总”的过程，直到满足收敛条件。</p>
+<h3 id="代码实例-1">代码实例
+</h3><p>这里导入库，生成数据，上传共享内存的代码同上，故省略。</p>
+<h4 id="定义分布式函数">定义分布式函数
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@ray.remote</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="n">X_chunk</span><span class="p">,</span><span class="n">y_chunk</span><span class="p">,</span><span class="n">beta</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">expit</span><span class="p">,</span><span class="n">softplus</span>
+</span></span><span class="line"><span class="cl">    <span class="n">z</span> <span class="o">=</span> <span class="n">X_chunk</span> <span class="o">@</span> <span class="n">beta</span>
+</span></span><span class="line"><span class="cl">    <span class="n">p</span> <span class="o">=</span> <span class="n">expit</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">n</span> <span class="o">=</span> <span class="n">X_chunk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="n">y_chunk</span> <span class="o">*</span> <span class="n">z</span> <span class="o">+</span> <span class="n">softplus</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">grad</span> <span class="o">=</span> <span class="n">X_chunk</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="n">y_chunk</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">n</span><span class="p">,</span><span class="n">loss</span><span class="p">,</span><span class="n">grad</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">global_objective</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span><span class="n">X_ref</span><span class="p">,</span><span class="n">y_ref</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 传入beta后记得重置形状</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">compute</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">X_chunk</span><span class="p">,</span><span class="n">y_chunk</span><span class="p">,</span><span class="n">beta</span><span class="p">)</span> <span class="k">for</span> <span class="n">X_chunk</span><span class="p">,</span><span class="n">y_chunk</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X_ref</span><span class="p">,</span><span class="n">y_ref</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">results</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">N</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">l</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span> <span class="o">/</span> <span class="n">N</span>
+</span></span><span class="line"><span class="cl">    <span class="n">grad</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span> <span class="o">/</span> <span class="n">N</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">l</span><span class="p">,</span><span class="n">grad</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>  <span class="c1"># SciPy 的 L-BFGS 要求梯度必须是double类型的ndarray</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="训练模型-2">训练模型
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fmin_l_bfgs_b</span>
+</span></span><span class="line"><span class="cl"><span class="n">Loss</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="n">beta_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># 必须是一维数组,不要改成二位数组</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">beta_lbfgs</span><span class="p">,</span> <span class="n">final_loss</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">fmin_l_bfgs_b</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">func</span> <span class="o">=</span> <span class="n">global_objective</span><span class="p">,</span>  <span class="c1"># 要求输入一个函数,这个函数先返回损失,再返回梯度,梯度必须是double类型的ndarray</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x0</span> <span class="o">=</span> <span class="n">beta_init</span><span class="p">,</span>  <span class="c1"># 传入初始参数</span>
+</span></span><span class="line"><span class="cl">    <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_ref</span><span class="p">,</span> <span class="n">y_ref</span><span class="p">),</span>  <span class="c1"># 传入函数需要的额外参数</span>
+</span></span><span class="line"><span class="cl">    <span class="n">maxiter</span><span class="o">=</span><span class="mi">100</span>  <span class="c1"># 设定最大迭代次数</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">L-BFGS 运行时间：</span><span class="si">{</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> 秒&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;收敛状态：</span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;warnflag&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (0表示成功)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;函数调用次数：</span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;funcalls&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上述代码最终打印出的结果如下:</p>
+<div align="center">
+  <img src="Pic03.png" alt="L-BFGS" width="800">
+</div>
+
 </section>
 
 

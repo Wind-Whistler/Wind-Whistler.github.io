@@ -1672,7 +1672,41 @@ L-BFGS优化器利用收到的精确梯度和损失值，更新参数 $\beta$ �
         <pubDate>Fri, 01 May 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A001/</guid>
-        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A001/Ruin.png" alt="Featured image of post 深度学习01" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A001/Ruin.png" alt="Featured image of post 深度学习01" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;符号主义与连接主义&lt;/li&gt;
+&lt;li&gt;深度学习学科定位与建模方式&lt;/li&gt;
+&lt;li&gt;深度学习核心元素&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;符号主义与连接主义&#34;&gt;符号主义与连接主义
+&lt;/h2&gt;&lt;p&gt;人工智能的发展史，本质上是不同技术路线对“智能”本质的探索。其中最具代表性的两大流派是符号主义和连接主义。&lt;/p&gt;
+&lt;h3 id=&#34;符号主义symbolism&#34;&gt;符号主义（Symbolism）
+&lt;/h3&gt;&lt;p&gt;符号主义认为智能的本质是对符号的逻辑操作与推理。它主张通过人为设定的显性规则和知识库来模拟人类思维。&lt;br&gt;
+成果：在符号主义的指导下，诞生了早期的逻辑理论家程序以及20世纪80年代风靡一时的专家系统。这类系统将特定领域的专家知识编码为“IF-THEN”规则库，在封闭且规则明确的问题域中展现出强大的推理能力。&lt;/p&gt;
+&lt;h3 id=&#34;连接主义connectionism&#34;&gt;连接主义（Connectionism）
+&lt;/h3&gt;&lt;p&gt;连接主义又称神经网络学派，其核心思想源于对人脑神经元网络的仿生学模拟。它认为智能并非来自预设的规则，而是源于大量简单计算单元（神经元）之间的复杂连接与并行处理。&lt;br&gt;
+成果：连接主义推动了从早期的单层感知机到现代深度神经网络的演进。目前主流的深度学习正是连接主义的集大成者，它不依赖人工定义的逻辑规则，而是通过数据驱动的方式自动学习深层次的规律。&lt;/p&gt;
+&lt;h2 id=&#34;深度学习学科定位与建模方式&#34;&gt;深度学习学科定位与建模方式
+&lt;/h2&gt;&lt;h3 id=&#34;学科层级定位&#34;&gt;学科层级定位
+&lt;/h3&gt;&lt;p&gt;深度学习在整个计算机科学体系中有着明确的归属关系，呈现出层层嵌套的结构：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;人工智能 (AI)&lt;/strong&gt;：最顶层的概念，旨在让机器模拟人类的智能行为。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;机器学习 (ML)&lt;/strong&gt;：实现人工智能的核心方法，让计算机从数据中自主学习规律，而非执行死板的指令。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;深度学习 (DL)&lt;/strong&gt;：机器学习的一个子集，基于多层人工神经网络，模拟人脑进行更深层次的特征提取与决策。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;建模方式&#34;&gt;建模方式
+&lt;/h3&gt;&lt;p&gt;与传统机器学习相比，深度学习最大的特点在于其“端到端”的自动化特征提取能力。传统机器学习往往需要人工设计并提取数据的特征（即特征工程），而深度学习利用深层网络结构，能够直接从海量的原始数据（如图像像素、文本序列）中自动学习到从低级到高级的抽象特征表示，极大地降低了对人工先验知识的依赖。&lt;/p&gt;
+&lt;h2 id=&#34;深度学习核心元素&#34;&gt;深度学习核心元素
+&lt;/h2&gt;&lt;p&gt;构建一个完整的深度学习系统，离不开以下四个基本要素的协同工作：&lt;/p&gt;
+&lt;h3 id=&#34;数据-data&#34;&gt;数据 (Data)
+&lt;/h3&gt;&lt;p&gt;数据是系统的输入素材与学习基础。无论是图像、语音还是文本，海量且高质量的数据决定了模型性能的理论上限。&lt;/p&gt;
+&lt;h3 id=&#34;模型-model&#34;&gt;模型 (Model)
+&lt;/h3&gt;&lt;p&gt;模型是承载知识的参数化函数，通常指具有多层结构的深度神经网络（DNN）。它包含大量的可学习参数（如权重和偏置），用于描述数据的内在规律。&lt;/p&gt;
+&lt;h3 id=&#34;损失函数-loss-function&#34;&gt;损失函数 (Loss Function)
+&lt;/h3&gt;&lt;p&gt;损失函数是衡量模型预测值与真实值之间差距的量化指标（如均方误差、交叉熵损失）。它为模型的优化提供了明确的目标，即不断缩小预测结果与真实情况的偏差。&lt;/p&gt;
+&lt;h3 id=&#34;优化算法-optimization-algorithm&#34;&gt;优化算法 (Optimization Algorithm)
+&lt;/h3&gt;&lt;p&gt;优化算法是调整模型参数的行动指南（如梯度下降及其变体Adam）。它根据损失函数反馈的误差信息，通过反向传播机制不断更新网络中的权重参数，驱使模型逐步逼近最优状态。&lt;/p&gt;
+</description>
         </item>
         <item>
         <title>Python基础 01</title>

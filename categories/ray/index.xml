@@ -110,7 +110,7 @@ $$ v^{(t)} = \beta_2 v^{(t-1)} + (1 - \beta_2) g^{(t)} \odot g^{(t)} $$&lt;/li&g
 &lt;h4 id=&#34;第二步偏差修正&#34;&gt;第二步：偏差修正
 &lt;/h4&gt;&lt;p&gt;由于 $m$ 和 $v$ 初始化为0，早期估计会偏小，因此需要修正：
 &lt;/p&gt;
-$$ \hat{m}^{(t)} = m^{(t)} / (1 - \beta_1^t), \quad \hat{v}^{(t)} = v^{(t)} / (1 - \beta_2^t) $$&lt;h4 id=&#34;第三步更新参数自适应调整&#34;&gt;第三步：更新参数（自适应调整）
+$$ \hat{m}^{(t)} = m^{(t)} / (1 - \beta_1^t), \quad \hat{v}^{(t)} = v^{(t)} / (1 - \beta_2^t) $$&lt;h4 id=&#34;第三步更新参数&#34;&gt;第三步：更新参数
 &lt;/h4&gt;$$ \beta^{(t+1)} = \beta^{(t)} - \frac{\alpha}{\sqrt{\hat{v}^{(t)}} + \epsilon} \odot \hat{m}^{(t)} $$&lt;p&gt;&lt;strong&gt;解读&lt;/strong&gt;：这里体现了自适应学习率的机制。算法根据$v_t$（陡峭程度）来动态调整步长：如果某方向陡峭（$v_t$ 大），分母变大，步长自动缩小，防止震荡；如果某方向平坦（$v_t$ 小），分母变小，步长自动放大，加快收敛。&lt;/p&gt;
 </description>
         </item>

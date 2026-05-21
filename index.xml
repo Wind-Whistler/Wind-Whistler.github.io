@@ -17,6 +17,7 @@
 &lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;随机优化理论&lt;/li&gt;
 &lt;li&gt;动量法与自适应学习率&lt;/li&gt;
+&lt;li&gt;Adam优化方法&lt;/li&gt;
 &lt;li&gt;随机优化的挑战&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;随机优化理论&#34;&gt;随机优化理论
@@ -31,7 +32,7 @@
 &lt;h3 id=&#34;sgd简介&#34;&gt;SGD简介
 &lt;/h3&gt;&lt;p&gt;为了解决上述痛点，随机梯度下降(SGD)应运而生。SGD 的核心思想在于“以偏概全”——利用极小规模的样本(Mini-batch)来近似全局梯度。&lt;/p&gt;
 &lt;p&gt;SGD 的更新公式如下：&lt;/p&gt;
-$$ \beta^{(t+1)} = \beta^{(t)} - \alpha \cdot \nabla \ell_B(\beta^{(t)}) $$&lt;p&gt;其中 $B$ 代表一个随机抽取的索引子集(Batch Size，通常为 32-102)）。相比于全量梯度下降，SGD 带来了显著的优势：&lt;/p&gt;
+$$ \beta^{(t+1)} = \beta^{(t)} - \alpha \cdot \nabla \ell_B(\beta^{(t)}) $$&lt;p&gt;其中 $B$ 代表一个随机抽取的索引子集(Batch Size，通常为 32-102)。相比于全量梯度下降，SGD 带来了显著的优势：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;极高的迭代频率&lt;/strong&gt;：在扫描一遍全量数据的过程中，全量梯度下降只能更新 1 次参数，而 SGD 可以更新 $n/|B|$ 次。这意味着模型能以极快的速度开始学习。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;引入噪声以跳出局部陷阱&lt;/strong&gt;：由于 $B$ 是随机抽取的，$\nabla \ell_B$ 本质上是一个随机向量。这种随机性带来的“噪声”反而成为了优点，它赋予了模型动能，有助于跳出鞍点和局部最优解，去寻找更广阔的全局最优区域。&lt;/li&gt;
@@ -42,8 +43,76 @@ $$ \beta^{(t+1)} = \beta^{(t)} - \alpha \cdot \nabla \ell_B(\beta^{(t)}) $$&lt;p
 $$ \sum_{t=1}^{\infty} \alpha_t = \infty, \quad \sum_{t=1}^{\infty} \alpha_t^2 &lt; \infty $$&lt;p&gt;这一条件保证了步长总和足以覆盖整个搜索空间（第一项），同时步长的平方和有限以消除随机噪声的影响（第二项）。在实际应用中，虽然理论上常引用 $\alpha_t = 1/t$，但为了平衡收敛速度与稳定性，工程上往往采用 $\alpha_t = 1/\sqrt{t}$ 甚至常数学习率。正是基于这一数学基础，SGD 才成为了现代深度学习优化的基石。&lt;/p&gt;
 &lt;h2 id=&#34;动量法与自适应学习率&#34;&gt;动量法与自适应学习率
 &lt;/h2&gt;&lt;h3 id=&#34;动量法&#34;&gt;动量法
-&lt;/h3&gt;&lt;h3 id=&#34;自适应学习率&#34;&gt;自适应学习率
-&lt;/h3&gt;</description>
+&lt;/h3&gt;&lt;h4 id=&#34;为什么要引入动量法&#34;&gt;为什么要引入动量法?
+&lt;/h4&gt;&lt;p&gt;标准的随机梯度下降虽然计算高效，但在实际优化路径中存在两个显著缺陷，动量法正是为了解决这些问题而提出的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;震荡严重&lt;/strong&gt;：由于SGD仅基于Mini-batch计算梯度，其估计带有随机噪声。在狭长的山谷地形中，SGD往往会在山谷两侧来回剧烈震荡，导致收敛路径曲折，效率低下。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;易陷局部极小值或鞍点&lt;/strong&gt;：在平坦区域或鞍点附近，梯度非常小，SGD容易停滞不前，无法有效跳出局部陷阱。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;动量法引入了物理学中的“惯性”概念，通过利用历史梯度的加权平均来更新参数，使得优化过程在方向一致的维度上加速，在震荡的维度上减速。&lt;/p&gt;
+&lt;h4 id=&#34;核心公式&#34;&gt;核心公式
+&lt;/h4&gt;&lt;p&gt;动量法维护了一个速度变量 $v^{(t)}$，其更新规则如下：&lt;/p&gt;
+$$ v^{(t)} = \gamma v^{(t-1)} + \alpha \cdot \nabla \ell_B(\beta^{(t)}) $$&lt;p&gt;
+&lt;/p&gt;
+$$ \beta^{(t+1)} = \beta^{(t)} - v^{(t)} $$&lt;p&gt;其中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$\gamma$ 是动量系数（通常取0.9），代表保留多少上一时刻的速度。&lt;/li&gt;
+&lt;li&gt;$\alpha$ 是学习率。&lt;/li&gt;
+&lt;li&gt;$\nabla \ell_B(\beta^{(t)})$ 是当前时刻的梯度。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;动量法的缺点&#34;&gt;动量法的缺点
+&lt;/h4&gt;&lt;p&gt;尽管动量法显著改善了收敛速度和稳定性，但它并非完美无缺：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;超调风险&lt;/strong&gt;：由于积累了巨大的惯性，当模型接近极小值点时，可能会因为冲力过大而无法及时停下，直接冲过最低点，导致损失函数值反弹，甚至引发震荡不收敛。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;超参数增加&lt;/strong&gt;：引入了一个新的超参数 $\gamma$（动量系数），虽然通常设为0.9效果较好，但这依然增加了模型调参的搜索空间。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;未解决自适应问题&lt;/strong&gt;：动量法依然对所有参数使用统一的学习率 $\alpha$。对于稀疏特征或需要不同更新频率的参数，它无法像自适应算法那样自动调整步长。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;自适应学习率&#34;&gt;自适应学习率
+&lt;/h3&gt;&lt;h4 id=&#34;为什么要引入自适应学习率&#34;&gt;为什么要引入自适应学习率?
+&lt;/h4&gt;&lt;p&gt;SGD和动量法虽然解决了方向震荡的问题，但它们对所有参数依然采用“一视同仁”的策略——共用同一个全局学习率。这在面对复杂数据分布时存在明显缺陷：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;特征频率差异&lt;/strong&gt;：在稀疏数据中，有些特征（参数）非常罕见，有些则非常频繁。对于罕见特征，我们需要更大的步长来快速学习；对于频繁特征，则需要更小的步长以防震荡。固定学习率无法兼顾这两者。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;地形适应性差&lt;/strong&gt;：不同的参数所处的损失函数曲面形态不同。有的方向平坦，有的方向陡峭。统一的步长容易导致在陡峭方向发散，或在平坦方向停滞。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;自适应学习率的核心思想是：不再使用全局统一的学习率，而是为每一个参数单独定制学习率。它根据参数梯度的历史信息自动调整步长：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对于历史梯度大（频繁更新、震荡剧烈）的参数，自动减小学习率。&lt;/li&gt;
+&lt;li&gt;对于历史梯度小（更新稀疏、变化缓慢）的参数，自动增大学习率。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;自适应学习率的缺点&#34;&gt;自适应学习率的缺点
+&lt;/h4&gt;&lt;p&gt;虽然自适应方法（如AdaGrad、RMSprop、Adam）在实践中收敛极快，但也存在一些理论上的隐患：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;收敛性证明的缺失&lt;/strong&gt;：相比于SGD，自适应算法在某些非凸问题上可能无法保证收敛到最优解，甚至可能出现“不收敛”的情况（尽管在实践中通过调整参数通常能避免）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;泛化能力差异&lt;/strong&gt;：许多研究表明，虽然Adam等算法训练速度极快，但最终找到的解在测试集上的表现（泛化能力）往往不如经过精心调参的SGD+动量。SGD倾向于收敛到“平坦”的极小值，而自适应算法容易收敛到“尖锐”的极小值。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;内存消耗大&lt;/strong&gt;：由于需要为每个参数维护额外的状态变量（如历史梯度平方），自适应算法的内存占用通常高于SGD。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;adam优化方法&#34;&gt;Adam优化方法
+&lt;/h2&gt;&lt;h3 id=&#34;核心思想&#34;&gt;核心思想
+&lt;/h3&gt;&lt;p&gt;Adam 结合了动量法和自适应学习率两种思想：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;一阶矩估计 ($m_t$)&lt;/strong&gt;：利用梯度的指数移动平均，模拟动量，用于平滑震荡、冲过鞍点。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;二阶矩估计 ($v_t$)&lt;/strong&gt;：利用梯度平方的指数移动平均，用于衡量地形的陡峭程度，实现自适应调整。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;数学公式与直观解读&#34;&gt;数学公式与直观解读
+&lt;/h3&gt;&lt;h4 id=&#34;第一步计算一阶矩和二阶矩&#34;&gt;第一步：计算一阶矩和二阶矩
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;一阶矩（动量项）&lt;/strong&gt;：
+
+$$ m^{(t)} = \beta_1 m^{(t-1)} + (1 - \beta_1) g^{(t)} $$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;解读&lt;/strong&gt;：这一项体现了动量法的思想。$\beta_1 m^{(t-1)}$代表过去的动量，保留了之前的速度惯性。$(1 - \beta_1) g^{(t)}$代表当前的梯度，提供了新的推力。两者结合，使得更新方向既考虑了历史趋势，又响应了当前地形。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;二阶矩（陡峭程度）&lt;/strong&gt;：
+
+$$ v^{(t)} = \beta_2 v^{(t-1)} + (1 - \beta_2) g^{(t)} \odot g^{(t)} $$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;解读&lt;/strong&gt;：这一项用于衡量参数的陡峭程度。$\beta_2 v^{(t-1)}$代表之前的陡峭程度（历史累积）。$(1 - \beta_2) g^{(t)} \odot g^{(t)}$代表当前的陡峭程度（当前梯度的平方）。$v^{(t)}$ 综合反映了该参数方向上的总体波动情况。&lt;/p&gt;
+&lt;h4 id=&#34;第二步偏差修正&#34;&gt;第二步：偏差修正
+&lt;/h4&gt;&lt;p&gt;由于 $m$ 和 $v$ 初始化为0，早期估计会偏小，因此需要修正：
+&lt;/p&gt;
+$$ \hat{m}^{(t)} = m^{(t)} / (1 - \beta_1^t), \quad \hat{v}^{(t)} = v^{(t)} / (1 - \beta_2^t) $$&lt;h4 id=&#34;第三步更新参数自适应调整&#34;&gt;第三步：更新参数（自适应调整）
+&lt;/h4&gt;$$ \beta^{(t+1)} = \beta^{(t)} - \frac{\alpha}{\sqrt{\hat{v}^{(t)}} + \epsilon} \odot \hat{m}^{(t)} $$&lt;p&gt;&lt;strong&gt;解读&lt;/strong&gt;：这里体现了自适应学习率的机制。算法根据$v_t$（陡峭程度）来动态调整步长：如果某方向陡峭（$v_t$ 大），分母变大，步长自动缩小，防止震荡；如果某方向平坦（$v_t$ 小），分母变小，步长自动放大，加快收敛。&lt;/p&gt;
+</description>
         </item>
         <item>
         <title>分布式计算 04</title>

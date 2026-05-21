@@ -2073,7 +2073,14 @@ L-BFGS优化器利用收到的精确梯度和损失值，更新参数 $\beta$ �
         <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A002/</guid>
-        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A002/Ruin.png" alt="Featured image of post 深度学习02" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A002/Ruin.png" alt="Featured image of post 深度学习02" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;前馈神经网络&lt;/li&gt;
+&lt;li&gt;自动微分与反向传播&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;前馈神经网络&#34;&gt;前馈神经网络
+&lt;/h2&gt;&lt;h2 id=&#34;自动微分与反向传播&#34;&gt;自动微分与反向传播
+&lt;/h2&gt;</description>
         </item>
         <item>
         <title>分布式计算 02</title>

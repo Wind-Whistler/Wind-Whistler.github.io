@@ -2344,6 +2344,57 @@ L-BFGS优化器利用收到的精确梯度和损失值，更新参数 $\beta$ �
         <description>&lt;img src="https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-03/Mojo.png" alt="Featured image of post 分布式计算 03" /&gt;</description>
         </item>
         <item>
+        <title>深度学习-Pytorch介绍</title>
+        <link>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-pytorch%E4%BB%8B%E7%BB%8D/</link>
+        <pubDate>Sun, 29 Mar 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-pytorch%E4%BB%8B%E7%BB%8D/</guid>
+        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-pytorch%E4%BB%8B%E7%BB%8D/Ruin.png" alt="Featured image of post 深度学习-Pytorch介绍" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;Pytorch简介&lt;/li&gt;
+&lt;li&gt;张量Tensor&lt;/li&gt;
+&lt;li&gt;矩阵运算&lt;/li&gt;
+&lt;li&gt;统计函数&lt;/li&gt;
+&lt;li&gt;代码实例&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;pytorch简介&#34;&gt;Pytorch简介
+&lt;/h2&gt;&lt;p&gt;PyTorch 是一个由 Meta开发的开源深度学习框架，主要用于搭建和训练各类 AI 模型。&lt;/p&gt;
+&lt;p&gt;它最大的同行是 Google 推出的 TensorFlow。相比 TensorFlow，PyTorch 的核心优势在于：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;极度灵活好上手&lt;/strong&gt;：PyTorch 采用动态计算图，代码可以像普通 Python 程序一样逐行运行和调试，非常直观；而 TensorFlow 早期主打静态图，需要先定义完整流程再执行，调试相对繁琐。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Python原生风格&lt;/strong&gt;：它的语法高度贴合 Python 和 NumPy，开发者几乎可以无缝切换，学习门槛极低。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;学术界主流&lt;/strong&gt;：由于开发效率高，目前绝大多数前沿的 AI 论文和最新大模型都会首选在 PyTorch 上发布，拥有极其丰富的开源资源。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;总结一下就是：TensorFlow 偏向工业级部署，而 PyTorch 胜在灵活、易调试，是目前研究探索和快速开发的首选工具。&lt;/p&gt;
+&lt;h3 id=&#34;如何在python中导入pytorch&#34;&gt;如何在Python中导入Pytorch
+&lt;/h3&gt;&lt;p&gt;在安装好相关包后,运行下列代码:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;torch&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;torch&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;manual_seed&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;123&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 和np.random.seed(123)类似,但是二者不走同一个通道,因此一般要同时设置&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;张量tensor&#34;&gt;张量Tensor
+&lt;/h2&gt;&lt;h3 id=&#34;tensor简介&#34;&gt;Tensor简介
+&lt;/h3&gt;&lt;p&gt;在深度学习框架中，Tensor是最核心的数据结构。从表面上看，它可以被理解为一个多维数组：0维的 Tensor 是一个数字(标量)，1维是一串数字（向量），2维是一张表格（矩阵），更高维度的 Tensor 则可以用来表示彩色图片、视频或批量数据等复杂结构。它是神经网络中传递输入数据、存储模型权重以及计算梯度的基本载体。&lt;/p&gt;
+&lt;h3 id=&#34;tensor-和-ndarray-的异同&#34;&gt;Tensor 和 ndarray 的异同
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;相同点：&lt;/strong&gt;
+两者在本质和操作上高度相似。它们都是用来高效存储和操作大规模多维数值数据的数组；基本的运算逻辑非常接近，比如加减乘除、矩阵乘法、索引切片、形状变换以及广播机制等，写代码时的手感几乎一致；在实际开发中，两者可以非常方便地互相转换，通过 &lt;code&gt;torch.from_numpy()&lt;/code&gt; 可以把 NumPy 数组转为 Tensor，通过 &lt;code&gt;.numpy()&lt;/code&gt; 可以把 Tensor 转回 NumPy 数组。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;不同点：&lt;/strong&gt;
+虽然长得像，但两者的设计目标和能力边界完全不同。NumPy 是通用的科学计算库，而 Tensor 是专为深度学习打造的专用工具。&lt;/p&gt;
+&lt;p&gt;最主要的区别在于硬件支持。NumPy 只能在 CPU 上运行；而 Tensor 原生支持 GPU 加速，在处理海量数据和大规模并行计算时，速度比 NumPy 快几十倍甚至上百倍。&lt;/p&gt;
+&lt;p&gt;其次是自动求导机制。这是两者最本质的区别，NumPy 只是一个纯粹的数值计算库，完全不支持自动求导；而 Tensor 内置了自动微分系统（Autograd），能够自动记录所有的运算过程并构建“计算图”，在训练 AI 模型时只需调用一个方法就能自动计算出梯度，极大地简化了反向传播的过程。&lt;/p&gt;
+&lt;p&gt;最后是设计定位与默认数据类型。NumPy 主要用于传统的数据分析、矩阵运算等通用科学计算，其默认数据类型通常是 float64；而 Tensor 是深度学习全流程的核心，为了适配 GPU 计算并节省显存，其默认数据类型通常是 float32。&lt;/p&gt;
+&lt;h2 id=&#34;矩阵运算&#34;&gt;矩阵运算
+&lt;/h2&gt;&lt;h2 id=&#34;统计函数&#34;&gt;统计函数
+&lt;/h2&gt;&lt;h2 id=&#34;代码实例&#34;&gt;代码实例
+&lt;/h2&gt;</description>
+        </item>
+        <item>
         <title>计量经济学 02</title>
         <link>https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-02/</link>
         <pubDate>Sat, 28 Mar 2026 00:00:00 +0000</pubDate>

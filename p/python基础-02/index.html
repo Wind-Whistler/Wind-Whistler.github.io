@@ -226,7 +226,48 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#numpy简介">Numpy简介</a>
+      <ol>
+        <li><a href="#python列表的局限性">Python列表的局限性</a></li>
+        <li><a href="#numpy概述">NumPy概述</a></li>
+        <li><a href="#核心数据结构ndarray">核心数据结构：ndarray</a></li>
+      </ol>
+    </li>
+    <li><a href="#数组创建">数组创建</a></li>
+    <li><a href="#数组的索引和切片">数组的索引和切片</a></li>
+    <li><a href="#数组的形态操作与运算">数组的形态操作与运算</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -309,7 +350,32 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>Numpy简介</li>
+<li>数组创建</li>
+<li>数组的索引和切片</li>
+<li>数组的形态操作与运算</li>
+</ul>
+<h2 id="numpy简介">Numpy简介
+</h2><h3 id="python列表的局限性">Python列表的局限性
+</h3><ul>
+<li><strong>形式灵活但效率低</strong>：Python原生列表允许每个元素拥有不同的数据类型，这虽然提供了极大的灵活性，但在科学计算中却成为了性能瓶颈。由于列表存储的是对象的引用，且类型不统一，程序在进行计算时必须通过循环逐个遍历元素，并实时检查每个元素的类型，这导致了大量的额外开销，运算效率较低。</li>
+</ul>
+<h3 id="numpy概述">NumPy概述
+</h3><ul>
+<li><strong>全称</strong>：Numerical Python。</li>
+<li><strong>核心功能</strong>：NumPy是Python科学计算的基础包，它提供了大量高效的库函数和操作，专门用于处理数值运算。它弥补了Python原生列表在处理大规模数据时的性能缺陷，是实现高性能计算的关键工具。</li>
+</ul>
+<h3 id="核心数据结构ndarray">核心数据结构：ndarray
+</h3><ul>
+<li><strong>存储方式</strong>：NumPy采用n维数组对象（ndarray）的方式进行存储。这种结构在内存中是连续存储的，极大地提高了数据访问和运算的速度。</li>
+<li><strong>同质性要求</strong>：与列表不同，ndarray里的存储元素必须是同一类型的数据。这种强类型约束使得NumPy能够利用底层C语言的优化，进行矢量化的数学运算，从而显著提升计算性能。</li>
+</ul>
+<h2 id="数组创建">数组创建
+</h2><h2 id="数组的索引和切片">数组的索引和切片
+</h2><h2 id="数组的形态操作与运算">数组的形态操作与运算
+</h2>
 </section>
 
 

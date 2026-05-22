@@ -1640,7 +1640,32 @@ L-BFGS优化器利用收到的精确梯度和损失值，更新参数 $\beta$ �
         <pubDate>Sun, 12 Apr 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/python%E5%9F%BA%E7%A1%80-02/</guid>
-        <description>&lt;img src="https://example.com/p/python%E5%9F%BA%E7%A1%80-02/Garden.png" alt="Featured image of post Python基础 02" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/python%E5%9F%BA%E7%A1%80-02/Garden.png" alt="Featured image of post Python基础 02" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;Numpy简介&lt;/li&gt;
+&lt;li&gt;数组创建&lt;/li&gt;
+&lt;li&gt;数组的索引和切片&lt;/li&gt;
+&lt;li&gt;数组的形态操作与运算&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;numpy简介&#34;&gt;Numpy简介
+&lt;/h2&gt;&lt;h3 id=&#34;python列表的局限性&#34;&gt;Python列表的局限性
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;形式灵活但效率低&lt;/strong&gt;：Python原生列表允许每个元素拥有不同的数据类型，这虽然提供了极大的灵活性，但在科学计算中却成为了性能瓶颈。由于列表存储的是对象的引用，且类型不统一，程序在进行计算时必须通过循环逐个遍历元素，并实时检查每个元素的类型，这导致了大量的额外开销，运算效率较低。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;numpy概述&#34;&gt;NumPy概述
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;全称&lt;/strong&gt;：Numerical Python。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;核心功能&lt;/strong&gt;：NumPy是Python科学计算的基础包，它提供了大量高效的库函数和操作，专门用于处理数值运算。它弥补了Python原生列表在处理大规模数据时的性能缺陷，是实现高性能计算的关键工具。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;核心数据结构ndarray&#34;&gt;核心数据结构：ndarray
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;存储方式&lt;/strong&gt;：NumPy采用n维数组对象（ndarray）的方式进行存储。这种结构在内存中是连续存储的，极大地提高了数据访问和运算的速度。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;同质性要求&lt;/strong&gt;：与列表不同，ndarray里的存储元素必须是同一类型的数据。这种强类型约束使得NumPy能够利用底层C语言的优化，进行矢量化的数学运算，从而显著提升计算性能。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;数组创建&#34;&gt;数组创建
+&lt;/h2&gt;&lt;h2 id=&#34;数组的索引和切片&#34;&gt;数组的索引和切片
+&lt;/h2&gt;&lt;h2 id=&#34;数组的形态操作与运算&#34;&gt;数组的形态操作与运算
+&lt;/h2&gt;</description>
         </item>
         <item>
         <title>分布式计算 04</title>

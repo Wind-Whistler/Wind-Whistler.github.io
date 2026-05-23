@@ -256,9 +256,23 @@
         <li><a href="#核心数据结构ndarray">核心数据结构：ndarray</a></li>
       </ol>
     </li>
-    <li><a href="#数组创建">数组创建</a></li>
-    <li><a href="#数组的索引和切片">数组的索引和切片</a></li>
-    <li><a href="#数组的形态操作与运算">数组的形态操作与运算</a></li>
+    <li><a href="#数组创建">数组创建</a>
+      <ol>
+        <li><a href="#基本创建方法与数组属性">基本创建方法与数组属性</a></li>
+      </ol>
+    </li>
+    <li><a href="#数组的索引和切片">数组的索引和切片</a>
+      <ol>
+        <li><a href="#简单索引">简单索引</a></li>
+        <li><a href="#bool索引和智能索引">Bool索引和智能索引</a></li>
+      </ol>
+    </li>
+    <li><a href="#数组的形态操作与运算">数组的形态操作与运算</a>
+      <ol>
+        <li><a href="#数组的形态操作">数组的形态操作</a></li>
+        <li><a href="#数组的运算">数组的运算</a></li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -373,9 +387,227 @@
 <li><strong>同质性要求</strong>：与列表不同，ndarray里的存储元素必须是同一类型的数据。这种强类型约束使得NumPy能够利用底层C语言的优化，进行矢量化的数学运算，从而显著提升计算性能。</li>
 </ul>
 <h2 id="数组创建">数组创建
-</h2><h2 id="数组的索引和切片">数组的索引和切片
-</h2><h2 id="数组的形态操作与运算">数组的形态操作与运算
-</h2>
+</h2><h3 id="基本创建方法与数组属性">基本创建方法与数组属性
+</h3><p>下面的代码给出了创建数组的基本方法，并展示如何使用代码返回数组的一些基本属性</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 数组的创建</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># 一维数组</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span> <span class="c1"># 二维数组</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 数组的属性</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span><span class="o">.</span><span class="n">ndim</span><span class="p">()</span>  <span class="c1"># 数组的维度</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span><span class="o">.</span><span class="n">shape</span><span class="p">()</span>  <span class="c1"># 数组的形状</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span><span class="o">.</span><span class="n">dtype</span><span class="p">()</span>  <span class="c1"># 数组的数据类型</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>  <span class="c1"># 数组的元素个数</span>
+</span></span><span class="line"><span class="cl"><span class="nb">len</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span>  <span class="c1"># 返回行数，有时候可以理解为观测值的数量</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>当然上述最基本的数组创建方法，还有一些常用的特殊数组创建方法，代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 其他创建数组的方法</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># begin end step  等差数列的创建，不返回右端值</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># begin end num  等差数列的创建，返回右端值，常用于绘制数学图像</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 创建随机数组</span>
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>  <span class="c1"># 设置种子，确保程序可复现</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># 创建5个0-1之间的随机数  参数为size</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># 创建10个0-9之间的整数  参数为start end size</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span> <span class="c1"># 生成正态分布随机数，loc代表期望 scale代表标准差 size为形状 </span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 特殊数组的创建</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>  <span class="c1"># 创建5*5的全零矩阵 dtype为float</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>  <span class="c1"># 创建5*5的全一矩阵 dtype为float</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>  <span class="c1"># 创建5*5的空矩阵</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># 创建3*3的单位阵</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># eye相较于identity更灵活，不一定是方阵，k代表对角线偏移</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 其他</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat_A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat_B</span> <span class="o">=</span> <span class="n">mat_A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># 开辟一块内存把数据复制过去，直接mat_B = mat_A 并不会开辟新内存</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat_C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">mat_A</span><span class="p">)</span>  <span class="c1"># 创建和mat_A形状一致的全零矩阵</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat_C</span> <span class="o">=</span> <span class="n">mat_C</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>  <span class="c1"># 类型转换函数astype</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="数组的索引和切片">数组的索引和切片
+</h2><h3 id="简单索引">简单索引
+</h3><p>下面是一些代码示例:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 简单索引</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 一维数组的切片(左闭右开)</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># 返回第一个元素</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># 返回前两个元素</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># 间隔索引 Step为2</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span>  <span class="c1"># 负索引，返回倒数第三个元素到最后一个元素</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 二维数组的切片</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># 返回第一行第一列的的元素</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># 返回一个子矩阵</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span><span class="p">[::</span><span class="mi">2</span><span class="p">,:]</span>  <span class="c1"># 取偶数行</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># 返回最后一行最后一列的元素</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="bool索引和智能索引">Bool索引和智能索引
+</h3><p>Bool索引在对特定元素进行更新时非常有效，而智能索引为数组切片提供了更高的灵活性。<br>
+下面是一些代码示例:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Bool索引</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span><span class="p">[</span><span class="n">vec</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">]</span>  <span class="c1"># 取出vec中所有大于5的数， vec &gt; 5会返回一个Bool数组</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span><span class="p">[</span><span class="n">mat</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 取出mat中所有大于0的数， 并将大于0的数修改为0</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 智能索引</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>  <span class="c1"># 按照列表中的索引取数</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="数组的形态操作与运算">数组的形态操作与运算
+</h2><h3 id="数组的形态操作">数组的形态操作
+</h3><p>在某些场合下我们需要修改数组的形状来作进一步运算，下面展示如何切换数组的形状。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">mat</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">))</span>  <span class="c1"># 默认为9列，行数自动计算</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">mat</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>  <span class="c1"># 转置</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">mat</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>  <span class="c1"># 切换维度</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="数组的运算">数组的运算
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 数组与标量之间的运算</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">mat</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 每个元素加2</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">mat</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 每个元素乘2</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">mat</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># 每个元素开根号</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 数组与数组之间的运算</span>
+</span></span><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># 数组相加</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># 每个位置相乘</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>  <span class="c1"># 每个位置取sin</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>  <span class="c1"># 每个位置取log</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 其他</span>
+</span></span><span class="line"><span class="cl"><span class="n">wts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.3</span><span class="p">,</span><span class="mf">0.3</span><span class="p">,</span><span class="mf">0.4</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">wts</span><span class="p">))</span>  <span class="c1"># 加权平均</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">i</span> <span class="o">=</span> <span class="n">wts</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>  <span class="c1"># 取出最大值的坐标</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">wts</span> <span class="o">&lt;</span> <span class="mf">0.4</span><span class="p">)</span>  <span class="c1"># 取出小于0.4的坐标</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>以上只是一些基础的数组运算方法，事实上Numpy数组的运算在之后机器学习中会扮演重要角色，届时会更多地使用矩阵相乘<code>@</code>和Numpy数组的广播机制。</p>
+
 </section>
 
 

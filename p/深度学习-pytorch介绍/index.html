@@ -260,9 +260,17 @@
         <li><a href="#tensor-和-ndarray-的异同">Tensor 和 ndarray 的异同</a></li>
       </ol>
     </li>
-    <li><a href="#矩阵运算">矩阵运算</a></li>
-    <li><a href="#统计函数">统计函数</a></li>
-    <li><a href="#代码实例">代码实例</a></li>
+    <li><a href="#矩阵运算">矩阵运算</a>
+      <ol>
+        <li><a href="#矩阵创建">矩阵创建</a></li>
+        <li><a href="#广播机制">广播机制</a></li>
+      </ol>
+    </li>
+    <li><a href="#统计分布">统计分布</a>
+      <ol>
+        <li><a href="#pytorch分布模块">PyTorch分布模块</a></li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -374,7 +382,6 @@
 <li>张量Tensor</li>
 <li>矩阵运算</li>
 <li>统计函数</li>
-<li>代码实例</li>
 </ul>
 <h2 id="pytorch简介">Pytorch简介
 </h2><p>PyTorch 是一个由 Meta开发的开源深度学习框架，主要用于搭建和训练各类 AI 模型。</p>
@@ -409,9 +416,100 @@
 <p>其次是自动求导机制。这是两者最本质的区别，NumPy 只是一个纯粹的数值计算库，完全不支持自动求导；而 Tensor 内置了自动微分系统（Autograd），能够自动记录所有的运算过程并构建“计算图”，在训练 AI 模型时只需调用一个方法就能自动计算出梯度，极大地简化了反向传播的过程。</p>
 <p>最后是设计定位与默认数据类型。NumPy 主要用于传统的数据分析、矩阵运算等通用科学计算，其默认数据类型通常是 float64；而 Tensor 是深度学习全流程的核心，为了适配 GPU 计算并节省显存，其默认数据类型通常是 float32。</p>
 <h2 id="矩阵运算">矩阵运算
-</h2><h2 id="统计函数">统计函数
-</h2><h2 id="代码实例">代码实例
-</h2>
+</h2><h3 id="矩阵创建">矩阵创建
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">vec</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">])</span>  <span class="c1"># 创建一维数组</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">]])</span>  <span class="c1"># 创建二维数组</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 创建全一矩阵</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># 创建全零数组</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># 同Numpy</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># 生成2*3的标准正态分布矩阵</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>pytorch中其他的关于数乘和函数的内容都和Numpy类似，故本文不再赘述。</p>
+<h3 id="广播机制">广播机制
+</h3><p>和Nunpy相同，Pytorch也具有数组广播的功能，合理运用数组广播可以有效减少计算量，提升代码运行效率，下面给出一段示例代码:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 广播机制</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">3.0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">mat</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">mat</span> <span class="o">+</span> <span class="n">vec</span><span class="p">)</span>  <span class="c1"># 这里vec和mat有相同的列数，所以会自动把vec加到mat的每一行</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">mat</span> <span class="o">*</span> <span class="n">vec</span><span class="p">)</span>  <span class="c1"># 乘法同理</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">vec</span> <span class="o">=</span> <span class="n">vec</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">mat</span> <span class="o">+</span> <span class="n">vec</span><span class="p">)</span>  <span class="c1"># 这里vec和mat有相同的行数，所以会自动把vec加到mat的每一列</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">mat</span> <span class="o">*</span> <span class="n">vec</span><span class="p">)</span>  <span class="c1"># 乘法同理</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对于一些特殊的矩阵类型，如对角矩阵，使用广播机制能显著降低时间复杂度。</p>
+<h2 id="统计分布">统计分布
+</h2><h3 id="pytorch分布模块">PyTorch分布模块
+</h3><p>PyTorch 在生成分布时采用了“面向对象”的设计思路，而 NumPy 更偏向于直接调用的“面向过程”函数式写法。PyTorch 的核心逻辑是先实例化一个具体的分布类（Distribution Class），这个类就像一个封装好的数学模型对象，创建之后就可以在对象上反复调用各种方法。这种设计不仅实现了状态封装和接口统一，更重要的是能原生支持深度学习的计算图与自动求导（Autograd）。</p>
+<p><strong>常用操作：</strong></p>
+<ul>
+<li><code>.sample()</code>：从该分布中采样出随机数。</li>
+<li><code>.log_prob(value)</code>：计算某个值的对数概率，在训练神经网络计算损失时非常常用。</li>
+<li><code>.entropy()</code>：计算分布的熵（衡量分布的不确定性）。</li>
+</ul>
+<p>先面给出使用Pytorch实例化分布类的例子:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch.distributions</span> <span class="k">as</span> <span class="nn">D</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">math</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">norm</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">]),</span> <span class="n">scale</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)]))</span>  <span class="c1"># 实例化一个均值为3，标准差为3的正态分布</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">norm</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]))</span>  <span class="c1"># 计算概率密度函数的对数值</span>
+</span></span><span class="line"><span class="cl"><span class="n">norm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,))</span>  <span class="c1"># 从对应分布生成随机数</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">bern</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">Bernoulli</span><span class="p">(</span><span class="n">probs</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]))</span>  <span class="c1"># 创建三个伯努利分布，输入三个参数</span>
+</span></span><span class="line"><span class="cl"><span class="n">bern</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>  <span class="c1"># 默认取一组样本</span>
+</span></span><span class="line"><span class="cl"><span class="n">bern</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,))</span>  <span class="c1"># 指定生成样本的形状</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">exp</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="n">rate</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># 实例化 lambda = 3 的指数分布</span>
+</span></span><span class="line"><span class="cl"><span class="n">exp</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">sample_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>  <span class="c1"># 抽取样本</span>
+</span></span><span class="line"><span class="cl"><span class="n">exp</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">3.0</span><span class="p">,</span><span class="mf">4.0</span><span class="p">]))</span>  <span class="c1"># 取对数概率</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
 </section>
 
 

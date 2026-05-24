@@ -26,11 +26,74 @@
 &lt;li&gt;多元线性回归的基本概念&lt;/li&gt;
 &lt;li&gt;多元线性回归的基本假设&lt;/li&gt;
 &lt;li&gt;多元线性回归的参数估计&lt;/li&gt;
+&lt;li&gt;最小二乘估计的优良性质&lt;/li&gt;
 &lt;li&gt;多元线性回归的统计检验&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;多元线性回归的基本概念&#34;&gt;多元线性回归的基本概念
-&lt;/h2&gt;&lt;h3 id=&#34;&#34;&gt;
-&lt;/h3&gt;</description>
+&lt;/h2&gt;&lt;p&gt;多元线性回归（Multiple Linear Regression）是研究一个被解释变量（因变量）与多个解释变量（自变量）之间线性关系的统计分析方法。其核心目标是通过样本数据来推断总体的结构特征，量化解释变量对被解释变量的边际影响。&lt;/p&gt;
+&lt;h3 id=&#34;总体回归模型&#34;&gt;总体回归模型
+&lt;/h3&gt;&lt;p&gt;总体回归模型描述了所研究总体中变量之间的真实关系，也称为数据生成过程（Data Generating Process, DGP）。它包含了随机扰动项 $\mu_i$，用于捕捉除了解释变量以外所有其他影响被解释变量的因素。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;随机形式&lt;/strong&gt;：
+&lt;/p&gt;
+$$Y_i = \beta_0 + \beta_1 X_{i1} + \beta_2 X_{i2} + ... + \beta_k X_{ik} + \mu_i, \quad i = 1, 2, ..., n$$&lt;ul&gt;
+&lt;li&gt;$Y_i$：被解释变量（因变量）&lt;/li&gt;
+&lt;li&gt;$X_{ij}$：解释变量（自变量），$j = 1, 2, &amp;hellip;, k$&lt;/li&gt;
+&lt;li&gt;$\beta_0$：截距项&lt;/li&gt;
+&lt;li&gt;$\beta_j$：回归系数（偏回归系数），表示在保持其他变量不变的情况下，$X_j$ 变化一个单位时 $Y$ 的条件均值的变化量。&lt;/li&gt;
+&lt;li&gt;$\mu_i$：随机扰动项（误差项），代表了模型未包含的随机因素。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;矩阵形式&lt;/strong&gt;：
+&lt;/p&gt;
+$$Y = X\beta + \mu$$&lt;ul&gt;
+&lt;li&gt;$Y$：$n \times 1$ 的被解释变量向量&lt;/li&gt;
+&lt;li&gt;$X$：$n \times (k+1)$ 的解释变量矩阵（包含一列1用于截距）&lt;/li&gt;
+&lt;li&gt;$\beta$：$(k+1) \times 1$ 的系数向量&lt;/li&gt;
+&lt;li&gt;$\mu$：$n \times 1$ 的扰动项向量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;总体回归函数&#34;&gt;总体回归函数
+&lt;/h3&gt;&lt;p&gt;总体回归函数是指在给定解释变量 $X$ 的条件下，被解释变量 $Y$ 的期望值（平均效应）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;定义公式&lt;/strong&gt;：
+
+$$E(Y_i | X_{i1}, X_{i2}, ..., X_{ik}) = \beta_0 + \beta_1 X_{i1} + \beta_2 X_{i2} + ... + \beta_k X_{ik}$$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;核心含义&lt;/strong&gt;：
+它描绘了 $Y$ 随 $X$ 变化的系统性部分。系数 $\beta_j$ 被称为偏回归系数，其经济含义是：在控制其他所有解释变量不变的前提下，$X_j$ 每增加一个单位，$Y$ 的平均值将变化 $\beta_j$ 个单位。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;样本回归模型&#34;&gt;样本回归模型
+&lt;/h3&gt;&lt;p&gt;由于总体通常是无法完全观测的，我们需要通过抽样来估计总体参数。样本回归模型是利用样本数据对总体模型的近似，其中包含了残差 $e_i$。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;随机形式&lt;/strong&gt;：
+&lt;/p&gt;
+$$Y_i = \hat{\beta}_0 + \hat{\beta}_1 X_{i1} + \hat{\beta}_2 X_{i2} + ... + \hat{\beta}_k X_{ik} + e_i$$&lt;ul&gt;
+&lt;li&gt;$\hat{\beta}_j$：参数的估计值（Estimators）&lt;/li&gt;
+&lt;li&gt;$e_i$：残差（Residual），即实际观测值 $Y_i$ 与样本回归函数预测值 $\hat{Y}_i$ 之差。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;矩阵形式&lt;/strong&gt;：
+&lt;/p&gt;
+$$Y = X\hat{\beta} + e$$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;样本回归函数&#34;&gt;样本回归函数
+&lt;/h3&gt;&lt;p&gt;样本回归函数是基于样本数据计算出的被解释变量的预测值（拟合值）与解释变量之间的关系式。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;定义公式&lt;/strong&gt;：
+
+$$\hat{Y}_i = \hat{\beta}_0 + \hat{\beta}_1 X_{i1} + \hat{\beta}_2 X_{i2} + ... + \hat{\beta}_k X_{ik}$$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;与误差的关系&lt;/strong&gt;：
+样本回归函数与样本回归模型的主要区别在于是否包含随机误差。样本回归函数给出的是&lt;strong&gt;点预测&lt;/strong&gt;，而样本回归模型承认存在&lt;strong&gt;误差（残差 $e_i$）&lt;/strong&gt;。
+
+$$e_i = Y_i - \hat{Y}_i$$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;多元线性回归的基本假设&#34;&gt;多元线性回归的基本假设
+&lt;/h2&gt;</description>
         </item>
         <item>
         <title>计量经济学 01</title>

@@ -422,8 +422,7 @@ $$f(y_1, ..., y_n; \theta) = g(T(y), \theta) \cdot h(y)$$&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;只要能成功这样拆解，就可以直接说：&lt;strong&gt;$T(y)$ 是参数 $\theta$ 的充分统计量。&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id=&#34;第二部分怎么证明完备性&#34;&gt;第二部分：怎么证明完备性？
-&lt;/h3&gt;&lt;p&gt;正如你所说，主要有两种“武器”，一种是走捷径，一种是硬推导：&lt;/p&gt;
-&lt;h5 id=&#34;方式一指数族分布判定法&#34;&gt;方式一：指数族分布判定法
+&lt;/h3&gt;&lt;h5 id=&#34;方式一指数族分布判定法&#34;&gt;方式一：指数族分布判定法
 &lt;/h5&gt;&lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;识别形式&lt;/strong&gt;：
 看你的概率密度函数能不能写成&lt;strong&gt;满秩指数族分布&lt;/strong&gt;的标准形式：

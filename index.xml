@@ -2915,9 +2915,91 @@ $$F(s) = \mathcal{L}\{f(t)\} = \int_{0}^{+\infty} f(t)e^{-st} dt$$&lt;p&gt;这�
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;多元线性回归的参数估计&#34;&gt;多元线性回归的参数估计
-&lt;/h2&gt;&lt;h3 id=&#34;最小二乘估计ols&#34;&gt;最小二乘估计（OLS）
-&lt;/h3&gt;&lt;h3 id=&#34;极大似然估计mle&#34;&gt;极大似然估计（MLE）
-&lt;/h3&gt;</description>
+&lt;/h2&gt;&lt;h3 id=&#34;估计对象&#34;&gt;估计对象
+&lt;/h3&gt;&lt;p&gt;在多元线性回归模型 $Y = X\beta + \mu$ 中，需要估计的参数主要包括：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;结构参数 ($\beta$)&lt;/strong&gt;：即回归系数，反映了解释变量对被解释变量的影响程度。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;随机扰动项的方差 ($\sigma^2$)&lt;/strong&gt;：反映了模型误差的波动大小。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;最小二乘估计ols&#34;&gt;最小二乘估计（OLS）
+&lt;/h3&gt;&lt;h4 id=&#34;核心原理&#34;&gt;核心原理
+&lt;/h4&gt;&lt;p&gt;普通最小二乘法（Ordinary Least Squares, OLS）的原理是通过最小化残差平方和（RSS, Residual Sum of Squares）来求解参数估计值。
+&lt;/p&gt;
+$$\min_{\beta} \sum e_i^2 = \min_{\beta} (Y - X\beta)^T(Y - X\beta)$$&lt;p&gt;
+即寻找一组参数，使得模型预测值与实际观测值之间的误差平方和达到最小。&lt;/p&gt;
+&lt;h4 id=&#34;参数估计结果&#34;&gt;参数估计结果
+&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;回归系数 $\beta$ 的估计&lt;/strong&gt;：
+OLS 估计量具有明确的矩阵形式，且在满足经典假设下具有良好的统计性质。
+&lt;/p&gt;
+$$ \hat{\beta}_{OLS} = (X^TX)^{-1}X^TY $$&lt;p&gt;
+该估计量具有线性性、无偏性、有效性（最小方差性）以及一致性。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;随机扰动项方差 $\sigma^2$ 的估计&lt;/strong&gt;：
+为了保证估计量的无偏性，OLS 使用自由度修正后的公式。
+&lt;/p&gt;
+$$ \hat{\sigma}^2_{OLS} = \frac{e^Te}{n-k-1} $$&lt;p&gt;
+其中，$n$ 为样本容量，$k$ 为解释变量个数（不包括常数项），$n-k-1$ 为残差平方和的自由度。&lt;strong&gt;该估计量是 $\sigma^2$ 的无偏估计。&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;极大似然估计mle&#34;&gt;极大似然估计（MLE）
+&lt;/h3&gt;&lt;h4 id=&#34;核心原理-1&#34;&gt;核心原理
+&lt;/h4&gt;&lt;p&gt;极大似然估计法（Maximum Likelihood Estimation, MLE）基于概率分布假设（通常假设扰动项服从正态分布），通过最大化似然函数（Likelihood Function）或对数似然函数来求解参数。
+&lt;/p&gt;
+$$ \max_{\beta, \sigma^2} L(\beta, \sigma^2) $$&lt;p&gt;
+其核心思想是：在已知样本数据的情况下，寻找能使该组样本出现概率（似然）最大的参数值。&lt;/p&gt;
+&lt;h4 id=&#34;参数估计结果-1&#34;&gt;参数估计结果
+&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;回归系数 $\beta$ 的估计&lt;/strong&gt;：
+在经典正态线性回归模型中，极大似然估计量与普通最小二乘估计量在数值上是相同的。
+&lt;/p&gt;
+$$ \hat{\beta}_{MLE} = (X^TX)^{-1}X^TY = \hat{\beta}_{OLS} $$&lt;p&gt;
+只有当假设扰动项服从正态分布时，MLE 和 OLS 的回归系数估计结果才相同。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;随机扰动项方差 $\sigma^2$ 的估计&lt;/strong&gt;：
+极大似然估计直接基于似然函数求导得出，其分母为样本容量 $n$。
+&lt;/p&gt;
+$$ \hat{\sigma}^2_{MLE} = \frac{e^Te}{n} $$&lt;p&gt;
+&lt;strong&gt;该估计量是有偏的&lt;/strong&gt;（分母为 $n$ 而非 $n-k-1$）。事实上，OLS 估计量是无偏的，而 MLE 估计量在小样本下存在偏差，但在大样本下具有一致性。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;最小二乘估计的优良性质&#34;&gt;最小二乘估计的优良性质
+&lt;/h2&gt;&lt;h3 id=&#34;小样本情况&#34;&gt;小样本情况
+&lt;/h3&gt;&lt;p&gt;在满足经典假设（包括零均值、同方差、无序列相关等）的前提下，OLS估计量具有以下三个性质：&lt;/p&gt;
+&lt;h4 id=&#34;线性性-linearity&#34;&gt;线性性 (Linearity)
+&lt;/h4&gt;&lt;p&gt;指估计量 $\hat{\beta}$ 是因变量观测值 $Y$ 的线性函数。
+&lt;/p&gt;
+$$ \hat{\beta} = (X^TX)^{-1}X^TY $$&lt;p&gt;
+由其矩阵解的公式可知，$\hat{\beta}$ 是 $Y$ 的线性组合。&lt;/p&gt;
+&lt;h4 id=&#34;无偏性-unbiasedness&#34;&gt;无偏性 (Unbiasedness)
+&lt;/h4&gt;&lt;p&gt;指估计量的期望值等于总体参数的真实值。
+&lt;/p&gt;
+$$ E(\hat{\beta}|X) = \beta $$&lt;p&gt;
+&lt;strong&gt;核心证明：&lt;/strong&gt;
+&lt;/p&gt;
+$$ E(\hat{\beta}|X) = E[(X^TX)^{-1}X^T(X\beta + \mu)|X] = \beta + (X^TX)^{-1}X^TE(\mu|X) $$&lt;p&gt;
+&lt;strong&gt;依赖假设：&lt;/strong&gt; 该性质严格依赖于&lt;strong&gt;零均值假设&lt;/strong&gt; $E(\mu|X)=0$（即解释变量与扰动项不相关）。若此假设不成立，估计量将是有偏的。&lt;/p&gt;
+&lt;h4 id=&#34;有效性-efficiency--高斯-马尔可夫定理&#34;&gt;有效性 (Efficiency) / 高斯-马尔可夫定理
+&lt;/h4&gt;&lt;p&gt;指在所有线性无偏估计量中，OLS估计量具有最小方差。
+&lt;strong&gt;核心证明思路：&lt;/strong&gt;
+&lt;/p&gt;
+$$ Var(\hat{\beta}|X) = \sigma^2(X^TX)^{-1} $$&lt;p&gt;
+&lt;strong&gt;依赖假设：&lt;/strong&gt; 该性质依赖于&lt;strong&gt;同方差&lt;/strong&gt; $Var(\mu|X)=\sigma^2I$ 和 &lt;strong&gt;无序列相关&lt;/strong&gt; $Cov(\mu_i, \mu_j)=0$ 的假设。若违背（如存在异方差或自相关），OLS虽然仍无偏，但不再是最有效的。&lt;/p&gt;
+&lt;h3 id=&#34;大样本情况&#34;&gt;大样本情况
+&lt;/h3&gt;&lt;p&gt;当样本容量 $n$ 趋于无穷大时，OLS估计量具有以下渐近性质（文档中主要提及）：&lt;/p&gt;
+&lt;h4 id=&#34;一致性-consistency&#34;&gt;一致性 (Consistency)
+&lt;/h4&gt;&lt;p&gt;随着样本量的增加，估计量依概率收敛于参数的真实值。
+&lt;/p&gt;
+$$ \text{plim}(\hat{\beta}) = \beta $$&lt;p&gt;
+这意味着在大样本下，OLS估计量能够以任意高的精度逼近真实参数。&lt;/p&gt;
+&lt;h4 id=&#34;渐近有效性-asymptotic-efficiency&#34;&gt;渐近有效性 (Asymptotic Efficiency)
+&lt;/h4&gt;&lt;p&gt;指在大样本下，OLS估计量在所有一致估计量中具有最小的渐近方差。&lt;/p&gt;
+&lt;h2 id=&#34;多元线性回归的统计检验&#34;&gt;多元线性回归的统计检验
+&lt;/h2&gt;</description>
         </item>
         <item>
         <title>深度学习02</title>

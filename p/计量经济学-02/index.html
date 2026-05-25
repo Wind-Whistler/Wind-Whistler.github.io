@@ -283,10 +283,39 @@
     </li>
     <li><a href="#多元线性回归的参数估计">多元线性回归的参数估计</a>
       <ol>
-        <li><a href="#最小二乘估计ols">最小二乘估计（OLS）</a></li>
-        <li><a href="#极大似然估计mle">极大似然估计（MLE）</a></li>
+        <li><a href="#估计对象">估计对象</a></li>
+        <li><a href="#最小二乘估计ols">最小二乘估计（OLS）</a>
+          <ol>
+            <li><a href="#核心原理">核心原理</a></li>
+            <li><a href="#参数估计结果">参数估计结果</a></li>
+          </ol>
+        </li>
+        <li><a href="#极大似然估计mle">极大似然估计（MLE）</a>
+          <ol>
+            <li><a href="#核心原理-1">核心原理</a></li>
+            <li><a href="#参数估计结果-1">参数估计结果</a></li>
+          </ol>
+        </li>
       </ol>
     </li>
+    <li><a href="#最小二乘估计的优良性质">最小二乘估计的优良性质</a>
+      <ol>
+        <li><a href="#小样本情况">小样本情况</a>
+          <ol>
+            <li><a href="#线性性-linearity">线性性 (Linearity)</a></li>
+            <li><a href="#无偏性-unbiasedness">无偏性 (Unbiasedness)</a></li>
+            <li><a href="#有效性-efficiency--高斯-马尔可夫定理">有效性 (Efficiency) / 高斯-马尔可夫定理</a></li>
+          </ol>
+        </li>
+        <li><a href="#大样本情况">大样本情况</a>
+          <ol>
+            <li><a href="#一致性-consistency">一致性 (Consistency)</a></li>
+            <li><a href="#渐近有效性-asymptotic-efficiency">渐近有效性 (Asymptotic Efficiency)</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#多元线性回归的统计检验">多元线性回归的统计检验</a></li>
   </ol>
 </nav>
         </div>
@@ -559,9 +588,91 @@ $$F(s) = \mathcal{L}\{f(t)\} = \int_{0}^{+\infty} f(t)e^{-st} dt$$<p>这里的 $
 </li>
 </ul>
 <h2 id="多元线性回归的参数估计">多元线性回归的参数估计
-</h2><h3 id="最小二乘估计ols">最小二乘估计（OLS）
-</h3><h3 id="极大似然估计mle">极大似然估计（MLE）
-</h3>
+</h2><h3 id="估计对象">估计对象
+</h3><p>在多元线性回归模型 $Y = X\beta + \mu$ 中，需要估计的参数主要包括：</p>
+<ol>
+<li><strong>结构参数 ($\beta$)</strong>：即回归系数，反映了解释变量对被解释变量的影响程度。</li>
+<li><strong>随机扰动项的方差 ($\sigma^2$)</strong>：反映了模型误差的波动大小。</li>
+</ol>
+<h3 id="最小二乘估计ols">最小二乘估计（OLS）
+</h3><h4 id="核心原理">核心原理
+</h4><p>普通最小二乘法（Ordinary Least Squares, OLS）的原理是通过最小化残差平方和（RSS, Residual Sum of Squares）来求解参数估计值。
+</p>
+$$\min_{\beta} \sum e_i^2 = \min_{\beta} (Y - X\beta)^T(Y - X\beta)$$<p>
+即寻找一组参数，使得模型预测值与实际观测值之间的误差平方和达到最小。</p>
+<h4 id="参数估计结果">参数估计结果
+</h4><ol>
+<li>
+<p><strong>回归系数 $\beta$ 的估计</strong>：
+OLS 估计量具有明确的矩阵形式，且在满足经典假设下具有良好的统计性质。
+</p>
+$$ \hat{\beta}_{OLS} = (X^TX)^{-1}X^TY $$<p>
+该估计量具有线性性、无偏性、有效性（最小方差性）以及一致性。</p>
+</li>
+<li>
+<p><strong>随机扰动项方差 $\sigma^2$ 的估计</strong>：
+为了保证估计量的无偏性，OLS 使用自由度修正后的公式。
+</p>
+$$ \hat{\sigma}^2_{OLS} = \frac{e^Te}{n-k-1} $$<p>
+其中，$n$ 为样本容量，$k$ 为解释变量个数（不包括常数项），$n-k-1$ 为残差平方和的自由度。<strong>该估计量是 $\sigma^2$ 的无偏估计。</strong></p>
+</li>
+</ol>
+<h3 id="极大似然估计mle">极大似然估计（MLE）
+</h3><h4 id="核心原理-1">核心原理
+</h4><p>极大似然估计法（Maximum Likelihood Estimation, MLE）基于概率分布假设（通常假设扰动项服从正态分布），通过最大化似然函数（Likelihood Function）或对数似然函数来求解参数。
+</p>
+$$ \max_{\beta, \sigma^2} L(\beta, \sigma^2) $$<p>
+其核心思想是：在已知样本数据的情况下，寻找能使该组样本出现概率（似然）最大的参数值。</p>
+<h4 id="参数估计结果-1">参数估计结果
+</h4><ol>
+<li>
+<p><strong>回归系数 $\beta$ 的估计</strong>：
+在经典正态线性回归模型中，极大似然估计量与普通最小二乘估计量在数值上是相同的。
+</p>
+$$ \hat{\beta}_{MLE} = (X^TX)^{-1}X^TY = \hat{\beta}_{OLS} $$<p>
+只有当假设扰动项服从正态分布时，MLE 和 OLS 的回归系数估计结果才相同。</p>
+</li>
+<li>
+<p><strong>随机扰动项方差 $\sigma^2$ 的估计</strong>：
+极大似然估计直接基于似然函数求导得出，其分母为样本容量 $n$。
+</p>
+$$ \hat{\sigma}^2_{MLE} = \frac{e^Te}{n} $$<p>
+<strong>该估计量是有偏的</strong>（分母为 $n$ 而非 $n-k-1$）。事实上，OLS 估计量是无偏的，而 MLE 估计量在小样本下存在偏差，但在大样本下具有一致性。</p>
+</li>
+</ol>
+<h2 id="最小二乘估计的优良性质">最小二乘估计的优良性质
+</h2><h3 id="小样本情况">小样本情况
+</h3><p>在满足经典假设（包括零均值、同方差、无序列相关等）的前提下，OLS估计量具有以下三个性质：</p>
+<h4 id="线性性-linearity">线性性 (Linearity)
+</h4><p>指估计量 $\hat{\beta}$ 是因变量观测值 $Y$ 的线性函数。
+</p>
+$$ \hat{\beta} = (X^TX)^{-1}X^TY $$<p>
+由其矩阵解的公式可知，$\hat{\beta}$ 是 $Y$ 的线性组合。</p>
+<h4 id="无偏性-unbiasedness">无偏性 (Unbiasedness)
+</h4><p>指估计量的期望值等于总体参数的真实值。
+</p>
+$$ E(\hat{\beta}|X) = \beta $$<p>
+<strong>核心证明：</strong>
+</p>
+$$ E(\hat{\beta}|X) = E[(X^TX)^{-1}X^T(X\beta + \mu)|X] = \beta + (X^TX)^{-1}X^TE(\mu|X) $$<p>
+<strong>依赖假设：</strong> 该性质严格依赖于<strong>零均值假设</strong> $E(\mu|X)=0$（即解释变量与扰动项不相关）。若此假设不成立，估计量将是有偏的。</p>
+<h4 id="有效性-efficiency--高斯-马尔可夫定理">有效性 (Efficiency) / 高斯-马尔可夫定理
+</h4><p>指在所有线性无偏估计量中，OLS估计量具有最小方差。
+<strong>核心证明思路：</strong>
+</p>
+$$ Var(\hat{\beta}|X) = \sigma^2(X^TX)^{-1} $$<p>
+<strong>依赖假设：</strong> 该性质依赖于<strong>同方差</strong> $Var(\mu|X)=\sigma^2I$ 和 <strong>无序列相关</strong> $Cov(\mu_i, \mu_j)=0$ 的假设。若违背（如存在异方差或自相关），OLS虽然仍无偏，但不再是最有效的。</p>
+<h3 id="大样本情况">大样本情况
+</h3><p>当样本容量 $n$ 趋于无穷大时，OLS估计量具有以下渐近性质（文档中主要提及）：</p>
+<h4 id="一致性-consistency">一致性 (Consistency)
+</h4><p>随着样本量的增加，估计量依概率收敛于参数的真实值。
+</p>
+$$ \text{plim}(\hat{\beta}) = \beta $$<p>
+这意味着在大样本下，OLS估计量能够以任意高的精度逼近真实参数。</p>
+<h4 id="渐近有效性-asymptotic-efficiency">渐近有效性 (Asymptotic Efficiency)
+</h4><p>指在大样本下，OLS估计量在所有一致估计量中具有最小的渐近方差。</p>
+<h2 id="多元线性回归的统计检验">多元线性回归的统计检验
+</h2>
 </section>
 
 

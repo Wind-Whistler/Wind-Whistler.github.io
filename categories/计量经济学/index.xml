@@ -296,6 +296,7 @@ $$&lt;p&gt;这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^
 &lt;li&gt;多元线性回归的参数估计&lt;/li&gt;
 &lt;li&gt;最小二乘估计的优良性质&lt;/li&gt;
 &lt;li&gt;多元线性回归的统计检验&lt;/li&gt;
+&lt;li&gt;多元线性回归的预测区间&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;多元线性回归的基本概念&#34;&gt;多元线性回归的基本概念
 &lt;/h2&gt;&lt;p&gt;多元线性回归（Multiple Linear Regression）是研究一个被解释变量（因变量）与多个解释变量（自变量）之间线性关系的统计分析方法。其核心目标是通过样本数据来推断总体的结构特征，量化解释变量对被解释变量的边际影响。&lt;/p&gt;
@@ -538,7 +539,7 @@ $$ E(\hat{\beta}|X) = E[(X^TX)^{-1}X^T(X\beta + \mu)|X] = \beta + (X^TX)^{-1}X^T
 $$ Var(\hat{\beta}|X) = \sigma^2(X^TX)^{-1} $$&lt;p&gt;
 &lt;strong&gt;依赖假设：&lt;/strong&gt; 该性质依赖于&lt;strong&gt;同方差&lt;/strong&gt; $Var(\mu|X)=\sigma^2I$ 和 &lt;strong&gt;无序列相关&lt;/strong&gt; $Cov(\mu_i, \mu_j)=0$ 的假设。若违背（如存在异方差或自相关），OLS虽然仍无偏，但不再是最有效的。&lt;/p&gt;
 &lt;h3 id=&#34;大样本情况&#34;&gt;大样本情况
-&lt;/h3&gt;&lt;p&gt;当样本容量 $n$ 趋于无穷大时，OLS估计量具有以下渐近性质（文档中主要提及）：&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;当样本容量 $n$ 趋于无穷大时，OLS估计量具有以下渐近性质：&lt;/p&gt;
 &lt;h4 id=&#34;一致性-consistency&#34;&gt;一致性 (Consistency)
 &lt;/h4&gt;&lt;p&gt;随着样本量的增加，估计量依概率收敛于参数的真实值。
 &lt;/p&gt;
@@ -547,7 +548,101 @@ $$ \text{plim}(\hat{\beta}) = \beta $$&lt;p&gt;
 &lt;h4 id=&#34;渐近有效性-asymptotic-efficiency&#34;&gt;渐近有效性 (Asymptotic Efficiency)
 &lt;/h4&gt;&lt;p&gt;指在大样本下，OLS估计量在所有一致估计量中具有最小的渐近方差。&lt;/p&gt;
 &lt;h2 id=&#34;多元线性回归的统计检验&#34;&gt;多元线性回归的统计检验
-&lt;/h2&gt;</description>
+&lt;/h2&gt;&lt;h3 id=&#34;拟合优度检验-r2&#34;&gt;拟合优度检验 ($R^2$)
+&lt;/h3&gt;&lt;p&gt;拟合优度检验用于衡量回归模型对观测数据的拟合程度，即模型解释因变量变异的能力。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;核心指标 ($R^2$)&lt;/strong&gt;：可决系数 $R^2$ 的取值范围在 0 到 1 之间。越接近 1，说明模型的拟合优度越高，即模型解释了因变量的大部分变异；越接近 0，则说明拟合效果越差。这里要注意如果模型不含截距项，那么可决系数$R^2$的下限为负无穷。
+
+$$R^2 = \frac{ESS}{TSS} = 1 - \frac{RSS}{TSS}$$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;调整的可决系数 ($\bar{R}^2$)&lt;/strong&gt;：为了惩罚模型中过多的解释变量，引入了调整的 $R^2$。它考虑了自由度，能够更真实地反映模型的解释力，避免因随意增加解释变量而导致 $R^2$ 虚高。
+
+$$ \bar{R}^2 = 1-\frac{RSS/(n-k-1)}{TSS/(n-1)} $$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;符号说明&lt;/strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;TSS (总平方和)&lt;/strong&gt;：反映因变量的总变异。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ESS (回归平方和)&lt;/strong&gt;：反映由回归模型解释的变异。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RSS (残差平方和)&lt;/strong&gt;：反映模型未能解释的误差变异。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;三者关系&lt;/strong&gt;：$TSS = ESS + RSS$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;f检验-方程的显著性检验&#34;&gt;F检验 (方程的显著性检验)
+&lt;/h3&gt;&lt;p&gt;F检验用于检验回归方程的整体显著性，即判断所有解释变量作为一个整体，是否对因变量有显著的线性影响。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;检验逻辑&lt;/strong&gt;：F检验统计量是通过比较“回归均方”与“残差均方”的比值构造的。它本质上是在问：模型解释的变异（ESS）是否显著大于未解释的变异（RSS）？&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;统计量构造&lt;/strong&gt;：F统计量的构造方式如下：
+&lt;ul&gt;
+&lt;li&gt;分子：回归均方 ($ESS/k$)，其中 $k$ 是解释变量个数。&lt;/li&gt;
+&lt;li&gt;分母：残差均方 ($RSS/(n-k-1)$)，其中 $n-k-1$ 是残差的自由度。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;判断标准&lt;/strong&gt;：F值越大，说明回归模型整体越显著。如果计算出的F值大于临界值，则拒绝原假设，认为方程线性关系显著。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;核心公式：&lt;/strong&gt;
+&lt;/p&gt;
+$$F = \frac{ESS/k}{RSS/(n-k-1)} \sim F(k, n-k-1)$$&lt;p&gt;
+&lt;em&gt;(注： F 与 $R^2$ 之间存在如下关系：$F = \frac{{R}^2/k}{(1-{R}^2)/(n-k-1)}$)&lt;/em&gt;&lt;/p&gt;
+&lt;h3 id=&#34;t检验-变量的显著性检验&#34;&gt;t检验 (变量的显著性检验)
+&lt;/h3&gt;&lt;p&gt;t检验用于检验单个回归系数（解释变量）的显著性，即判断某个特定的解释变量是否对因变量有显著影响。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;检验逻辑&lt;/strong&gt;：基于OLS估计量的抽样分布。在正态性假设下，回归系数的估计量服从正态分布，标准化后服从t分布。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;构造方式&lt;/strong&gt;：t统计量等于“估计系数值”减去“假设的总体真值（通常为0）”，再除以该系数的“标准误”。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;判断标准&lt;/strong&gt;：如果 $|t|$ 大于临界值，则拒绝原假设（$H_0: \beta_j = 0$），认为该解释变量对因变量有显著影响。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;核心公式：&lt;/strong&gt;
+&lt;/p&gt;
+$$t = \frac{\hat{\beta}_j - \beta_j}{\text{se}(\hat{\beta}_j)} = \frac{\hat{\beta}_j - \beta_j}{\sqrt{c_{jj} \frac{\sum e_i^2}{n-k-1}}} \sim t(n-k-1)$$&lt;p&gt;
+其中，$c_{jj}$ 是 $(X^TX)^{-1}$ 矩阵对角线上的元素。&lt;/p&gt;
+&lt;h3 id=&#34;置信区间构造&#34;&gt;置信区间构造
+&lt;/h3&gt;&lt;p&gt;在完成参数估计后，除了点估计值，还需要构造&lt;strong&gt;置信区间&lt;/strong&gt;来给出参数的可能范围。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;核心思想&lt;/strong&gt;：利用估计量的分布性质（t分布），在给定的置信水平（如95%）下，构造一个区间，使得该区间包含真实参数值的概率等于置信水平。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;构造方法&lt;/strong&gt;：以t分布的临界值（$t_{\alpha/2}$）乘以标准误，得到估计值的上下浮动范围。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;核心公式：&lt;/strong&gt;
+&lt;/p&gt;
+$$P(\hat{\beta}_j - t_{\alpha/2} \times \text{se}(\hat{\beta}_j) \le \beta_j \le \hat{\beta}_j + t_{\alpha/2} \times \text{se}(\hat{\beta}_j)) = 1 - \alpha$$&lt;p&gt;
+即置信区间为：
+&lt;/p&gt;
+$$(\hat{\beta}_j - t_{\alpha/2} \cdot s_{\hat{\beta}_j}, \quad \hat{\beta}_j + t_{\alpha/2} \cdot s_{\hat{\beta}_j})$$&lt;p&gt;&lt;strong&gt;如何缩短置信区间？&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;增大样本容量n&lt;/li&gt;
+&lt;li&gt;增加模型的拟合优度&lt;/li&gt;
+&lt;li&gt;提高样本观测的分散程度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;多元线性回归的预测&#34;&gt;多元线性回归的预测
+&lt;/h2&gt;&lt;p&gt;在多元线性回归模型中，当给定一个新的样本观测值 $X_0$ 时，对因变量 $Y_0$ 进行预测是模型应用的核心环节。&lt;/p&gt;
+&lt;h3 id=&#34;点预测与无偏性&#34;&gt;点预测与无偏性
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;预测值计算&lt;/strong&gt;：将给定的新样本值 $X_0$ 代入已估计出的回归方程 $\hat{Y} = X\hat{\beta}$ 中，即可得到 $Y_0$ 的预测值 $\hat{Y}_0$。
+
+$$ \hat{Y}_0 = X_0 \hat{\beta} $$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;无偏性&lt;/strong&gt;：在经典线性回归假设下，预测值 $\hat{Y}_0$ 是真实值 $Y_0$ 的无偏估计。这意味着，如果重复抽样并进行预测，预测误差的期望值为零，即 $E(\hat{Y}_0) = E(Y_0)$。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;预测值的置信区间构造&#34;&gt;预测值的置信区间构造
+&lt;/h3&gt;&lt;p&gt;点预测给出了一个具体的数值，但为了衡量预测的不确定性，需要构建置信区间。&lt;/p&gt;
+&lt;h4 id=&#34;条件均值-ey_0-的置信区间&#34;&gt;条件均值 $E(Y_0)$ 的置信区间
+&lt;/h4&gt;&lt;p&gt;该区间用于估计在给定 $X_0$ 的条件下，$Y$ 的平均值可能落在的范围。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;核心公式&lt;/strong&gt;：
+
+$$ \hat{Y}_0 \pm t_{\alpha/2}(n-k-1) \cdot \hat{\sigma} \sqrt{X_0(X^TX)^{-1}X_0^T} $$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;构造要素&lt;/strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;标准误&lt;/strong&gt;：$\text{se}(\hat{Y}_0) = \hat{\sigma} \sqrt{X_0(X^TX)^{-1}X_0^T}$。这衡量了预测均值的波动大小，其中 $\hat{\sigma}^2$ 是随机误差项方差的无偏估计。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;临界值&lt;/strong&gt;：$t_{\alpha/2}(n-k-1)$，根据给定的置信水平（如95%）和自由度查t分布表得到。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;b-个别值-y_0-的预测区间&#34;&gt;B. 个别值 $Y_0$ 的预测区间
+&lt;/h4&gt;&lt;p&gt;该区间用于估计在给定 $X_0$ 的条件下，下一次具体观测到的 $Y$ 值可能落在的范围。由于包含了随机扰动项的影响，该区间通常比均值的置信区间更宽。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;核心逻辑&lt;/strong&gt;：预测误差不仅包含估计系数的不确定性，还包含新观测值自身的随机误差 $\mu_0$。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;标准误修正&lt;/strong&gt;：在计算区间宽度时，标准误需要增加一项反映个体离差的方差：
+
+$$ \text{se}_{\text{pred}} = \hat{\sigma} \sqrt{1 + X_0(X^TX)^{-1}X_0^T} $$&lt;/li&gt;
+&lt;/ul&gt;
+</description>
         </item>
         <item>
         <title>计量经济学 01</title>

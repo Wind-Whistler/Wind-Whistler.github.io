@@ -2855,7 +2855,7 @@ $$e_i = Y_i - \hat{Y}_i$$&lt;/li&gt;
 &lt;h3 id=&#34;从blue到umvue&#34;&gt;从BLUE到UMVUE
 &lt;/h3&gt;&lt;h4 id=&#34;lehmann-scheffé-定理&#34;&gt;Lehmann-Scheffé 定理
 &lt;/h4&gt;&lt;p&gt;Lehmann-Scheffé 定理一句话概括就是：只要一个无偏估计量是基于“完备充分统计量”构造的，那它就绝对是全局最优的一致最小方差无偏估计（UMVUE）。&lt;/p&gt;
-&lt;p&gt;你总结得非常到位！逻辑清晰，核心考点全都抓住了。为了让你在答题或实际应用时更加严谨和顺手，我帮你把这两部分的证明框架做一个标准化的梳理和微调：&lt;/p&gt;
+&lt;p&gt;如果模型在CLRM基础上进一步满足正态性假设，那么OLS估计将从原先的BLUE进一步成为UMVUE。&lt;/p&gt;
 &lt;h4 id=&#34;怎么证明充分性&#34;&gt;怎么证明充分性？
 &lt;/h4&gt;&lt;p&gt;&lt;strong&gt;核心工具：因子分解定理 (Factorization Theorem)&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;

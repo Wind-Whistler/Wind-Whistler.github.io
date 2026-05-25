@@ -195,7 +195,9 @@ $$F(s) = \mathcal{L}\{f(t)\} = \int_{0}^{+\infty} f(t)e^{-st} dt$$&lt;p&gt;这�
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;多元线性回归的参数估计&#34;&gt;多元线性回归的参数估计
-&lt;/h2&gt;</description>
+&lt;/h2&gt;&lt;h3 id=&#34;最小二乘估计ols&#34;&gt;最小二乘估计（OLS）
+&lt;/h3&gt;&lt;h3 id=&#34;极大似然估计mle&#34;&gt;极大似然估计（MLE）
+&lt;/h3&gt;</description>
         </item>
         <item>
         <title>计量经济学 01</title>

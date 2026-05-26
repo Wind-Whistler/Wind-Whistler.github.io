@@ -265,8 +265,8 @@
     </li>
     <li><a href="#实例演示">实例演示</a>
       <ol>
-        <li><a href="#虚拟变量实例">虚拟变量实例</a></li>
-        <li><a href="#受约束回归实例">受约束回归实例</a></li>
+        <li><a href="#例一">例一</a></li>
+        <li><a href="#例二">例二</a></li>
       </ol>
     </li>
   </ol>
@@ -518,9 +518,218 @@ $$F = \frac{[RSS_R - (RSS_1 + RSS_2)]/(k+1)}{(RSS_1 + RSS_2)/(n_1 + n_2 - 2(k+1)
 </li>
 </ul>
 <h2 id="实例演示">实例演示
-</h2><h3 id="虚拟变量实例">虚拟变量实例
-</h3><h3 id="受约束回归实例">受约束回归实例
-</h3>
+</h2><h3 id="例一">例一
+</h3><p>该部分例子来源于李子奈《计量经济学：第五版》第三章练习题第17题。</p>
+<div align="center">
+  <img src="Q1.png" alt="Q1" width="800">
+</div>
+<p>下面先给出第一问的代码与解答：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">**Q1**
+</span></span><span class="line"><span class="cl">//生成虚拟变量
+</span></span><span class="line"><span class="cl">gen D = 1 if jumin == &#39;农村&#39;
+</span></span><span class="line"><span class="cl">replace D = 0 if jumin == &#39;城市&#39;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">gen DX1=工资收入X1*d
+</span></span><span class="line"><span class="cl">gen DX2=经营收入X2*d
+</span></span><span class="line"><span class="cl">gen DX3=其他收入X3*d
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">//无约束回归
+</span></span><span class="line"><span class="cl">reg 消费支出Y d DX1 DX2 DX3 工资收入X1 经营收入X2 其他收入X3
+</span></span><span class="line"><span class="cl">eret list
+</span></span><span class="line"><span class="cl">scalar rss_u = e(rss)  //记录RSS
+</span></span><span class="line"><span class="cl">scalar df_u = e(df_m)  //记录变量个数
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reg 消费支出Y d 工资收入X1 经营收入X2 其他收入X3
+</span></span><span class="line"><span class="cl">scalar rss_r = e(rss)
+</span></span><span class="line"><span class="cl">scalar df_r = e(df_m)
+</span></span><span class="line"><span class="cl">scalar n = e(N)  //记录样本数
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">scalar F = (rss_r - rss_u) / (df_u - df_r) / rss_u * (n - df_u - 1)
+</span></span><span class="line"><span class="cl">scalar list F
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">//直接命令检验
+</span></span><span class="line"><span class="cl">reg 消费支出Y d DX1 DX2 DX3 工资收入X1 经营收入X2 其他收入X3
+</span></span><span class="line"><span class="cl">test DX1 DX2 DX3
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>无约束回归结果如下所示：</p>
+<div align="center">
+  <img src="R1.png" alt="回归结果" width="800">
+</div>
+手动实现F检验结果如下所示：
+<div align="center">
+  <img src="res 01.png" alt="手动实现结果" width="800">
+</div>
+指令实现F检验结果如下所示：
+<div align="center">
+  <img src="res 02.png" alt="指令实现结果" width="800">
+</div>
+由图可知F检验的p值大于0.05，因此在5%的显著性水平下不能拒绝原假设，认为$H_0$成立。这与无约束回归结果里的t检验的结果保持一致。   
+<p>接下来给出第二问的代码与解答：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">**Q2**
+</span></span><span class="line"><span class="cl">reg 消费支出Y d DX1 DX2 DX3 工资收入X1 经营收入X2 其他收入X3
+</span></span><span class="line"><span class="cl">scalar rss_u = e(rss)
+</span></span><span class="line"><span class="cl">scalar df_u = e(df_m)
+</span></span><span class="line"><span class="cl">scalar n = e(N)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reg 消费支出Y 工资收入X1 经营收入X2 其他收入X3
+</span></span><span class="line"><span class="cl">scalar rss_r = e(rss)
+</span></span><span class="line"><span class="cl">scalar df_r = e(df_m)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">scalar F = (rss_r - rss_u) / (df_u - df_r) / rss_u * (n - df_u - 1)
+</span></span><span class="line"><span class="cl">scalar list F
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">//直接命令检验
+</span></span><span class="line"><span class="cl">reg 消费支出Y d DX1 DX2 DX3 工资收入X1 经营收入X2 其他收入X3
+</span></span><span class="line"><span class="cl">test d DX1 DX2 DX3
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>无约束回归的结果与之前一致，因此不再展示。
+手动实现F检验结果如下所示：</p>
+<div align="center">
+  <img src="res 03.png" alt="手动实现结果" width="800">
+</div>
+指令实现F检验结果如下所示：
+<div align="center">
+  <img src="res 04.png" alt="指令实现结果" width="800">
+</div>
+由图可知F检验的p值大于0.05，因此在5%的显著性水平下不能拒绝原假设，认为$H_0$成立。这与3.7.3中Chow检验的结果保持一致。
+<h3 id="例二">例二
+</h3><p>该部分例子来源于李子奈《计量经济学：第五版》第三章练习题第19题。</p>
+<div align="center">
+  <img src="Q2.png" alt="Q2" width="800">
+</div>
+下面先给出第一问的代码与解答：  
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">gen logY=ln(工业总产值Y)
+</span></span><span class="line"><span class="cl">gen logK=ln(资产合计K)
+</span></span><span class="line"><span class="cl">gen logL=ln(职工人数L)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reg logY logK logL
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>无约束回归结果如下所示：</p>
+<div align="center">
+  <img src="R2.png" alt="回归结果" width="800">
+</div>
+对于回归方程总体的显著性，F统计量对应p值为0.0000，在1%水平下显著，这表明在我们的回归模型中，被解释变量与解释变量间的线性关系在总体上是显著的；拟合优度值为0.8099，这表明工业总产值对数值80.99%的波动可以由logK和logL进行解释，说明我们的模型对被解释变量的拟合较好。  
+<p>对于各个回归参数的显著性，logK回归参数 为0.609，对应p值为0.002，在1%水平下显著，这表明logK对logY的影响较为明显，logL的回归参数 为0.0361，对应p值为0.084，在10%水平下显著，这表明logL对logY也有一定影响，但相较于logK对logY的影响要弱很多。</p>
+<p>接下来给出第二问的代码与解答：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">**Q2**
+</span></span><span class="line"><span class="cl">reg logY logK logL
+</span></span><span class="line"><span class="cl">scalar rss_u = e(rss)
+</span></span><span class="line"><span class="cl">scalar df_u = e(df_m)
+</span></span><span class="line"><span class="cl">scalar n = e(N)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">gen logKL=ln(资产合计K)-ln(职工人数L)
+</span></span><span class="line"><span class="cl">gen logYL=ln(工业总产值Y)-ln(职工人数L)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reg logYL logKL
+</span></span><span class="line"><span class="cl">scalar rss_r = e(rss)
+</span></span><span class="line"><span class="cl">scalar df_r = e(df_m)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">scalar F = (rss_r - rss_u) / (df_u - df_r) / rss_u * (n - df_u - 1)
+</span></span><span class="line"><span class="cl">scalar list F
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reg logY logK logL
+</span></span><span class="line"><span class="cl">test _b[logK] + _b[logL] = 1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>第二问的规模不变假设，转化为数学形式即
+</p>
+$$H_0:logK与logL的回归参数和为1$$<p>
+接下来只要针对这一约束条件进行F检验即可。
+无约束回归的结果在上一问已经呈现，这里不再展示。
+手动实现F检验结果如下所示：</p>
+<div align="center">
+  <img src="res 05.png" alt="手动实现结果" width="800">
+</div>
+指令实现F检验结果如下所示：
+<div align="center">
+  <img src="res 06.png" alt="指令实现结果" width="800">
+</div>
+计算得到F=0.105，在5%显著水平下不显著 因此不能拒绝原假设$H_0$ ，即中国该年的制造业呈现规模报酬不变的状态。
+
 </section>
 
 

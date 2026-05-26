@@ -2592,7 +2592,160 @@ L-BFGS优化器利用收到的精确梯度和损失值，更新参数 $\beta$ �
         <pubDate>Thu, 02 Apr 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-03/</guid>
-        <description>&lt;img src="https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-03/marepile.png" alt="Featured image of post 计量经济学 03" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-03/marepile.png" alt="Featured image of post 计量经济学 03" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;含虚拟变量的多元线性回归&lt;/li&gt;
+&lt;li&gt;受约束回归&lt;/li&gt;
+&lt;li&gt;实例演示&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;含虚拟变量的多元线性回归&#34;&gt;含虚拟变量的多元线性回归
+&lt;/h2&gt;&lt;h3 id=&#34;虚拟变量的概念&#34;&gt;虚拟变量的概念
+&lt;/h3&gt;&lt;p&gt;虚拟变量（$D$）是一种用于量化定性因素（如性别、地区、政策变动）的工具。它将无法直接度量的属性“数字化”，通常取值为0或1。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;核心逻辑&lt;/strong&gt;：通过构造一个人工变量，将样本划分为两个组别。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;取值含义&lt;/strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;$D=1$&lt;/strong&gt;：表示属于某个特定类别（如：城镇居民、改革后时期、男性）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;$D=0$&lt;/strong&gt;：表示属于另一个基准类别（如：农村居民、改革前时期、女性）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;虚拟变量的引入&#34;&gt;虚拟变量的引入
+&lt;/h3&gt;&lt;p&gt;引入虚拟变量主要有两种方式：加法方式（改变截距）和乘法方式（改变斜率）。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;加法方式 (Additive Form)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;形式&lt;/strong&gt;：$Y_i = \beta_0 + \beta_1 X_i + \delta D_i + \mu_i$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;含义&lt;/strong&gt;：虚拟变量 $D$ 仅影响模型的截距，不改变解释变量 $X$ 的斜率。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;效应分析&lt;/strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;当 $D=0$（基准组）：$E(Y_i|X_i, D=0) = \beta_0 + \beta_1 X_i$&lt;/li&gt;
+&lt;li&gt;当 $D=1$（对照组）：$E(Y_i|X_i, D=1) = (\beta_0 + \delta) + \beta_1 X_i$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;结论&lt;/strong&gt;：两组的回归线平行，$\delta$ 代表两组在截距上的差异（如：城镇居民的基础消费水平比农村高 $\delta$）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;乘法方式 (Multiplicative Form / Interaction)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;形式&lt;/strong&gt;：$Y_i = \beta_0 + \beta_1 X_i + \gamma (D_i X_i) + \mu_i$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;含义&lt;/strong&gt;：虚拟变量 $D$ 与解释变量 $X$ 交互，主要影响模型的斜率（边际效应），或者在截距和斜率上同时产生差异。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;效应分析&lt;/strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;当 $D=0$：$E(Y_i|X_i, D=0) = \beta_0 + \beta_1 X_i$&lt;/li&gt;
+&lt;li&gt;当 $D=1$：$E(Y_i|X_i, D=1) = \beta_0 + (\beta_1 + \gamma) X_i$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;结论&lt;/strong&gt;：两组的回归线斜率不同，$\gamma$ 代表边际效应的差异（如：城镇居民的边际消费倾向比农村高 $\gamma$）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;虚拟变量的设置原则&#34;&gt;虚拟变量的设置原则
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;为什么取值是 0 和 1？&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;0-1 编码的本质&lt;/strong&gt;：这种设置是为了让回归系数 $\delta$ 具有明确的经济含义（即组间差异）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;如果设为 1, 2, 3&amp;hellip;&lt;/strong&gt;：若将类别编码为 1, 2, 3（例如：小学=1，中学=2，大学=3），模型会误认为这是定量数据，并强制假设它们之间存在等距的线性关系（即大学-中学的差距=中学-小学的差距）。这在大多数定性分类中是不成立的。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;0-1 的优势&lt;/strong&gt;：0 作为基准（参照组），1 作为触发器。当 $D=0$ 时，该项消失；当 $D=1$ 时，该项直接加上系数 $\delta$，直观表示相对于基准组的“溢价”或“折价”。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;“掉入陷阱”与设置数量&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;原则&lt;/strong&gt;：如果一个定性变量有 $m$ 个类别，只能引入 $m-1$ 个虚拟变量。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;原因&lt;/strong&gt;：完全多重共线性（Dummy Variable Trap）。如果所有类别都设为 1（即引入了 $m$ 个变量），会导致设计矩阵 $X$ 不满秩，无法计算逆矩阵，参数估计失效。
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;例如&lt;/em&gt;：季节（春、夏、秋、冬）有 4 个类别，只需设置 3 个虚拟变量。第 4 个类别（如冬季）由所有虚拟变量均为 0 来表示。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;受约束回归&#34;&gt;受约束回归
+&lt;/h2&gt;&lt;p&gt;当根据经济理论或先验信息对模型参数施加特定限制（如规模报酬不变）时，需进行受约束回归分析。&lt;/p&gt;
+&lt;h3 id=&#34;模型参数的线性约束&#34;&gt;模型参数的线性约束
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;核心不等式&lt;/strong&gt;：受约束模型的残差平方和（$RSS_R$）&lt;strong&gt;恒大于或等于&lt;/strong&gt;无约束模型的残差平方和（$RSS_U$）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$RSS_R \ge RSS_U$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;含义&lt;/strong&gt;：增加约束条件会降低模型的拟合优度（增大残差），若约束不成立，差异显著；若约束成立，差异微小。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;检验统计量 (F-Statistic)&lt;/strong&gt;：
+为了检验约束条件是否成立（即 $RSS_R$ 的增加是否显著），构建如下统计量：
+&lt;/p&gt;
+$$F = \frac{(RSS_R - RSS_U)/(k_U - k_R)}{RSS_U/(n - k_U - 1)} \sim F(k_U - k_R, n - k_U - 1)$$&lt;ul&gt;
+&lt;li&gt;$RSS_R$: 受约束模型的残差平方和&lt;/li&gt;
+&lt;li&gt;$RSS_U$: 无约束模型的残差平方和&lt;/li&gt;
+&lt;li&gt;$k_U$: 无约束模型解释变量个数&lt;/li&gt;
+&lt;li&gt;$k_R$: 受约束模型解释变量个数&lt;/li&gt;
+&lt;li&gt;$n$: 样本容量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;检验逻辑&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;假设&lt;/strong&gt;：$H_0$ (约束成立) vs $H_1$ (约束不成立)。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;计算&lt;/strong&gt;：分别跑出受约束和无约束模型，计算 $RSS$ 并代入公式求 $F$ 值。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;判断&lt;/strong&gt;：若计算出的 $F$ 值大于临界值 $F_\alpha$，则拒绝原假设，认为约束条件不成立（即参数不满足该线性关系）；反之则接受约束。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;对回归模型增加或减少解释变量&#34;&gt;对回归模型增加或减少解释变量
+&lt;/h3&gt;&lt;p&gt;增加或减少解释变量可视为一种特殊的受约束回归（变量系数为0的约束）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;场景定义&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;全模型 (U)&lt;/strong&gt;：包含 $k+q$ 个解释变量。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;子模型 (R)&lt;/strong&gt;：仅包含 $k$ 个解释变量（相当于对另外 $q$ 个变量的系数施加了等于0的约束）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;核心公式 (F-Test for Variable Addition/Deletion)&lt;/strong&gt;：
+用于检验新增的 $q$ 个变量是否对解释被解释变量有显著贡献：
+&lt;/p&gt;
+$$F = \frac{(RSS_R - RSS_U)/q}{RSS_U/(n - k - q - 1)} \sim F(q, n - k - q - 1)$$&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;分子含义&lt;/strong&gt;：新增变量带来的残差平方和的“改善程度”。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;分母含义&lt;/strong&gt;：全模型的误差方差。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;决策原则&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;若 $F$ 值显著（大于临界值），说明新增变量联合显著，应保留（或原约束 $\beta_{k+1}=&amp;hellip;=0$ 不成立）。&lt;/li&gt;
+&lt;li&gt;若 $F$ 值不显著，说明新增变量无显著贡献，可剔除以简化模型。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;检验不同组织间回归模型的差异&#34;&gt;检验不同组织间回归模型的差异
+&lt;/h3&gt;&lt;p&gt;检验两个不同组别（如城镇vs农村、改革前vs改革后）的回归模型是否存在结构性差异，即参数是否稳定。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;视为何种约束&lt;/strong&gt;：
+这被视为对两组样本的回归系数是否相等的约束检验（Chow Test）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;原假设 $H_0$&lt;/strong&gt;：两组样本回归系数相同（结构稳定，无差异）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;备择假设 $H_1$&lt;/strong&gt;：两组样本回归系数不同（结构不稳定，存在差异）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;统计量与分布&lt;/strong&gt;：
+构造 F 统计量来检验结构稳定性：
+&lt;/p&gt;
+$$F = \frac{[RSS_R - (RSS_1 + RSS_2)]/(k+1)}{(RSS_1 + RSS_2)/(n_1 + n_2 - 2(k+1))} \sim F(k+1, n_1+n_2-2k-2)$$&lt;ul&gt;
+&lt;li&gt;$RSS_1, RSS_2$：分别对两组样本回归得到的残差平方和。&lt;/li&gt;
+&lt;li&gt;$RSS_R$：将两组合并为一个大样本回归得到的残差平方和。&lt;/li&gt;
+&lt;li&gt;$k+1$：模型参数个数（含截距）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;检验步骤&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;分别对两组样本进行回归，得到 $RSS_1$ 和 $RSS_2$。&lt;/li&gt;
+&lt;li&gt;将两组合并，进行全样本回归，得到 $RSS_R$。&lt;/li&gt;
+&lt;li&gt;代入公式计算 $F$ 值。&lt;/li&gt;
+&lt;li&gt;若 $F$ 值显著，拒绝 $H_0$，说明两组样本的回归模型存在显著差异（结构发生断裂）；若不显著，则说明模型结构稳定，可以合并回归。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;实例演示&#34;&gt;实例演示
+&lt;/h2&gt;&lt;h3 id=&#34;虚拟变量实例&#34;&gt;虚拟变量实例
+&lt;/h3&gt;&lt;h3 id=&#34;受约束回归实例&#34;&gt;受约束回归实例
+&lt;/h3&gt;</description>
         </item>
         <item>
         <title>分布式计算 03</title>

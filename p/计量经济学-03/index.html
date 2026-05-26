@@ -226,7 +226,58 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#含虚拟变量的多元线性回归">含虚拟变量的多元线性回归</a>
+      <ol>
+        <li><a href="#虚拟变量的概念">虚拟变量的概念</a></li>
+        <li><a href="#虚拟变量的引入">虚拟变量的引入</a></li>
+        <li><a href="#虚拟变量的设置原则">虚拟变量的设置原则</a></li>
+      </ol>
+    </li>
+    <li><a href="#受约束回归">受约束回归</a>
+      <ol>
+        <li><a href="#模型参数的线性约束">模型参数的线性约束</a></li>
+        <li><a href="#对回归模型增加或减少解释变量">对回归模型增加或减少解释变量</a></li>
+        <li><a href="#检验不同组织间回归模型的差异">检验不同组织间回归模型的差异</a></li>
+      </ol>
+    </li>
+    <li><a href="#实例演示">实例演示</a>
+      <ol>
+        <li><a href="#虚拟变量实例">虚拟变量实例</a></li>
+        <li><a href="#受约束回归实例">受约束回归实例</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -316,7 +367,160 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>含虚拟变量的多元线性回归</li>
+<li>受约束回归</li>
+<li>实例演示</li>
+</ul>
+<h2 id="含虚拟变量的多元线性回归">含虚拟变量的多元线性回归
+</h2><h3 id="虚拟变量的概念">虚拟变量的概念
+</h3><p>虚拟变量（$D$）是一种用于量化定性因素（如性别、地区、政策变动）的工具。它将无法直接度量的属性“数字化”，通常取值为0或1。</p>
+<ul>
+<li><strong>核心逻辑</strong>：通过构造一个人工变量，将样本划分为两个组别。</li>
+<li><strong>取值含义</strong>：
+<ul>
+<li><strong>$D=1$</strong>：表示属于某个特定类别（如：城镇居民、改革后时期、男性）。</li>
+<li><strong>$D=0$</strong>：表示属于另一个基准类别（如：农村居民、改革前时期、女性）。</li>
+</ul>
+</li>
+</ul>
+<h3 id="虚拟变量的引入">虚拟变量的引入
+</h3><p>引入虚拟变量主要有两种方式：加法方式（改变截距）和乘法方式（改变斜率）。</p>
+<p><strong>加法方式 (Additive Form)</strong></p>
+<ul>
+<li><strong>形式</strong>：$Y_i = \beta_0 + \beta_1 X_i + \delta D_i + \mu_i$</li>
+<li><strong>含义</strong>：虚拟变量 $D$ 仅影响模型的截距，不改变解释变量 $X$ 的斜率。</li>
+<li><strong>效应分析</strong>：
+<ul>
+<li>当 $D=0$（基准组）：$E(Y_i|X_i, D=0) = \beta_0 + \beta_1 X_i$</li>
+<li>当 $D=1$（对照组）：$E(Y_i|X_i, D=1) = (\beta_0 + \delta) + \beta_1 X_i$</li>
+<li><strong>结论</strong>：两组的回归线平行，$\delta$ 代表两组在截距上的差异（如：城镇居民的基础消费水平比农村高 $\delta$）。</li>
+</ul>
+</li>
+</ul>
+<p><strong>乘法方式 (Multiplicative Form / Interaction)</strong></p>
+<ul>
+<li><strong>形式</strong>：$Y_i = \beta_0 + \beta_1 X_i + \gamma (D_i X_i) + \mu_i$</li>
+<li><strong>含义</strong>：虚拟变量 $D$ 与解释变量 $X$ 交互，主要影响模型的斜率（边际效应），或者在截距和斜率上同时产生差异。</li>
+<li><strong>效应分析</strong>：
+<ul>
+<li>当 $D=0$：$E(Y_i|X_i, D=0) = \beta_0 + \beta_1 X_i$</li>
+<li>当 $D=1$：$E(Y_i|X_i, D=1) = \beta_0 + (\beta_1 + \gamma) X_i$</li>
+<li><strong>结论</strong>：两组的回归线斜率不同，$\gamma$ 代表边际效应的差异（如：城镇居民的边际消费倾向比农村高 $\gamma$）。</li>
+</ul>
+</li>
+</ul>
+<h3 id="虚拟变量的设置原则">虚拟变量的设置原则
+</h3><p><strong>为什么取值是 0 和 1？</strong></p>
+<ul>
+<li><strong>0-1 编码的本质</strong>：这种设置是为了让回归系数 $\delta$ 具有明确的经济含义（即组间差异）。</li>
+<li><strong>如果设为 1, 2, 3&hellip;</strong>：若将类别编码为 1, 2, 3（例如：小学=1，中学=2，大学=3），模型会误认为这是定量数据，并强制假设它们之间存在等距的线性关系（即大学-中学的差距=中学-小学的差距）。这在大多数定性分类中是不成立的。</li>
+<li><strong>0-1 的优势</strong>：0 作为基准（参照组），1 作为触发器。当 $D=0$ 时，该项消失；当 $D=1$ 时，该项直接加上系数 $\delta$，直观表示相对于基准组的“溢价”或“折价”。</li>
+</ul>
+<p><strong>“掉入陷阱”与设置数量</strong></p>
+<ul>
+<li><strong>原则</strong>：如果一个定性变量有 $m$ 个类别，只能引入 $m-1$ 个虚拟变量。</li>
+<li><strong>原因</strong>：完全多重共线性（Dummy Variable Trap）。如果所有类别都设为 1（即引入了 $m$ 个变量），会导致设计矩阵 $X$ 不满秩，无法计算逆矩阵，参数估计失效。
+<ul>
+<li><em>例如</em>：季节（春、夏、秋、冬）有 4 个类别，只需设置 3 个虚拟变量。第 4 个类别（如冬季）由所有虚拟变量均为 0 来表示。</li>
+</ul>
+</li>
+</ul>
+<h2 id="受约束回归">受约束回归
+</h2><p>当根据经济理论或先验信息对模型参数施加特定限制（如规模报酬不变）时，需进行受约束回归分析。</p>
+<h3 id="模型参数的线性约束">模型参数的线性约束
+</h3><ul>
+<li>
+<p><strong>核心不等式</strong>：受约束模型的残差平方和（$RSS_R$）<strong>恒大于或等于</strong>无约束模型的残差平方和（$RSS_U$）。</p>
+<ul>
+<li>$RSS_R \ge RSS_U$</li>
+<li><strong>含义</strong>：增加约束条件会降低模型的拟合优度（增大残差），若约束不成立，差异显著；若约束成立，差异微小。</li>
+</ul>
+</li>
+<li>
+<p><strong>检验统计量 (F-Statistic)</strong>：
+为了检验约束条件是否成立（即 $RSS_R$ 的增加是否显著），构建如下统计量：
+</p>
+$$F = \frac{(RSS_R - RSS_U)/(k_U - k_R)}{RSS_U/(n - k_U - 1)} \sim F(k_U - k_R, n - k_U - 1)$$<ul>
+<li>$RSS_R$: 受约束模型的残差平方和</li>
+<li>$RSS_U$: 无约束模型的残差平方和</li>
+<li>$k_U$: 无约束模型解释变量个数</li>
+<li>$k_R$: 受约束模型解释变量个数</li>
+<li>$n$: 样本容量</li>
+</ul>
+</li>
+<li>
+<p><strong>检验逻辑</strong>：</p>
+<ol>
+<li><strong>假设</strong>：$H_0$ (约束成立) vs $H_1$ (约束不成立)。</li>
+<li><strong>计算</strong>：分别跑出受约束和无约束模型，计算 $RSS$ 并代入公式求 $F$ 值。</li>
+<li><strong>判断</strong>：若计算出的 $F$ 值大于临界值 $F_\alpha$，则拒绝原假设，认为约束条件不成立（即参数不满足该线性关系）；反之则接受约束。</li>
+</ol>
+</li>
+</ul>
+<h3 id="对回归模型增加或减少解释变量">对回归模型增加或减少解释变量
+</h3><p>增加或减少解释变量可视为一种特殊的受约束回归（变量系数为0的约束）。</p>
+<ul>
+<li>
+<p><strong>场景定义</strong>：</p>
+<ul>
+<li><strong>全模型 (U)</strong>：包含 $k+q$ 个解释变量。</li>
+<li><strong>子模型 (R)</strong>：仅包含 $k$ 个解释变量（相当于对另外 $q$ 个变量的系数施加了等于0的约束）。</li>
+</ul>
+</li>
+<li>
+<p><strong>核心公式 (F-Test for Variable Addition/Deletion)</strong>：
+用于检验新增的 $q$ 个变量是否对解释被解释变量有显著贡献：
+</p>
+$$F = \frac{(RSS_R - RSS_U)/q}{RSS_U/(n - k - q - 1)} \sim F(q, n - k - q - 1)$$<ul>
+<li><strong>分子含义</strong>：新增变量带来的残差平方和的“改善程度”。</li>
+<li><strong>分母含义</strong>：全模型的误差方差。</li>
+</ul>
+</li>
+<li>
+<p><strong>决策原则</strong>：</p>
+<ul>
+<li>若 $F$ 值显著（大于临界值），说明新增变量联合显著，应保留（或原约束 $\beta_{k+1}=&hellip;=0$ 不成立）。</li>
+<li>若 $F$ 值不显著，说明新增变量无显著贡献，可剔除以简化模型。</li>
+</ul>
+</li>
+</ul>
+<h3 id="检验不同组织间回归模型的差异">检验不同组织间回归模型的差异
+</h3><p>检验两个不同组别（如城镇vs农村、改革前vs改革后）的回归模型是否存在结构性差异，即参数是否稳定。</p>
+<ul>
+<li>
+<p><strong>视为何种约束</strong>：
+这被视为对两组样本的回归系数是否相等的约束检验（Chow Test）。</p>
+<ul>
+<li><strong>原假设 $H_0$</strong>：两组样本回归系数相同（结构稳定，无差异）。</li>
+<li><strong>备择假设 $H_1$</strong>：两组样本回归系数不同（结构不稳定，存在差异）。</li>
+</ul>
+</li>
+<li>
+<p><strong>统计量与分布</strong>：
+构造 F 统计量来检验结构稳定性：
+</p>
+$$F = \frac{[RSS_R - (RSS_1 + RSS_2)]/(k+1)}{(RSS_1 + RSS_2)/(n_1 + n_2 - 2(k+1))} \sim F(k+1, n_1+n_2-2k-2)$$<ul>
+<li>$RSS_1, RSS_2$：分别对两组样本回归得到的残差平方和。</li>
+<li>$RSS_R$：将两组合并为一个大样本回归得到的残差平方和。</li>
+<li>$k+1$：模型参数个数（含截距）。</li>
+</ul>
+</li>
+<li>
+<p><strong>检验步骤</strong>：</p>
+<ol>
+<li>分别对两组样本进行回归，得到 $RSS_1$ 和 $RSS_2$。</li>
+<li>将两组合并，进行全样本回归，得到 $RSS_R$。</li>
+<li>代入公式计算 $F$ 值。</li>
+<li>若 $F$ 值显著，拒绝 $H_0$，说明两组样本的回归模型存在显著差异（结构发生断裂）；若不显著，则说明模型结构稳定，可以合并回归。</li>
+</ol>
+</li>
+</ul>
+<h2 id="实例演示">实例演示
+</h2><h3 id="虚拟变量实例">虚拟变量实例
+</h3><h3 id="受约束回归实例">受约束回归实例
+</h3>
 </section>
 
 

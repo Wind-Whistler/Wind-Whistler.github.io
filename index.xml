@@ -2154,12 +2154,12 @@ L-BFGS优化器利用收到的精确梯度和损失值，更新参数 $\beta$ �
 </description>
         </item>
         <item>
-        <title>计量经济学 03</title>
-        <link>https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-03/</link>
+        <title>计量经济学 04</title>
+        <link>https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-04/</link>
         <pubDate>Fri, 10 Apr 2026 00:00:00 +0000</pubDate>
         
-        <guid>https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-03/</guid>
-        <description>&lt;img src="https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-03/marepile.png" alt="Featured image of post 计量经济学 03" /&gt;</description>
+        <guid>https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-04/</guid>
+        <description>&lt;img src="https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-04/marepile.png" alt="Featured image of post 计量经济学 04" /&gt;</description>
         </item>
         <item>
         <title>分布式计算 04</title>
@@ -2585,6 +2585,14 @@ L-BFGS优化器利用收到的精确梯度和损失值，更新参数 $\beta$ �
 &lt;li&gt;&lt;strong&gt;&lt;code&gt;continue&lt;/code&gt; (跳过)&lt;/strong&gt;：用于&lt;strong&gt;跳过&lt;/strong&gt;当前这一次循环中剩余的代码，直接进入下一次循环的判断或取值。它不会终止整个循环，只是忽略当下的这一轮操作。&lt;/li&gt;
 &lt;/ul&gt;
 </description>
+        </item>
+        <item>
+        <title>计量经济学 03</title>
+        <link>https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-03/</link>
+        <pubDate>Thu, 02 Apr 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-03/</guid>
+        <description>&lt;img src="https://example.com/p/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6-03/marepile.png" alt="Featured image of post 计量经济学 03" /&gt;</description>
         </item>
         <item>
         <title>分布式计算 03</title>

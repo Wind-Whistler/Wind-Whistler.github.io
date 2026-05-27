@@ -1891,7 +1891,51 @@ L-BFGS优化器利用收到的精确梯度和损失值，更新参数 $\beta$ �
         <pubDate>Fri, 10 Apr 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A003/</guid>
-        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A003/Ruin.png" alt="Featured image of post 深度学习03" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A003/Ruin.png" alt="Featured image of post 深度学习03" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;经典优化方法&lt;/li&gt;
+&lt;li&gt;自适应学习率方法&lt;/li&gt;
+&lt;li&gt;现代方法&lt;/li&gt;
+&lt;li&gt;前沿方法&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;经典优化方法&#34;&gt;经典优化方法
+&lt;/h2&gt;&lt;h3 id=&#34;为什么不用牛顿法&#34;&gt;为什么不用牛顿法？
+&lt;/h3&gt;&lt;p&gt;牛顿法的核心在于利用二阶导数（海森矩阵 $H$）来寻找最优步长。虽然它收敛极快，但公式中的&lt;strong&gt;矩阵求逆&lt;/strong&gt;操作 $H^{-1}$ 是计算噩梦。&lt;/p&gt;
+&lt;p&gt;其更新公式为：
+&lt;/p&gt;
+$$ \theta_{t+1} = \theta_t - H^{-1} \nabla L(\theta_t) $$&lt;p&gt;
+其中 $H$ 是海森矩阵。对于拥有 $n$ 个参数的模型，计算并存储 $H^{-1}$ 的复杂度高达 $O(n^3)$ 和 $O(n^2)$。当 $n$ 达到百万级甚至亿级时，这一操作在工程上是不可行的，因此我们只能退回到仅使用一阶导数（梯度）的方法。&lt;/p&gt;
+&lt;h3 id=&#34;全量梯度下降gd&#34;&gt;全量梯度下降（GD）
+&lt;/h3&gt;&lt;p&gt;GD 是最朴素的一阶优化方法。它的核心逻辑是：每次更新都基于全量数据计算出的精确梯度。&lt;/p&gt;
+&lt;p&gt;其更新公式为：
+&lt;/p&gt;
+$$ \theta_{t+1} = \theta_t - \eta \frac{1}{N} \sum_{i=1}^{N} \nabla L(f(x_i; \theta_t), y_i) $$&lt;p&gt;
+这里 $N$ 是训练集的总样本数。公式中的求和项 $\sum$ 意味着模型必须遍历所有 $N$ 个样本才能进行一次参数更新。虽然梯度方向精准，但当 $N$ 很大时，计算成本极高，且无法在线更新。&lt;/p&gt;
+&lt;h3 id=&#34;随机梯度下降sgd&#34;&gt;随机梯度下降（SGD）
+&lt;/h3&gt;&lt;p&gt;SGD 对 GD 的公式进行了“抽样简化”。它不再计算全量梯度的和，而是用单个样本（或小批量数据）的梯度来近似整体梯度。&lt;/p&gt;
+&lt;p&gt;其核心更新公式（以单样本为例）为：
+&lt;/p&gt;
+$$ \theta_{t+1} = \theta_t - \eta \nabla L(f(x_j; \theta_t), y_j) $$&lt;p&gt;
+这里 $(x_j, y_j)$ 是从数据集中随机抽取的一个样本。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;本质区别：&lt;/strong&gt;
+SGD 用 $\nabla L(x_j)$ 代替了 GD 中的 $\frac{1}{N} \sum \nabla L(x_i)$。虽然这个估计带有噪声，但它极大地降低了单次计算量，使得模型可以快速、频繁地更新参数。&lt;/p&gt;
+&lt;h3 id=&#34;mini-batch-sgd&#34;&gt;Mini-batch SGD
+&lt;/h3&gt;&lt;p&gt;在实际工程中，我们通常使用两者的折中方案，即小批量随机梯度下降。&lt;/p&gt;
+&lt;p&gt;其公式为：
+&lt;/p&gt;
+$$ \theta_{t+1} = \theta_t - \eta \frac{1}{B} \sum_{k=1}^{B} \nabla L(f(x_k; \theta_t), y_k) $$&lt;p&gt;
+这里 $B$ 是批量大小。它既保留了 SGD 的高效性（不用遍历全量数据），又利用了矩阵运算的并行优势（比单样本更稳定）。为了配合这个公式，工程上必须引入 &lt;strong&gt;Shuffle&lt;/strong&gt;（打乱），以确保每个 Batch 都是整体分布的无偏估计。&lt;/p&gt;
+&lt;h3 id=&#34;代码实现&#34;&gt;代码实现
+&lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;自适应学习率方法&#34;&gt;自适应学习率方法
+&lt;/h2&gt;&lt;h2 id=&#34;现代方法&#34;&gt;现代方法
+&lt;/h2&gt;&lt;h2 id=&#34;前沿方法&#34;&gt;前沿方法
+&lt;/h2&gt;</description>
         </item>
         <item>
         <title>分布式计算 04</title>

@@ -254,8 +254,15 @@
         <li><a href="#为什么不用牛顿法">为什么不用牛顿法？</a></li>
         <li><a href="#全量梯度下降gd">全量梯度下降（GD）</a></li>
         <li><a href="#随机梯度下降sgd">随机梯度下降（SGD）</a></li>
+        <li><a href="#sgd-收敛条件robbins-monro-条件">SGD 收敛条件（Robbins-Monro 条件）</a></li>
         <li><a href="#mini-batch-sgd">Mini-batch SGD</a></li>
-        <li><a href="#代码实现">代码实现</a></li>
+        <li><a href="#代码实现">代码实现</a>
+          <ol>
+            <li><a href="#数据处理组件">数据处理组件</a></li>
+            <li><a href="#核心参数与概念">核心参数与概念</a></li>
+            <li><a href="#数学关系">数学关系</a></li>
+          </ol>
+        </li>
       </ol>
     </li>
     <li><a href="#自适应学习率方法">自适应学习率方法</a></li>
@@ -394,6 +401,22 @@ $$ \theta_{t+1} = \theta_t - \eta \nabla L(f(x_j; \theta_t), y_j) $$<p>
 这里 $(x_j, y_j)$ 是从数据集中随机抽取的一个样本。</p>
 <p><strong>本质区别：</strong>
 SGD 用 $\nabla L(x_j)$ 代替了 GD 中的 $\frac{1}{N} \sum \nabla L(x_i)$。虽然这个估计带有噪声，但它极大地降低了单次计算量，使得模型可以快速、频繁地更新参数。</p>
+<h3 id="sgd-收敛条件robbins-monro-条件">SGD 收敛条件（Robbins-Monro 条件）
+</h3><p>假设 $t$ 代表训练步数，$\eta_t$ 代表第 $t$ 步的学习率。SGD 要保证收敛，学习率的衰减必须同时满足以下两条数学公式：</p>
+<ol>
+<li>
+<p><strong>总步长无限</strong>
+</p>
+$$ \sum_{t=1}^{\infty} \eta_t = \infty $$<p>
+<em>物理含义：保证模型有足够的“动力”走到最优解的区域。</em></p>
+</li>
+<li>
+<p><strong>步长平方和有限</strong>
+</p>
+$$ \sum_{t=1}^{\infty} \eta_t^2 < \infty $$<p>
+<em>物理含义：保证后期的步长足够小，能够消除随机噪声，最终稳定在极值点而不震荡。</em></p>
+</li>
+</ol>
 <h3 id="mini-batch-sgd">Mini-batch SGD
 </h3><p>在实际工程中，我们通常使用两者的折中方案，即小批量随机梯度下降。</p>
 <p>其公式为：
@@ -401,13 +424,183 @@ SGD 用 $\nabla L(x_j)$ 代替了 GD 中的 $\frac{1}{N} \sum \nabla L(x_i)$。�
 $$ \theta_{t+1} = \theta_t - \eta \frac{1}{B} \sum_{k=1}^{B} \nabla L(f(x_k; \theta_t), y_k) $$<p>
 这里 $B$ 是批量大小。它既保留了 SGD 的高效性（不用遍历全量数据），又利用了矩阵运算的并行优势（比单样本更稳定）。为了配合这个公式，工程上必须引入 <strong>Shuffle</strong>（打乱），以确保每个 Batch 都是整体分布的无偏估计。</p>
 <h3 id="代码实现">代码实现
-</h3><div class="highlight"><div class="chroma">
+</h3><h4 id="数据处理组件">数据处理组件
+</h4><ul>
+<li><strong>TensorDataset</strong>：将特征张量 (X) 和标签张量 (y) 包装成标准数据集对象。</li>
+<li><strong>DataLoader</strong>：接收 Dataset，自动生成 Mini-batch 迭代器，支持自动打乱 (shuffle) 和多进程预加载 (num_workers)。</li>
+</ul>
+<p><strong>关于DataLoader算创建的对象</strong>：</p>
+<ol>
+<li><strong>批次化提取器</strong>：它像一个智能分发机，严格按照设定的 <code>batch_size</code>，将打包好的 <code>Train_Data</code> 按批次切分并取出。</li>
+<li><strong>自带随机洗牌机制</strong>：因为开启了 <code>shuffle=True</code>，它在每一轮数据遍历开始时，都会自动将原始数据的顺序彻底打乱，保证模型不会记住数据的排列规律。</li>
+<li><strong>可重复使用的迭代工厂</strong>：它不是“一次性”的迭代器。每当外层循环进入下一个 Epoch（重新调用它）时，它会自动重置进度条，从头开始新一轮的数据提取。</li>
+<li><strong>每轮独立且动态</strong>：每一次重新调用，它都会生成一套全新的、与上一轮完全不同的随机数据顺序，持续为多轮训练提供多样化的数据输入。</li>
+</ol>
+<h4 id="核心参数与概念">核心参数与概念
+</h4><ul>
+<li><strong>Batch size</strong>：单次传入模型的样本数量，决定了单次梯度更新的计算依据。</li>
+<li><strong>Epoch</strong>：模型完整遍历一遍训练集的次数。</li>
+<li><strong>Iteration/Step</strong>：模型处理完一个 Mini-batch 并更新一次参数的过程。</li>
+</ul>
+<h4 id="数学关系">数学关系
+</h4><ul>
+<li><strong>迭代次数公式</strong>：在一个 Epoch 中，迭代次数等于总样本数除以 Batch size 的向上取整。</li>
+</ul>
+<p>下面给出实现代码：
+<strong>Step1：导入需要用到的库</strong></p>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code></code></pre></td>
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">TensorDataset</span><span class="p">,</span> <span class="n">DataLoader</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_moons</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 设置随机种子，保证每次运行的结果可复现</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="自适应学习率方法">自适应学习率方法
+</div><p><strong>Step2：生成数据</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 生成具有1000个观测的样本，并加入一定的噪声</span>
+</span></span><span class="line"><span class="cl"><span class="n">X_np</span><span class="p">,</span> <span class="n">y_np</span> <span class="o">=</span> <span class="n">make_moons</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 将 NumPy 数组转换为 PyTorch Tensors</span>
+</span></span><span class="line"><span class="cl"><span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X_np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y_np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 数据可视化</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">c</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">RdYlBu</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&#34;Two Moons Dataset&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Step3：数据打包，创建迭代器</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">64</span>  <span class="c1"># 确定batch大小</span>
+</span></span><span class="line"><span class="cl"><span class="n">Train_Data</span> <span class="o">=</span> <span class="n">TensorDataset</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>  <span class="c1"># 打包,功能类似于Zip</span>
+</span></span><span class="line"><span class="cl"><span class="n">Train_Loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">Train_Data</span><span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span><span class="p">,</span><span class="n">shuffle</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1"># 生成迭代器</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Step4：定义网络，损失函数，优化器</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 定义网络</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">SimpleMLP</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">(</span><span class="n">SimpleMLP</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 两分类输出</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">SimpleMLP</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span> <span class="c1"># 这个东西和BCELoss不同，BCELoss要求输入p，而CrossEntropyLoss要求输入各类得分</span>
+</span></span><span class="line"><span class="cl"><span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span><span class="n">lr</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Step5：模型训练</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">num_epoch</span> <span class="o">=</span> <span class="mi">100</span>
+</span></span><span class="line"><span class="cl"><span class="n">L</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epoch</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">E_loss</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span> <span class="ow">in</span> <span class="n">Train_Loader</span><span class="p">:</span>  <span class="c1"># 这里会读取迭代器里的内容，直到读完结束内循环，之后再开启新一轮Epoch</span>
+</span></span><span class="line"><span class="cl">        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">E_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">E_loss</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;已训练</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">轮，损失为</span><span class="si">{</span><span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>下面给出训练损失函数下降图：</p>
+<div align="center">
+  <img src="Pic01.png" alt="下降图" width="800">
+</div>
+<h2 id="自适应学习率方法">自适应学习率方法
 </h2><h2 id="现代方法">现代方法
 </h2><h2 id="前沿方法">前沿方法
 </h2>

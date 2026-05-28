@@ -267,7 +267,7 @@
     </li>
     <li><a href="#自适应学习率方法">自适应学习率方法</a>
       <ol>
-        <li><a href="#sgd的缺点与自适应学习率的引出">SGD的缺点与自适应学习率的引出</a></li>
+        <li><a href="#sgd的缺点">SGD的缺点</a></li>
         <li><a href="#adagrad">Adagrad</a></li>
         <li><a href="#rmsprop">RMSprop</a></li>
         <li><a href="#adadelta">Adadelta</a></li>
@@ -611,7 +611,7 @@ $$ \theta_{t+1} = \theta_t - \eta \frac{1}{B} \sum_{k=1}^{B} \nabla L(f(x_k; \th
   <img src="Pic01.png" alt="下降图" width="800">
 </div>
 <h2 id="自适应学习率方法">自适应学习率方法
-</h2><h3 id="sgd的缺点与自适应学习率的引出">SGD的缺点与自适应学习率的引出
+</h2><h3 id="sgd的缺点">SGD的缺点
 </h3><p>SGD的一大核心缺陷在于其“峡谷震荡”问题。当损失函数的曲面呈现某一方向极其陡峭而另一方向极其平缓的“峡谷”形状时，SGD的表现会非常糟糕：在陡峭方向上，梯度很大导致参数剧烈震荡；而在平缓方向上，梯度极小导致参数推进缓慢。为了解决这一问题，我们需要一种能够自适应地为不同参数分配不同学习率的方法——即自适应学习率算法。</p>
 <h3 id="adagrad">Adagrad
 </h3><p><strong>背景与核心思想</strong>

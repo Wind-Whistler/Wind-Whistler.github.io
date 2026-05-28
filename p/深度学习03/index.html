@@ -539,6 +539,7 @@ $$ \theta_{t+1} = \theta_t - \eta \frac{1}{B} \sum_{k=1}^{B} \nabla L(f(x_k; \th
 </span><span class="lnt">16
 </span><span class="lnt">17
 </span><span class="lnt">18
+</span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 定义网络</span>
@@ -558,6 +559,7 @@ $$ \theta_{t+1} = \theta_t - \eta \frac{1}{B} \sum_{k=1}^{B} \nabla L(f(x_k; \th
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">SimpleMLP</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl"><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span> <span class="c1"># 这个东西和BCELoss不同，BCELoss要求输入p，而CrossEntropyLoss要求输入各类得分</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># BCELoss对应float32 float32 CrossEnropyLoss要求float32，long</span>
 </span></span><span class="line"><span class="cl"><span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span><span class="n">lr</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>

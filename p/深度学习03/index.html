@@ -274,8 +274,13 @@
         <li><a href="#代码实现-1">代码实现</a></li>
       </ol>
     </li>
-    <li><a href="#现代方法">现代方法</a></li>
-    <li><a href="#前沿方法">前沿方法</a></li>
+    <li><a href="#现代方法">现代方法</a>
+      <ol>
+        <li><a href="#adam">Adam</a></li>
+        <li><a href="#muon">Muon</a></li>
+        <li><a href="#代码实现-2">代码实现</a></li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -719,8 +724,140 @@ $$ \theta_{t+1} = \theta_t + \Delta\theta_t $$<p><strong>改进点</strong></p>
   <img src="Pic02.png" alt="下降图" width="1200">
 </div>
 <h2 id="现代方法">现代方法
-</h2><h2 id="前沿方法">前沿方法
-</h2>
+</h2><h3 id="adam">Adam
+</h3><p>Adam（Adaptive Moment Estimation）是目前深度学习中最主流的优化器，它巧妙地结合了 动量（Momentum） 和 自适应学习率（RMSprop） 两种思想。</p>
+<ul>
+<li>
+<p><strong>核心思想</strong>：</p>
+<ul>
+<li><strong>一阶矩（动量）</strong>：计算梯度的指数移动平均，利用惯性帮助模型冲过鞍点，并平滑震荡。</li>
+<li><strong>二阶矩（自适应）</strong>：计算梯度平方的指数移动平均，为不同参数分配不同的自适应学习率（类似RMSprop）。</li>
+</ul>
+</li>
+<li>
+<p><strong>核心公式</strong>：
+<strong>计算矩估计</strong>：
+*   $m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$ （一阶矩，动量）
+*   $v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2$ （二阶矩，未偏方差）
+<strong>偏差修正</strong>（因为初始值为0，早期估计会有偏差）：
+*   $\hat{m}_t = m_t / (1 - \beta_1^t)$
+*   $\hat{v}<em>t = v_t / (1 - \beta_2^t)$
+<strong>更新参数</strong>：
+*   $\theta</em>{t+1} = \theta_t - \eta \cdot \hat{m}_t / (\sqrt{\hat{v}_t} + \epsilon)$</p>
+</li>
+<li>
+<p><strong>补充：AdamW</strong>
+AdamW是 Adam 的改进版。主要区别在于处理权重衰减（Weight Decay）的方式：AdamW 将权重衰减与梯度更新解耦，直接在参数更新最后按比例减去权重，而不是将其作为损失函数的一部分。这在训练 Transformer 等大模型时几乎是标配。</p>
+</li>
+</ul>
+<h3 id="muon">Muon
+</h3><p>Muon (Momentum Orthogonalizer) 是针对大模型训练提出的前沿优化器，旨在在计算效率和二阶信息之间寻找新的平衡。</p>
+<ul>
+<li><strong>核心思路</strong>：
+<ul>
+<li><strong>背景痛点</strong>：一阶方法（如Adam）无法像二阶方法那样捕捉参数之间的曲率关系，但在大模型中计算二阶信息（如海森矩阵）成本过高。</li>
+<li><strong>核心创新</strong>：Muon 提出对 动量矩阵** 进行 正交化。</li>
+<li><strong>实现方式</strong>：利用 Newton-Schulz 迭代来近似计算矩阵的逆。这在数学上等价于某种形式的二阶预条件（Preconditioning），但避免了直接计算巨大的海森矩阵。</li>
+<li><strong>优势</strong>：利用现代 GPU 强大的矩阵乘法算力，通过增加少量计算开销来显著减少收敛所需的步数，特别适合包含大量二维权重矩阵（如 Transformer）的大规模模型训练。</li>
+</ul>
+</li>
+</ul>
+<h3 id="代码实现-2">代码实现
+</h3><p>准备工作同上，不再赘述。<br>
+这里展示如何同时使用两种优化器Adam和Moun分别对偏移参数和权重参数进行优化，代码如下：<br>
+<strong>Step1:定义模型，损失函数，优化器</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 定义网络</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">SimpleMLP_2</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">fc3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># 两分类输出</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">ac</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ac</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ac</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">SimpleMLP_2</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">optimizer_1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">([</span><span class="n">model</span><span class="o">.</span><span class="n">fc1</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span><span class="n">model</span><span class="o">.</span><span class="n">fc2</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span><span class="n">model</span><span class="o">.</span><span class="n">fc3</span><span class="o">.</span><span class="n">bias</span><span class="p">],</span><span class="n">lr</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">optimizer_2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Muon</span><span class="p">([</span><span class="n">model</span><span class="o">.</span><span class="n">fc1</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span><span class="n">model</span><span class="o">.</span><span class="n">fc2</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span><span class="n">model</span><span class="o">.</span><span class="n">fc3</span><span class="o">.</span><span class="n">weight</span><span class="p">],</span><span class="n">lr</span> <span class="o">=</span> <span class="mf">0.005</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Step2：训练模型</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">num_epoch</span> <span class="o">=</span> <span class="mi">100</span>
+</span></span><span class="line"><span class="cl"><span class="n">L</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epoch</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">E_loss</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span> <span class="ow">in</span> <span class="n">Train_Loader</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">E_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">optimizer_1</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">optimizer_2</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">optimizer_1</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">optimizer_2</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">E_loss</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;已训练</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">轮，损失为</span><span class="si">{</span><span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最终损失函数曲线如下图所示：</p>
+<div align="center">
+  <img src="Pic03.png" alt="下降图" width="1200">
+</div>
+
 </section>
 
 

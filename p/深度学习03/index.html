@@ -735,20 +735,22 @@ $$ \theta_{t+1} = \theta_t + \Delta\theta_t $$<p><strong>改进点</strong></p>
 </ul>
 </li>
 <li>
-<p><strong>核心公式</strong>：
-<strong>计算矩估计</strong>：
-*   $m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$ （一阶矩，动量）
-*   $v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2$ （二阶矩，未偏方差）
-<strong>偏差修正</strong>（因为初始值为0，早期估计会有偏差）：
-*   $\hat{m}_t = m_t / (1 - \beta_1^t)$
-*   $\hat{v}<em>t = v_t / (1 - \beta_2^t)$
-<strong>更新参数</strong>：
-*   $\theta</em>{t+1} = \theta_t - \eta \cdot \hat{m}_t / (\sqrt{\hat{v}_t} + \epsilon)$</p>
+<p><strong>核心公式</strong>：</p>
 </li>
-<li>
-<p><strong>补充：AdamW</strong>
-AdamW是 Adam 的改进版。主要区别在于处理权重衰减（Weight Decay）的方式：AdamW 将权重衰减与梯度更新解耦，直接在参数更新最后按比例减去权重，而不是将其作为损失函数的一部分。这在训练 Transformer 等大模型时几乎是标配。</p>
-</li>
+</ul>
+<p><strong>Step1:计算矩估计</strong>
+</p>
+$$m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$$<p>
+</p>
+$$v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2$$<p><strong>Step2:偏差修正</strong>（因为初始值为0，早期估计会有偏差）
+</p>
+$$\hat{m}_t = m_t / (1 - \beta_1^t)$$<p>
+</p>
+$$\hat{v}_t = v_t / (1 - \beta_2^t)$$<p><strong>Step3:更新参数</strong>：
+</p>
+$$\theta_{t+1} = \theta_t - \eta \cdot \hat{m}_t / (\sqrt{\hat{v}_t} + \epsilon)$$<ul>
+<li><strong>补充：AdamW</strong>
+AdamW是 Adam 的改进版。主要区别在于处理权重衰减（Weight Decay）的方式：AdamW 将权重衰减与梯度更新解耦，直接在参数更新最后按比例减去权重，而不是将其作为损失函数的一部分。这在训练 Transformer 等大模型时几乎是标配。</li>
 </ul>
 <h3 id="muon">Muon
 </h3><p>Muon (Momentum Orthogonalizer) 是针对大模型训练提出的前沿优化器，旨在在计算效率和二阶信息之间寻找新的平衡。</p>
@@ -756,7 +758,7 @@ AdamW是 Adam 的改进版。主要区别在于处理权重衰减（Weight Decay
 <li><strong>核心思路</strong>：
 <ul>
 <li><strong>背景痛点</strong>：一阶方法（如Adam）无法像二阶方法那样捕捉参数之间的曲率关系，但在大模型中计算二阶信息（如海森矩阵）成本过高。</li>
-<li><strong>核心创新</strong>：Muon 提出对 动量矩阵** 进行 正交化。</li>
+<li><strong>核心创新</strong>：Muon 提出对 动量矩阵 进行 正交化。</li>
 <li><strong>实现方式</strong>：利用 Newton-Schulz 迭代来近似计算矩阵的逆。这在数学上等价于某种形式的二阶预条件（Preconditioning），但避免了直接计算巨大的海森矩阵。</li>
 <li><strong>优势</strong>：利用现代 GPU 强大的矩阵乘法算力，通过增加少量计算开销来显著减少收敛所需的步数，特别适合包含大量二维权重矩阵（如 Transformer）的大规模模型训练。</li>
 </ul>
@@ -913,6 +915,30 @@ AdamW是 Adam 的改进版。主要区别在于处理权重衰减（Weight Decay
             
                 
 <article class="has-image">
+    <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A004/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A004/Ruin.142265fb55dea43ae5144e2bd76415ed_hu_51ad5fcc096b5506.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 深度学习04"
+                        
+                        data-hash="md5-FCJl&#43;1XepDrlFE4r12QV7Q==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">深度学习04</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
     <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-pytorch%E4%BB%8B%E7%BB%8D/">
         
         
@@ -1002,30 +1028,6 @@ AdamW是 Adam 的改进版。主要区别在于处理权重衰减（Weight Decay
 
         <div class="article-details">
             <h2 class="article-title">分布式计算 06</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="has-image">
-    <a href="/p/python%E5%9F%BA%E7%A1%80-04/">
-        
-        
-            <div class="article-image">
-                <img src="/p/python%E5%9F%BA%E7%A1%80-04/Garden.0bd165c03c5668d4b969c19bc1b4e129_hu_a0b2ceacee7e64cf.png" 
-                        width="250" 
-                        height="150" 
-                        loading="lazy"
-                        alt="Featured image of post Python基础 04"
-                        
-                        data-hash="md5-C9FlwDxWaNS5acGbwbThKQ==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">Python基础 04</h2>
         </div>
     </a>
 </article>

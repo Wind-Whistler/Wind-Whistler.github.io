@@ -1635,6 +1635,14 @@ L-BFGS优化器利用收到的精确梯度和损失值，更新参数 $\beta$ �
 </description>
         </item>
         <item>
+        <title>深度学习04</title>
+        <link>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A004/</link>
+        <pubDate>Mon, 20 Apr 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A004/</guid>
+        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A004/Ruin.png" alt="Featured image of post 深度学习04" /&gt;</description>
+        </item>
+        <item>
         <title>Python基础 02</title>
         <link>https://example.com/p/python%E5%9F%BA%E7%A1%80-02/</link>
         <pubDate>Sun, 12 Apr 2026 00:00:00 +0000</pubDate>
@@ -2240,20 +2248,22 @@ $$ \theta_{t+1} = \theta_t + \Delta\theta_t $$&lt;p&gt;&lt;strong&gt;改进点&l
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;strong&gt;核心公式&lt;/strong&gt;：
-&lt;strong&gt;计算矩估计&lt;/strong&gt;：
-*   $m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$ （一阶矩，动量）
-*   $v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2$ （二阶矩，未偏方差）
-&lt;strong&gt;偏差修正&lt;/strong&gt;（因为初始值为0，早期估计会有偏差）：
-*   $\hat{m}_t = m_t / (1 - \beta_1^t)$
-*   $\hat{v}&lt;em&gt;t = v_t / (1 - \beta_2^t)$
-&lt;strong&gt;更新参数&lt;/strong&gt;：
-*   $\theta&lt;/em&gt;{t+1} = \theta_t - \eta \cdot \hat{m}_t / (\sqrt{\hat{v}_t} + \epsilon)$&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;核心公式&lt;/strong&gt;：&lt;/p&gt;
 &lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;补充：AdamW&lt;/strong&gt;
-AdamW是 Adam 的改进版。主要区别在于处理权重衰减（Weight Decay）的方式：AdamW 将权重衰减与梯度更新解耦，直接在参数更新最后按比例减去权重，而不是将其作为损失函数的一部分。这在训练 Transformer 等大模型时几乎是标配。&lt;/p&gt;
-&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Step1:计算矩估计&lt;/strong&gt;
+&lt;/p&gt;
+$$m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$$&lt;p&gt;
+&lt;/p&gt;
+$$v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2$$&lt;p&gt;&lt;strong&gt;Step2:偏差修正&lt;/strong&gt;（因为初始值为0，早期估计会有偏差）
+&lt;/p&gt;
+$$\hat{m}_t = m_t / (1 - \beta_1^t)$$&lt;p&gt;
+&lt;/p&gt;
+$$\hat{v}_t = v_t / (1 - \beta_2^t)$$&lt;p&gt;&lt;strong&gt;Step3:更新参数&lt;/strong&gt;：
+&lt;/p&gt;
+$$\theta_{t+1} = \theta_t - \eta \cdot \hat{m}_t / (\sqrt{\hat{v}_t} + \epsilon)$$&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;补充：AdamW&lt;/strong&gt;
+AdamW是 Adam 的改进版。主要区别在于处理权重衰减（Weight Decay）的方式：AdamW 将权重衰减与梯度更新解耦，直接在参数更新最后按比例减去权重，而不是将其作为损失函数的一部分。这在训练 Transformer 等大模型时几乎是标配。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;muon&#34;&gt;Muon
 &lt;/h3&gt;&lt;p&gt;Muon (Momentum Orthogonalizer) 是针对大模型训练提出的前沿优化器，旨在在计算效率和二阶信息之间寻找新的平衡。&lt;/p&gt;
@@ -2261,7 +2271,7 @@ AdamW是 Adam 的改进版。主要区别在于处理权重衰减（Weight Decay
 &lt;li&gt;&lt;strong&gt;核心思路&lt;/strong&gt;：
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;背景痛点&lt;/strong&gt;：一阶方法（如Adam）无法像二阶方法那样捕捉参数之间的曲率关系，但在大模型中计算二阶信息（如海森矩阵）成本过高。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;核心创新&lt;/strong&gt;：Muon 提出对 动量矩阵** 进行 正交化。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;核心创新&lt;/strong&gt;：Muon 提出对 动量矩阵 进行 正交化。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;实现方式&lt;/strong&gt;：利用 Newton-Schulz 迭代来近似计算矩阵的逆。这在数学上等价于某种形式的二阶预条件（Preconditioning），但避免了直接计算巨大的海森矩阵。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;优势&lt;/strong&gt;：利用现代 GPU 强大的矩阵乘法算力，通过增加少量计算开销来显著减少收敛所需的步数，特别适合包含大量二维权重矩阵（如 Transformer）的大规模模型训练。&lt;/li&gt;
 &lt;/ul&gt;

@@ -13,7 +13,16 @@
         <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/python%E7%A8%8B%E5%BA%8F%E6%8E%A7%E5%88%B6%E7%BB%93%E6%9E%84%E4%B8%93%E9%A2%98/</guid>
-        <description>&lt;img src="https://example.com/p/python%E7%A8%8B%E5%BA%8F%E6%8E%A7%E5%88%B6%E7%BB%93%E6%9E%84%E4%B8%93%E9%A2%98/Garden.png" alt="Featured image of post Python程序控制结构专题" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/python%E7%A8%8B%E5%BA%8F%E6%8E%A7%E5%88%B6%E7%BB%93%E6%9E%84%E4%B8%93%E9%A2%98/Garden.png" alt="Featured image of post Python程序控制结构专题" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;条件表达式&lt;/li&gt;
+&lt;li&gt;分支结构&lt;/li&gt;
+&lt;li&gt;循环结构&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;条件表达式&#34;&gt;条件表达式
+&lt;/h2&gt;&lt;h2 id=&#34;分支结构&#34;&gt;分支结构
+&lt;/h2&gt;&lt;h2 id=&#34;循环结构&#34;&gt;循环结构
+&lt;/h2&gt;</description>
         </item>
         <item>
         <title>Python基础 04</title>

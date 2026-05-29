@@ -13,7 +13,14 @@
         <pubDate>Mon, 20 Apr 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A004/</guid>
-        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A004/Ruin.png" alt="Featured image of post 深度学习04" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A004/Ruin.png" alt="Featured image of post 深度学习04" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;图片结构简介&lt;/li&gt;
+&lt;li&gt;卷积&lt;/li&gt;
+&lt;li&gt;池化&lt;/li&gt;
+&lt;li&gt;CNN结构&lt;/li&gt;
+&lt;/ul&gt;
+</description>
         </item>
         <item>
         <title>深度学习03</title>

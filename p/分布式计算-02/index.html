@@ -226,7 +226,47 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#ray基本操作流程">Ray基本操作流程</a>
+      <ol>
+        <li><a href="#ray-集群的启动与关闭">Ray 集群的启动与关闭</a></li>
+        <li><a href="#异步执行">异步执行</a></li>
+        <li><a href="#同步获取">同步获取</a></li>
+        <li><a href="#4-共享内存与零拷贝">4. 共享内存与零拷贝</a></li>
+        <li><a href="#map-reduce思想">Map-Reduce思想</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -330,7 +370,152 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>Ray基本操作流程</li>
+<li>集群操作</li>
+<li>Bootstrap分布式实现</li>
+<li>K折交叉验证分布式实现</li>
+</ul>
+<h2 id="ray基本操作流程">Ray基本操作流程
+</h2><h3 id="ray-集群的启动与关闭">Ray 集群的启动与关闭
+</h3><p>这是使用 Ray 的第一步，用于初始化分布式环境或关闭已有的集群连接。</p>
+<ul>
+<li><strong><code>ray.init()</code></strong>：启动 Ray 集群。在 Jupyter Notebook 或脚本开头调用，初始化分布式运行时环境。</li>
+<li><strong><code>ray.shutdown()</code></strong>：关闭 Ray 集群。释放资源，通常在程序结束时调用。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ray</span>
+</span></span><span class="line"><span class="cl"><span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>  <span class="c1"># num_cpus可设定启用cpu核数</span>
+</span></span><span class="line"><span class="cl"><span class="n">ray</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="异步执行">异步执行
+</h3><p>Ray 的核心特性之一是异步非阻塞执行，这使得主程序无需等待耗时任务完成即可继续运行。</p>
+<ul>
+<li><strong><code>@ray.remote</code></strong>：装饰器，将普通的 Python 函数转换为远程函数（即 Ray 任务）。</li>
+<li><strong><code>.remote()</code></strong>：调用该方法会立即返回一个 <strong>ObjectRef</strong>（对象引用/取件码），而不会等待函数实际执行完毕。主程序会立刻继续执行下一行代码。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 定义一个远程任务</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ray.remote</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">task_sleep</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s2">&#34;Task Done&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 异步提交任务</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 代码会瞬间执行到这里，不会卡住等待5秒</span>
+</span></span><span class="line"><span class="cl"><span class="n">task_ref</span> <span class="o">=</span> <span class="n">task_sleep</span><span class="o">.</span><span class="n">remote</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;任务已提交，主程序继续运行...&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="同步获取">同步获取
+</h3><p>虽然任务是异步执行的，但在需要使用结果时，必须通过同步阻塞的方式获取。</p>
+<ul>
+<li><strong><code>ray.get()</code></strong>：这是一个<strong>同步阻塞</strong>操作。
+<ul>
+<li>如果任务已完成，立即返回结果。</li>
+<li>如果任务未完成，主程序会在这里<strong>卡住（阻塞）</strong>，直到结果计算完成并返回。</li>
+<li>注意：如果在 <code>.remote()</code> 后立刻接 <code>ray.get()</code>，程序可能会退化为串行计算，失去并行意义。</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 获取结果（阻塞操作）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 如果上面的任务还没睡完5秒，这里就会卡住等待</span>
+</span></span><span class="line"><span class="cl"><span class="n">result</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">task_ref</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>  <span class="c1"># 输出: Task Done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="4-共享内存与零拷贝">4. 共享内存与零拷贝
+</h3><p>为了解决大数据在节点间传输占用带宽的问题，Ray 提供了共享内存机制。</p>
+<ul>
+<li><strong><code>ray.put()</code></strong>：将大对象（如大型矩阵、数据集）放入分布式共享内存（Object Store）中。</li>
+<li><strong>ObjectRef 传递</strong>：传递 <code>ray.put()</code> 返回的引用 ID，而不是直接传递大数据本身。</li>
+<li><strong>零拷贝</strong>：如果多个核心在同一物理节点上，它们可以直接读取同一块内存地址，无需复制数据，极大提升效率。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 假设有一个巨大的矩阵</span>
+</span></span><span class="line"><span class="cl"><span class="n">large_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 将大矩阵放入共享内存，返回引用ID</span>
+</span></span><span class="line"><span class="cl"><span class="n">matrix_ref</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">large_matrix</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 定义一个使用该矩阵的任务</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ray.remote</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">process_matrix</span><span class="p">(</span><span class="n">matrix_id</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 任务内部通过 ray.get 获取数据</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 如果在同一节点，这是零拷贝读取</span>
+</span></span><span class="line"><span class="cl">    <span class="n">data</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">matrix_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 提交任务，传递的是引用ID（很小），而不是巨大的矩阵</span>
+</span></span><span class="line"><span class="cl"><span class="n">result_ref</span> <span class="o">=</span> <span class="n">process_matrix</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">matrix_ref</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">result</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">result_ref</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="map-reduce思想">Map-Reduce思想
+</h3><p>利用上述特性可以实现经典的 <strong>Map-Reduce</strong> 模式：</p>
+<ol>
+<li><strong>Map</strong>：通过循环调用 <code>.remote()</code> 分发大量子任务。</li>
+<li><strong>Barrier</strong>：通过 <code>ray.get(list_of_refs)</code> 等待所有任务完成。</li>
+<li><strong>Reduce</strong>：在主程序中汇总所有结果（如求平均值）。</li>
+</ol>
+
 </section>
 
 

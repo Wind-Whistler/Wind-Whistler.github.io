@@ -100,7 +100,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 输出: Task Done&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;4-共享内存与零拷贝&#34;&gt;4. 共享内存与零拷贝
+&lt;/div&gt;&lt;h3 id=&#34;共享内存与零拷贝&#34;&gt;共享内存与零拷贝
 &lt;/h3&gt;&lt;p&gt;为了解决大数据在节点间传输占用带宽的问题，Ray 提供了共享内存机制。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;&lt;code&gt;ray.put()&lt;/code&gt;&lt;/strong&gt;：将大对象（如大型矩阵、数据集）放入分布式共享内存（Object Store）中。&lt;/li&gt;

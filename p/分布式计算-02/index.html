@@ -254,7 +254,7 @@
         <li><a href="#ray-集群的启动与关闭">Ray 集群的启动与关闭</a></li>
         <li><a href="#异步执行">异步执行</a></li>
         <li><a href="#同步获取">同步获取</a></li>
-        <li><a href="#4-共享内存与零拷贝">4. 共享内存与零拷贝</a></li>
+        <li><a href="#共享内存与零拷贝">共享内存与零拷贝</a></li>
         <li><a href="#map-reduce思想">Map-Reduce思想</a></li>
       </ol>
     </li>
@@ -457,7 +457,7 @@
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>  <span class="c1"># 输出: Task Done</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="4-共享内存与零拷贝">4. 共享内存与零拷贝
+</div><h3 id="共享内存与零拷贝">共享内存与零拷贝
 </h3><p>为了解决大数据在节点间传输占用带宽的问题，Ray 提供了共享内存机制。</p>
 <ul>
 <li><strong><code>ray.put()</code></strong>：将大对象（如大型矩阵、数据集）放入分布式共享内存（Object Store）中。</li>

@@ -226,7 +226,76 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#字符串基本知识">字符串基本知识</a></li>
+    <li><a href="#字符串格式化">字符串格式化</a>
+      <ol>
+        <li><a href="#format方法">format()方法</a></li>
+        <li><a href="#运算符格式化">%运算符格式化</a></li>
+        <li><a href="#格式化字符串常量f-string">格式化字符串常量（f-string）</a></li>
+      </ol>
+    </li>
+    <li><a href="#字符串常用操作">字符串常用操作</a>
+      <ol>
+        <li><a href="#python字符串操作特性">Python字符串操作特性</a></li>
+        <li><a href="#查找位置和统计次数">查找位置和统计次数</a>
+          <ol>
+            <li><a href="#find-与-rfind">find() 与 rfind()</a></li>
+            <li><a href="#index与-rindex">index()与 rindex()</a></li>
+            <li><a href="#count">count()</a></li>
+          </ol>
+        </li>
+        <li><a href="#字符串拆分">字符串拆分</a>
+          <ol>
+            <li><a href="#split-与-rsplit">split() 与 rsplit()</a></li>
+            <li><a href="#partition-与-rpartition">partition() 与 rpartition()</a></li>
+          </ol>
+        </li>
+        <li><a href="#字符串连接">字符串连接</a></li>
+        <li><a href="#大小写">大小写</a></li>
+        <li><a href="#字符串替换">字符串替换</a>
+          <ol>
+            <li><a href="#replace方法">replace()方法</a></li>
+            <li><a href="#maketrans-与-translate-方法">maketrans() 与 translate() 方法</a></li>
+          </ol>
+        </li>
+        <li><a href="#字符串删除两端字符">字符串删除两端字符</a></li>
+        <li><a href="#字符串判断">字符串判断</a></li>
+        <li><a href="#字符串调整">字符串调整</a></li>
+        <li><a href="#其他操作">其他操作</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -309,7 +378,466 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>字符串基本知识</li>
+<li>字符串格式化</li>
+<li>字符串常用操作</li>
+</ul>
+<h2 id="字符串基本知识">字符串基本知识
+</h2><p>字符串属于不可变有序序列，支持比较大小、计算长度、索引访问、切片、成员测试等操作，但不支持原地修改，既不能增删改字符，切片也只能读取元素，无法改变原字符串内容。</p>
+<p>定义字符串可使用单引号、双引号、三单引号或三双引号作为定界符，不同定界符支持互相嵌套。其中单双引号用法一致，三引号适合包裹包含引号的内容或多行文本。</p>
+<p>字符串中可通过转义符<code>\</code>表达特殊含义，比如<code>\n</code>表示换行、<code>\t</code>表示水平制表符、<code>\&quot;</code>和<code>\'</code>分别输出单双引号、<code>\\</code>输出反斜杠本身，也支持用八进制、十六进制等形式表示字符。若不想让转义生效，可在字符串前加<code>r</code>定义为原始字符串，所有字符都会保持字面含义，常用来书写文件路径。</p>
+<p>注意字符串的所有“修改”类方法都只会返回新的字符串，不会对原对象做任何改动。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a</span><span class="se">\n</span><span class="s1">b&#39;</span><span class="p">)</span>  <span class="c1"># a b 分两行输出</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;a\nb&#39;</span><span class="p">)</span>  <span class="c1"># 输出a\nb</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\&#34;</span><span class="s1">&#39;</span><span class="p">)</span>  <span class="c1"># 输出\ &#39; &#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="字符串格式化">字符串格式化
+</h2><p>格式化是对字符串进行格式表达的方式。换句话说，要规定它输出的表达方式。
+Python共支持三种字符串格式化方式，分别是format方法、%运算符、格式化字符串常量（f-string）。</p>
+<h3 id="format方法">format()方法
+</h3><p>语法为<code>&lt;模板字符串&gt;.format(&lt;逗号分隔的参数&gt;)</code>，模板中用一对<code>{}</code>作为占位槽，默认按顺序匹配参数，也可手动指定序号，例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="s2">&#34;</span><span class="si">{}</span><span class="s2">的CPU占用率为</span><span class="si">{}</span><span class="s2">%&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&#34;C&#34;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>       <span class="c1"># 按顺序匹配</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;</span><span class="si">{1}</span><span class="s2">的CPU占用率为</span><span class="si">{0}</span><span class="s2">%&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&#34;C&#34;</span><span class="p">)</span>    <span class="c1"># 指定序号，输出&#34;C的CPU占用率为10%&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>槽内部可通过<code>{&lt;参数序号&gt;:&lt;格式控制标记&gt;}</code>添加格式规则，控制标记顺序固定为：<code>&lt;填充&gt;&lt;对齐&gt;&lt;宽度&gt;&lt;千位分隔符&gt;&lt;精度&gt;&lt;类型&gt;</code>。</p>
+<ul>
+<li>填充、对齐、宽度常搭配使用：<code>&lt;</code>左对齐、<code>&gt;</code>右对齐、<code>^</code>居中对齐，不足宽度时用指定字符填充：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="s2">&#34;</span><span class="si">{:*&gt;10}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&#34;BIT&#34;</span><span class="p">)</span>    <span class="c1"># 右对齐，*填充，宽度10，输出&#34;*******BIT&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;</span><span class="si">{:^10}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&#34;PYTHON&#34;</span><span class="p">)</span>  <span class="c1"># 居中对齐，空格填充，输出&#34;  PYTHON  &#34;</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Hello!</span><span class="si">{:&amp;^10}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;World&#39;</span><span class="p">)</span>  <span class="c1"># &#39;Hello!&amp;&amp;World&amp;&amp;&amp;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Yes,</span><span class="si">{:+&lt;20}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Sir&#39;</span><span class="p">)</span>  <span class="c1"># &#39;Yes,Sir+++++++++++++++++&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>数字相关格式：<code>,</code>为千位分隔符，<code>.精度</code>控制浮点数小数位或字符串最大长度，类型支持进制、科学计数法等转换：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="s2">&#34;</span><span class="si">{:,.2f}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mf">12345.6789</span><span class="p">)</span>   <span class="c1"># 输出&#34;12,345.68&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;</span><span class="si">{:b}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>              <span class="c1"># 转二进制，输出&#34;1010&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;</span><span class="si">{:.2%}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span>          <span class="c1"># 百分比，输出&#34;25.00%&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 复杂一些</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Take that!</span><span class="si">{:,.3f}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mf">3.1415926</span><span class="p">)</span>   <span class="c1"># &#39;,&#39;开启千分位，&#39;.3&#39;精确到小数点后3位，&#39;f&#39;指定为浮点类型，输出&#39;Take that!3.142&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Hold it!</span><span class="si">{:*^11,.2%}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mf">1.234567</span><span class="p">)</span>  <span class="c1"># 输出&#39;Hold it!**123.46%**&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="运算符格式化">%运算符格式化
+</h3><p>用法类似C语言，通过<code>%</code>连接格式字符串和参数，常用格式符：<code>%s</code>字符串、<code>%d</code>十进制整数、<code>%f</code>浮点数、<code>%x</code>十六进制、<code>%%</code>输出百分号本身：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="s2">&#34;姓名：</span><span class="si">%s</span><span class="s2">，年龄：</span><span class="si">%d</span><span class="s2">&#34;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&#34;张三&#34;</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>    <span class="c1"># 输出&#34;姓名：张三，年龄：20&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;圆周率：</span><span class="si">%.2f</span><span class="s2">&#34;</span> <span class="o">%</span> <span class="mf">3.14159</span>             <span class="c1"># 保留两位小数的浮点数，输出&#34;圆周率：3.14&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="格式化字符串常量f-string">格式化字符串常量（f-string）
+</h3><p>Python 3.6+新增的写法，字符串前加<code>f</code>，直接在<code>{}</code>中嵌入变量或表达式，也支持复用format的格式控制规则：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">name</span> <span class="o">=</span> <span class="s2">&#34;李四&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">age</span> <span class="o">=</span> <span class="mi">22</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;姓名：</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">，明年</span><span class="si">{</span><span class="n">age</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">岁&#34;</span><span class="p">)</span>    <span class="c1"># 输出&#34;姓名：李四，明年23岁&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">value</span> <span class="o">=</span> <span class="mi">11</span><span class="o">/</span><span class="mi">3</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;结果：</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">10.4f</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>         <span class="c1"># 宽度10，保留4位小数，输出&#34;结果：    3.6667&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="字符串常用操作">字符串常用操作
+</h2><h3 id="python字符串操作特性">Python字符串操作特性
+</h3><p>Python字符串对象内置了大量方法，用于处理切分、连接、替换和排版等操作。除了方法之外，Python还提供了一些内置函数和运算符来辅助字符串处理。</p>
+<p>需要特别强调的是，字符串对象具有不可变性。这意味着一旦一个字符串被创建，就无法直接对其进行原地修改，比如增删某个字符。因此，所有涉及“修改”操作的方法（如替换、切割等）都不会改变原始字符串，而是会生成并返回一个新的字符串对象。这种机制保证了原始数据的安全性，但也意味着如果需要保留修改后的结果，必须将返回值重新赋值给一个变量。</p>
+<h3 id="查找位置和统计次数">查找位置和统计次数
+</h3><h4 id="find-与-rfind">find() 与 rfind()
+</h4><ul>
+<li><strong><code>find()</code></strong>：从字符串的左侧开始查找，返回子串<strong>首次</strong>出现的位置。</li>
+<li><strong><code>rfind()</code></strong>：从字符串的右侧开始查找，返回子串<strong>最后一次</strong>出现的位置。</li>
+<li><strong>容错性</strong>：如果指定的子串不存在，它们<strong>不会报错</strong>，而是安全地返回 <code>-1</code>。</li>
+</ul>
+<h4 id="index与-rindex">index()与 rindex()
+</h4><ul>
+<li><strong><code>index()</code></strong>：功能与 <code>find()</code> 类似，也是从左向右查找首次出现的位置。</li>
+<li><strong><code>rindex()</code></strong>：功能与 <code>rfind()</code> 类似，也是从右向左查找最后一次出现的位置。</li>
+<li><strong>严格性</strong>：如果子串不存在，它们<strong>会抛出异常</strong>（ValueError），终止程序运行。通常在确定子串一定存在时使用。</li>
+</ul>
+<h4 id="count">count()
+</h4><ul>
+<li>用于统计一个子串在当前字符串中一共出现了多少次。</li>
+<li>它同样支持指定查找的范围，如果不指定，则默认统计整个字符串中的总数。</li>
+</ul>
+<p>下面给出代码演示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># find(), rfind(), index(), rindex(), count()</span>
+</span></span><span class="line"><span class="cl"><span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;a,b,c,d,c,b,a&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">))</span>  <span class="c1"># 返回首次出现的位置，即0</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">))</span>  <span class="c1"># 返回最后一次出现的位置，即12</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">))</span>  <span class="c1"># 找不到返回-1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">))</span>  <span class="c1"># 找不到返回-1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">))</span>  <span class="c1"># 返回首次出现的位置，即0</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rindex</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">))</span>  <span class="c1"># 返回最后一次出现的位置，即12</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">))</span>  <span class="c1"># 找不到就报错</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rindex</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">))</span>  <span class="c1"># 找不到就报错</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">))</span>  <span class="c1"># 返回2</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="字符串拆分">字符串拆分
+</h3><p>Python 中用于将字符串拆分成多个部分的方法主要分为两组：<code>split</code> 系列和 <code>partition</code> 系列。它们的核心区别在于拆分后的结果形式以及对分隔符的处理。</p>
+<h4 id="split-与-rsplit">split() 与 rsplit()
+</h4><p>这两个方法的作用是<strong>以指定字符为界</strong>，将字符串拆开，并返回一个包含所有片段的<strong>列表</strong>。</p>
+<ul>
+<li><strong>方向不同</strong>：
+<ul>
+<li><code>split()</code>：从<strong>左往右</strong>进行切割。</li>
+<li><code>rsplit()</code>：从<strong>右往左</strong>进行切割。</li>
+<li><em>注：在大多数常见情况下（如不限制切割次数），两者的结果是一致的。</em></li>
+</ul>
+</li>
+<li><strong>结果特点</strong>：
+<ul>
+<li>切割后产生的是<strong>多个</strong>字符串片段。</li>
+<li>如果原字符串为空，返回空列表。</li>
+<li>可以通过参数 <code>maxsplit</code> 控制最大切割次数。</li>
+</ul>
+</li>
+</ul>
+<h4 id="partition-与-rpartition">partition() 与 rpartition()
+</h4><p>这两个方法同样是以指定字符为界，但拆分逻辑更严格，结果固定为<strong>3个部分</strong>的元组。</p>
+<ul>
+<li><strong>方向不同</strong>：
+<ul>
+<li><code>partition()</code>：从<strong>左往右</strong>找第一个匹配项进行切割。</li>
+<li><code>rpartition()</code>：从<strong>右往左</strong>找第一个匹配项进行切割。</li>
+</ul>
+</li>
+<li><strong>结果特点（强制三分割）</strong>：
+<ul>
+<li>无论字符串多长，结果都包含 <strong>3个元素</strong>。</li>
+<li>格式固定为：<code>(分隔符前的部分, 分隔符本身, 分隔符后的部分)</code>。</li>
+</ul>
+</li>
+<li><strong>特殊情况</strong>：
+<ul>
+<li>如果指定的分隔符不在原字符串中：
+<ul>
+<li><code>partition()</code> 返回：<code>(原字符串, '', '')</code></li>
+<li><code>rpartition()</code> 返回：<code>('', '', 原字符串)</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>下面给出代码演示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># split(), rsplit(), partition(), rpartition()</span>
+</span></span><span class="line"><span class="cl"><span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;a,b,c,d,c,b,a&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">))</span>  <span class="c1"># [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;c&#39;, &#39;b&#39;, &#39;a&#39;]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">))</span>  <span class="c1"># [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;c&#39;, &#39;b&#39;, &#39;a&#39;]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>  <span class="c1"># [&#39;a,b,c,d,c,b,a&#39;] 如果不传入分隔符，那么默认空白符即分隔符，比如&#39; &#39;,&#39;   &#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">maxsplit</span> <span class="o">=</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># [&#39;a&#39;, &#39;b&#39;, &#39;c,d,c,b,a&#39;]  # maxsplit指定最大分割次数</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">))</span>  <span class="c1"># (&#39;a,b,&#39;, &#39;c&#39;, &#39;,d,c,b,a&#39;)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">))</span>  <span class="c1"># (&#39;a,b,c,d,&#39;, &#39;c&#39;, &#39;,b,a&#39;)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;e&#39;</span><span class="p">))</span>  <span class="c1"># (&#39;a,b,c,d,c,b,a&#39;, &#39;&#39;, &#39;&#39;)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="s1">&#39;e&#39;</span><span class="p">))</span>  <span class="c1"># (&#39;&#39;, &#39;&#39;, &#39;a,b,c,d,c,b,a&#39;)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="字符串连接">字符串连接
+</h3><p>字符串连接一般使用<code>join()</code>函数，下面直接给出代码演示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># join()</span>
+</span></span><span class="line"><span class="cl"><span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>  <span class="c1"># 用&#39;,&#39;连接  a,b,c</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>  <span class="c1"># 用&#39;.&#39;连接  a.b.c</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>  <span class="c1"># 用&#39; &#39;连接  a b c</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 一些联动，清除分隔符,连成字符串</span>
+</span></span><span class="line"><span class="cl"><span class="n">s1</span> <span class="o">=</span> <span class="s1">&#39;a          b            c&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">s2</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">s3</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span>  <span class="c1"># abc</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="大小写">大小写
+</h3><p>Python提供了很多用于修改字符串大小写的函数，下面给出代码演示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># lower(), upper(), capitalize(), title(),swapcase()</span>
+</span></span><span class="line"><span class="cl"><span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;You drop the bomb on me~~&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>  <span class="c1"># 返回全大写  YOU DROP THE BOMB ON ME~~</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>  <span class="c1"># 返回全小写  you drop the bomb on me~~</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">title</span><span class="p">())</span>  <span class="c1"># 每个字母首字母大写  You Drop The Bomb On Me~~</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>  <span class="c1"># 字符串首字母大写  You drop the bomb on me~~</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">swapcase</span><span class="p">())</span>  <span class="c1"># 大小写互换  yOU DROP THE BOMB ON ME~~</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="字符串替换">字符串替换
+</h3><p>Python 中主要提供三种方式进行字符串替换，分别适用于不同的场景：</p>
+<h4 id="replace方法">replace()方法
+</h4><p>最直观的替换方式，基于<strong>子串</strong>进行匹配，将指定的旧字符串整体替换为新字符串。支持通过参数限制最大替换次数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># replace()</span>
+</span></span><span class="line"><span class="cl"><span class="n">s1</span> <span class="o">=</span> <span class="s1">&#39;a,a&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>  <span class="c1"># a,a</span>
+</span></span><span class="line"><span class="cl"><span class="n">s2</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>  <span class="c1"># 用&#39;b&#39;代替&#39;a&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>  <span class="c1"># b,b</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="maketrans-与-translate-方法">maketrans() 与 translate() 方法
+</h4><p>高效的<strong>字符级</strong>映射转换方案。</p>
+<ul>
+<li><code>maketrans()</code> 用于构建一张“翻译表”，定义字符之间的一一对应关系。</li>
+<li><code>translate()</code> 依据这张表对字符串中的字符进行批量转换。
+这种方式特别适合处理多对多的字符替换或简单的字符加密。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># maketrans(),translate()</span>
+</span></span><span class="line"><span class="cl"><span class="n">s1</span> <span class="o">=</span> <span class="s1">&#39;Now we need to take action&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">table</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="s1">&#39;Nowe&#39;</span><span class="p">,</span><span class="s1">&#39;Yete&#39;</span><span class="p">)</span>  <span class="c1"># 建立规则 N-Y o-e w-t e-e</span>
+</span></span><span class="line"><span class="cl"><span class="n">s2</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>  <span class="c1"># 按规则转义</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>  <span class="c1"># Yet te need te take actien</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="字符串删除两端字符">字符串删除两端字符
+</h3><p>这里主要用的的函数是<code>strip()</code>,<code>rstrip()</code>,<code>lstrip()</code>，下面给出代码演示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># strip()、rstrip()、lstrip()</span>
+</span></span><span class="line"><span class="cl"><span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;laabbccbbaal&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">))</span>  <span class="c1"># aabbccbbaa  两侧移除&#39;l&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">))</span>  <span class="c1"># aabbccbbaal  左侧移除&#39;l&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">))</span>  <span class="c1"># laabbccbbaa  右侧移除&#39;l&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 注意点  strip不会把后面的参数视为一个整体</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">))</span>  <span class="c1"># aabbccbbaa</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;la&#39;</span><span class="p">))</span>  <span class="c1"># bbccbb</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;lab&#39;</span><span class="p">))</span>  <span class="c1"># cc</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;labc&#39;</span><span class="p">))</span>  <span class="c1"># 什么都没了</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="字符串判断">字符串判断
+</h3><p>Python里提供了很多对字符串进行判断的函数，这里不一一介绍，直接展示代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 字符串判断</span>
+</span></span><span class="line"><span class="cl"><span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;Get it done!&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;G&#39;</span><span class="p">))</span>  <span class="c1"># 判断是否以&#39;S&#39;开头  返回True</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;!&#39;</span><span class="p">))</span>  <span class="c1"># 判断是否以&#39;！&#39;结尾  返回True</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">isalnum</span><span class="p">())</span>   <span class="c1"># 判断是否全为字母或数字  返回 False</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">isalpha</span><span class="p">())</span>   <span class="c1"># 判断是否全为字母  返回 False</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">isdigit</span><span class="p">())</span>   <span class="c1"># 判断是否全为数字  返回 False</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">isdecimal</span><span class="p">())</span> <span class="c1"># 判断是否全为十进制数字  返回 False</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">())</span> <span class="c1"># 判断是否全为数值字符  返回 False</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">isspace</span><span class="p">())</span>   <span class="c1"># 判断是否全为空白字符  返回 False</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">isupper</span><span class="p">())</span>   <span class="c1"># 判断是否全为大写字母  返回 False</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">islower</span><span class="p">())</span>   <span class="c1"># 判断是否全为小写字母  返回 False</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="字符串调整">字符串调整
+</h3><p>Python提供了一些函数用于调整字符串在指定宽度内的显示位置，或对字符串进行数字填充，使其达到特定的格式要求。</p>
+<p><strong><code>center()</code></strong>：将字符串<strong>居中</strong>放置在新字符串中。如果指定宽度大于原字符串长度，则在左右两侧使用指定字符（默认为空格）进行填充。
+<strong><code>ljust()</code></strong>：将字符串<strong>左对齐</strong>放置在新字符串中。如果指定宽度大于原字符串长度，则在右侧使用指定字符（默认为空格）进行填充。
+<strong><code>rjust()</code></strong>：将字符串<strong>右对齐</strong>放置在新字符串中。如果指定宽度大于原字符串长度，则在左侧使用指定字符（默认为空格）进行填充。
+<strong><code>zfill()</code></strong>：专门用于<strong>左侧以字符 &lsquo;0&rsquo; 进行填充</strong>，通常用于生成固定位数的数字字符串或补零对齐。</p>
+<p>下面给出代码演示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># center()、ljust()、rjust()、zfill()</span>
+</span></span><span class="line"><span class="cl"><span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;Big Door&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>  <span class="c1"># 扩充长度为20，居中，空格填充  输出      Big Door      </span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="s1">&#39;=&#39;</span><span class="p">))</span>  <span class="c1"># 扩充长度为20，居中，&#39;=&#39;填充  输出======Big Door======</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="s1">&#39;=&#39;</span><span class="p">))</span>  <span class="c1"># 扩充长度为20，左对齐，&#39;=&#39;填充  输出Big Door============</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="s1">&#39;=&#39;</span><span class="p">))</span>  <span class="c1"># 扩充长度为20，右对齐，&#39;=&#39;填充  输出============Big Door</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>  <span class="c1"># # 扩充长度为20，右对齐，&#39;0&#39;填充  输出000000000000Big Door</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="其他操作">其他操作
+</h3><p>这里给出一些别的字符串操作的演示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 其他操作</span>
+</span></span><span class="line"><span class="cl"><span class="n">s1</span> <span class="o">=</span> <span class="s1">&#39;abc&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>  <span class="c1"># 返回长度</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>  <span class="c1"># 返回最大 c</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>  <span class="c1"># 返回最小 a</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span><span class="n">s1</span><span class="p">)))</span>  <span class="c1"># 打包组合 [(&#39;a&#39;, &#39;a&#39;), (&#39;b&#39;, &#39;b&#39;), (&#39;c&#39;, &#39;c&#39;)]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># eval函数可以把字符串转成表达式求值</span>
+</span></span><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="mi">3</span>
+</span></span><span class="line"><span class="cl"><span class="n">s2</span> <span class="o">=</span> <span class="s1">&#39;a+b&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>  <span class="c1"># a+b</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">s2</span><span class="p">))</span>  <span class="c1"># 5</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
 </section>
 
 

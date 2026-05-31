@@ -316,7 +316,7 @@ Python共支持三种字符串格式化方式，分别是format方法、%运算�
 &lt;/div&gt;
 &lt;/div&gt;&lt;h3 id=&#34;字符串替换&#34;&gt;字符串替换
 &lt;/h3&gt;&lt;p&gt;Python 中主要提供三种方式进行字符串替换，分别适用于不同的场景：&lt;/p&gt;
-&lt;h4 id=&#34;replace方法&#34;&gt;replace()方法
+&lt;h4 id=&#34;replace&#34;&gt;replace()
 &lt;/h4&gt;&lt;p&gt;最直观的替换方式，基于&lt;strong&gt;子串&lt;/strong&gt;进行匹配，将指定的旧字符串整体替换为新字符串。支持通过参数限制最大替换次数。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -334,7 +334,7 @@ Python共支持三种字符串格式化方式，分别是format方法、%运算�
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;s2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# b,b&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h4 id=&#34;maketrans-与-translate-方法&#34;&gt;maketrans() 与 translate() 方法
+&lt;/div&gt;&lt;h4 id=&#34;maketrans-与-translate&#34;&gt;maketrans() 与 translate()
 &lt;/h4&gt;&lt;p&gt;高效的&lt;strong&gt;字符级&lt;/strong&gt;映射转换方案。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;maketrans()&lt;/code&gt; 用于构建一张“翻译表”，定义字符之间的一一对应关系。&lt;/li&gt;

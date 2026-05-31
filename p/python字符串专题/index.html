@@ -277,8 +277,8 @@
         <li><a href="#大小写">大小写</a></li>
         <li><a href="#字符串替换">字符串替换</a>
           <ol>
-            <li><a href="#replace方法">replace()方法</a></li>
-            <li><a href="#maketrans-与-translate-方法">maketrans() 与 translate() 方法</a></li>
+            <li><a href="#replace">replace()</a></li>
+            <li><a href="#maketrans-与-translate">maketrans() 与 translate()</a></li>
           </ol>
         </li>
         <li><a href="#字符串删除两端字符">字符串删除两端字符</a></li>
@@ -673,7 +673,7 @@ Python共支持三种字符串格式化方式，分别是format方法、%运算�
 </div>
 </div><h3 id="字符串替换">字符串替换
 </h3><p>Python 中主要提供三种方式进行字符串替换，分别适用于不同的场景：</p>
-<h4 id="replace方法">replace()方法
+<h4 id="replace">replace()
 </h4><p>最直观的替换方式，基于<strong>子串</strong>进行匹配，将指定的旧字符串整体替换为新字符串。支持通过参数限制最大替换次数。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -691,7 +691,7 @@ Python共支持三种字符串格式化方式，分别是format方法、%运算�
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>  <span class="c1"># b,b</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="maketrans-与-translate-方法">maketrans() 与 translate() 方法
+</div><h4 id="maketrans-与-translate">maketrans() 与 translate()
 </h4><p>高效的<strong>字符级</strong>映射转换方案。</p>
 <ul>
 <li><code>maketrans()</code> 用于构建一张“翻译表”，定义字符之间的一一对应关系。</li>

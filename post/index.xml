@@ -7,7 +7,15 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Wind Whistler</copyright>
-        <lastBuildDate>Sun, 31 May 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Mon, 01 Jun 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Python文件专题</title>
+        <link>https://example.com/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/</link>
+        <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/</guid>
+        <description>&lt;img src="https://example.com/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/Garden.png" alt="Featured image of post Python文件专题" /&gt;</description>
+        </item>
+        <item>
         <title>Python正则化专题</title>
         <link>https://example.com/p/python%E6%AD%A3%E5%88%99%E5%8C%96%E4%B8%93%E9%A2%98/</link>
         <pubDate>Sun, 31 May 2026 00:00:00 +0000</pubDate>
@@ -5770,6 +5778,17 @@ $$&lt;p&gt;其中：&lt;/p&gt;
 &lt;/div&gt;
 &lt;p&gt;Ray 是一个高性能的分布式计算框架，它最大的特点就是非常用户友好。对于开发者来说，几乎不需要改变原有的代码逻辑，只需要在普通的 Python 函数前加上一个简单的装饰器（&lt;code&gt;@ray.remote&lt;/code&gt;），就能轻松地把单机程序转化为可以同时在多核 CPU 甚至多台机器上运行的分布式程序，极大地降低了并行计算的门槛。&lt;/p&gt;
 </description>
+        </item>
+        <item>
+        <title>Seattle, 2021</title>
+        <link>https://example.com/p/seattle-2021/</link>
+        <pubDate>Sat, 14 Oct 2023 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/p/seattle-2021/</guid>
+        <description>&lt;img src="https://example.com/p/seattle-2021/Seattle.png" alt="Featured image of post Seattle, 2021" /&gt;&lt;h2 id=&#34;从这里开始&#34;&gt;从这里开始
+&lt;/h2&gt;&lt;h2 id=&#34;曲目&#34;&gt;曲目
+&lt;/h2&gt;&lt;h2 id=&#34;结语&#34;&gt;结语
+&lt;/h2&gt;</description>
         </item>
         
     </channel>

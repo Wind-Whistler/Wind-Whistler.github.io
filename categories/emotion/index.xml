@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Emotion on Wind Whistler</title>
+        <link>https://example.com/categories/emotion/</link>
+        <description>Recent content in Emotion on Wind Whistler</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <copyright>Wind Whistler</copyright>
+        <lastBuildDate>Sat, 14 Oct 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/categories/emotion/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Seattle, 2021</title>
+        <link>https://example.com/p/seattle-2021/</link>
+        <pubDate>Sat, 14 Oct 2023 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/p/seattle-2021/</guid>
+        <description>&lt;img src="https://example.com/p/seattle-2021/Seattle.png" alt="Featured image of post Seattle, 2021" /&gt;&lt;h2 id=&#34;从这里开始&#34;&gt;从这里开始
+&lt;/h2&gt;&lt;h2 id=&#34;曲目&#34;&gt;曲目
+&lt;/h2&gt;&lt;h2 id=&#34;结语&#34;&gt;结语
+&lt;/h2&gt;</description>
+        </item>
+        
+    </channel>
+</rss>

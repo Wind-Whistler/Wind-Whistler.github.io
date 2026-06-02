@@ -262,9 +262,24 @@
         <li><a href="#代码演示">代码演示</a></li>
       </ol>
     </li>
-    <li><a href="#卷积">卷积</a></li>
+    <li><a href="#卷积">卷积</a>
+      <ol>
+        <li><a href="#为什么要卷积">为什么要卷积</a></li>
+        <li><a href="#怎么卷积">怎么卷积</a></li>
+        <li><a href="#卷积的好处">卷积的好处</a></li>
+      </ol>
+    </li>
     <li><a href="#池化">池化</a></li>
     <li><a href="#cnn结构">CNN结构</a></li>
+    <li><a href="#代码展示">代码展示</a>
+      <ol>
+        <li><a href="#step1生成数据观察数据">Step1:生成数据，观察数据</a></li>
+        <li><a href="#step2定义模型">Step2:定义模型</a></li>
+        <li><a href="#step3实例化模型设定损失函数和优化器">Step3:实例化模型，设定损失函数和优化器</a></li>
+        <li><a href="#step4训练模型">Step4:训练模型</a></li>
+        <li><a href="#step5打印结果">Step5:打印结果</a></li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -376,6 +391,7 @@
 <li>卷积</li>
 <li>池化</li>
 <li>CNN结构</li>
+<li>代码展示</li>
 </ul>
 <h2 id="图片结构简介">图片结构简介
 </h2><h3 id="图片的存储结构">图片的存储结构
@@ -502,9 +518,203 @@ $$[N, H, W, C]$$<p>
   <img src="ruin_grey.png" alt="灰色" width="800">
 </div>
 <h2 id="卷积">卷积
-</h2><h2 id="池化">池化
-</h2><h2 id="cnn结构">CNN结构
-</h2>
+</h2><h3 id="为什么要卷积">为什么要卷积
+</h3><p>直接对图像使用全连接层（MLP）存在明显缺陷：将二维图像展平会破坏像素间的空间邻接关系，且全连接带来参数爆炸，导致模型极易过拟合。为解决这些问题，卷积神经网络引入了局部感受野与参数共享两大归纳偏置。</p>
+<h3 id="怎么卷积">怎么卷积
+</h3><p>卷积的操作逻辑非常直观：使用一个较小的卷积核（如 3×3）作为特征提取器，在输入图像上逐格滑动。在每个窗口位置，卷积核与对应像素做乘加运算，最终生成一张特征图。值得注意的是，深度学习中的“卷积”实际上是数学上的互相关（未进行核翻转），但由于权重通过数据学习，这并不影响模型表达能力。</p>
+<p>单靠卷积不足以完成任务，实际应用中通常配合汇聚（Pooling）层（如最大汇聚或平均汇聚）进行降维，在减少计算量的同时增强模型对微小位移的鲁棒性。此外，卷积层有三个关键超参数需设定：核大小（决定感受野）、步幅（控制滑动步长，大于1时起到降采样作用）以及填充（边缘补零以维持尺寸）。输出特征图的尺寸遵循公式：$W_{out}=\lfloor (W_{in}-K+2P)/S \rfloor +1$。</p>
+<p>在处理彩色图像或多层堆叠时，通道数至关重要：若输入通道为 $C_{in}$，输出通道为 $C_{out}$，则需要 $C_{in} \times C_{out}$ 个卷积核，每个输出通道代表一种特定的抽象特征（如边缘或纹理）。随着网络加深，特征会从浅层的边缘逐步组合为深层的语义概念。从 LeNet 奠定基础，到 AlexNet 引入 ReLU 与 Dropout，再到 VGG 验证小卷积核堆叠的有效性，直至 ResNet 通过残差连接解决深层网络退化问题，CNN 的演进始终围绕着提升特征提取效率与优化稳定性展开。</p>
+<h3 id="卷积的好处">卷积的好处
+</h3><p>卷积的核心优势在于极高的参数效率：无论输入图像多大，可学习参数仅存在于微小的卷积核中，避免了全连接层的冗余，使得深层网络在图像任务上的训练成为可能。</p>
+<h2 id="池化">池化
+</h2><p>池化的核心作用是降维与信息压缩。在连续的卷积层之间加入池化（通常为 2×2 窗口），可以将特征图的尺寸减半，在显著降低计算量的同时，赋予模型对微小位移的平移不变性（即目标稍微移动不影响识别结果）。最常见的实现是最大池化，即只保留窗口内最强烈的响应值。</p>
+<p>随着网络不断进行“卷积 → 池化”的堆叠，特征图会发生质变：空间尺寸（宽高）逐渐缩小，而通道数（特征种类）逐渐增加。原始像素最终会被转化为 7×7×512 这类极小空间尺寸、极高通道维度的特征张量。此时，特征已不再是可视的图像，而是高度抽象的语义证据。</p>
+<p>最终的图像识别通过特征聚合完成：传统做法是将特征拉平为一维向量接入全连接层；现代网络则常用全局平均池化直接将空间压缩，输出一个类别向量。至此，池化完成了从“像素空间”到“语义向量”的转换。</p>
+<h2 id="cnn结构">CNN结构
+</h2><p><strong>CNN 是一类模型的统称，而非单一模型。</strong> 其核心定义在于：只要网络架构中大量使用了“卷积核”进行特征提取，这类模型都属于 CNN 家族。 相比于全连接层，卷积核带来的参数共享和局部感受野是其区别于其他网络的根本特征。</p>
+<p>在 CNN 这一大类下，包含多种经典的具体架构：</p>
+<ul>
+<li>LeNet-5：早期奠基之作，确立了基础结构。</li>
+<li>AlexNet / VGG / ResNet：后续演进的重要模型，特别是 ResNet 引入的残差连接解决了深层网络的退化问题。</li>
+</ul>
+<p>通用的 CNN 工作流程如下：</p>
+<ol>
+<li><strong>特征提取阶段</strong>：通常采用 <strong>“卷积 $\rightarrow$ 池化 $\rightarrow$ 卷积 $\rightarrow$ 池化”</strong> 的循环堆叠结构。通过反复压缩空间尺寸（宽高）并增加通道数（特征种类），将原始像素转化为高度抽象的语义特征。</li>
+<li><strong>分类/预测阶段</strong>：当特征图被压缩至较小尺寸（如 7×7）且通道数极大时，空间位置关系已不再重要。此时将特征图<strong>拉平（Flatten）<strong>为一维向量，接入</strong>全连接层（MLP）</strong>，最终输出分类概率或回归值。</li>
+</ol>
+<p>下面给出一个示意图，展示的是LeNet-5架构的卷积神经网络：</p>
+<div align="center">
+  <img src="LeNet.png" alt="示意图" width="800">
+</div>
+<h2 id="代码展示">代码展示
+</h2><p>下面以MINST数据集的分类任务做一个简单演示：</p>
+<h3 id="step1生成数据观察数据">Step1:生成数据，观察数据
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">datasets</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">torchvision.transforms</span> <span class="kn">import</span> <span class="n">ToTensor</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123456</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">123456</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">mnist</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span>   <span class="c1"># 这里的Minst是一个TensorDataset</span>
+</span></span><span class="line"><span class="cl">    <span class="n">root</span><span class="o">=</span><span class="s2">&#34;data&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">transform</span><span class="o">=</span><span class="n">ToTensor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">mnist</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># loader只是一个可迭代对象，不是迭代器</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">loader</span><span class="p">))</span>  <span class="c1"># iter()把loader变成迭代器，next()取出迭代器下一个元素</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># torch.Size([256, 1, 28, 28])</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># torch.Size([256])</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="step2定义模型">Step2:定义模型
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">CNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">out_channels</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">kernel_size</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">stride</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># in_channels 输入通道 # out_channels 输出通道 kernel_size 卷积核大小 stride 步长</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">ac1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>  <span class="c1"># 激活函数提高复杂度</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">pool1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="n">kernel_size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 池化层对特征图进行缩略</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span> <span class="o">=</span> <span class="mi">720</span><span class="p">,</span> <span class="n">out_features</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>  <span class="c1"># 线性层作MLP</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># 卷积</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ac1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># 激活</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># 池化</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">start_dim</span> <span class="o">=</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># 注意设置start_dim = 1再拉平，因为dim0代表样本序号</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">dim</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># 算一个softmax</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">x</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="step3实例化模型设定损失函数和优化器">Step3:实例化模型，设定损失函数和优化器
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">CNN</span><span class="p">()</span> <span class="c1"># 实例化模型</span>
+</span></span><span class="line"><span class="cl"><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">NLLLoss</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="step4训练模型">Step4:训练模型
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">num_epoch</span> <span class="o">=</span> <span class="mi">30</span>
+</span></span><span class="line"><span class="cl"><span class="n">LOSS</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epoch</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">L</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">X_batch</span><span class="p">,</span> <span class="n">y_batch</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X_batch</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">y_pred</span><span class="p">),</span><span class="n">y_batch</span><span class="p">)</span>  <span class="c1"># NLLLoss 要求输入的是对数概率，个人不是很喜欢NLLLoss，因为容易数字不稳定然后爆炸</span>
+</span></span><span class="line"><span class="cl">        <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">LOSS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">L</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Epoch:</span><span class="si">{</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">, loss:</span><span class="si">{</span><span class="n">LOSS</span><span class="p">[</span><span class="n">epoch</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="step5打印结果">Step5:打印结果
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">LOSS</span><span class="p">,</span><span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Epoch&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Training Curve&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;Pic01.png&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最终结果如下图所示：</p>
+<div align="center">
+  <img src="Pic01.png" alt="训练图" width="800">
+</div>
 </section>
 
 

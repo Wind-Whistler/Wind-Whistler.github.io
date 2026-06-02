@@ -2587,7 +2587,7 @@ L-BFGS优化器利用收到的精确梯度和损失值，更新参数 $\beta$ �
 &lt;h2 id=&#34;图片结构简介&#34;&gt;图片结构简介
 &lt;/h2&gt;&lt;h3 id=&#34;图片的存储结构&#34;&gt;图片的存储结构
 &lt;/h3&gt;&lt;p&gt;图片在计算机中以多维数组（张量）的形式存储。&lt;/p&gt;
-&lt;h4 id=&#34;单张图片三维数组-h-w-c&#34;&gt;单张图片：三维数组 &lt;code&gt;[H, W, C]&lt;/code&gt;
+&lt;h4 id=&#34;单张图片三维数组&#34;&gt;单张图片：三维数组
 &lt;/h4&gt;&lt;table&gt;
 	&lt;thead&gt;
 			&lt;tr&gt;

@@ -200,10 +200,14 @@ $$\begin{pmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{pmatrix} = \begin{pmatrix} \i
 通过OLS直接估计所有参数，其中 $\iota_T$ 为全1向量，$\alpha_i$ 为个体固定效应。&lt;/p&gt;
 &lt;h5 id=&#34;组内估计法&#34;&gt;组内估计法
 &lt;/h5&gt;&lt;p&gt;先对数据进行“组内离差”变换，消去个体固定效应：
-对每个变量计算个体均值：$\bar{Y}&lt;em&gt;i = \frac{1}{T}\sum&lt;/em&gt;{t=1}^T Y_{it}$，$\bar{X}&lt;em&gt;i = \frac{1}{T}\sum&lt;/em&gt;{t=1}^T X_{it}$
-做离差变换：$Y_{it}-\bar{Y}&lt;em&gt;i = (X&lt;/em&gt;{it}-\bar{X}&lt;em&gt;i)\beta + (\mu&lt;/em&gt;{it}-\bar{\mu}_i)$
-对变换后的模型做OLS估计，得到 $\hat{\beta}$，再代入原模型计算个体效应估计值：$\hat{\alpha}_i = \bar{Y}_i - \bar{X}_i\hat{\beta}$。&lt;/p&gt;
-&lt;h4 id=&#34;固定效应变系数模型估计&#34;&gt;固定效应变系数模型估计
+对每个变量计算个体均值：&lt;/p&gt;
+$$\bar{Y}_i = \frac{1}{T}\sum_{t=1}^T Y_{it}$$&lt;p&gt;
+&lt;/p&gt;
+$$\bar{X}_i = \frac{1}{T}\sum_{t=1}^T X_{it}$$&lt;p&gt;&lt;br&gt;
+做离差变换：&lt;/p&gt;
+$$Y_{it}-\bar{Y}_i = (X_{it}-\bar{X}_i)\beta + (\mu_{it}-\bar{\mu}_i)$$&lt;p&gt;&lt;br&gt;
+对变换后的模型做OLS估计，得到 $\hat{\beta}$，再代入原模型计算个体效应估计值：&lt;/p&gt;
+$$\hat{\alpha}_i = \bar{Y}_i - \bar{X}_i\hat{\beta}$$&lt;h4 id=&#34;固定效应变系数模型估计&#34;&gt;固定效应变系数模型估计
 &lt;/h4&gt;&lt;h5 id=&#34;截面个体不相关场景&#34;&gt;截面个体不相关场景
 &lt;/h5&gt;&lt;p&gt;若不同个体的随机干扰项无协方差（$E(\mu_i\mu_j&amp;rsquo;)=0$），可直接对每个个体单独做时间序列OLS估计，结果与系统估计等价，无信息损失。&lt;/p&gt;
 &lt;h5 id=&#34;截面个体相关场景&#34;&gt;截面个体相关场景

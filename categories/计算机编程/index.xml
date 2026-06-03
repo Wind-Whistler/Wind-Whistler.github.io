@@ -13,7 +13,69 @@
         <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/</guid>
-        <description>&lt;img src="https://example.com/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/Garden.png" alt="Featured image of post Python文件专题" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/Garden.png" alt="Featured image of post Python文件专题" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;文件的类型&lt;/li&gt;
+&lt;li&gt;文件的打开与关闭&lt;/li&gt;
+&lt;li&gt;文件内容读取&lt;/li&gt;
+&lt;li&gt;文件数据写入&lt;/li&gt;
+&lt;li&gt;文件夹操作&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;文件的类型&#34;&gt;文件的类型
+&lt;/h2&gt;&lt;h3 id=&#34;文件的定义&#34;&gt;文件的定义
+&lt;/h3&gt;&lt;p&gt;文件是数据的抽象和集合，是辅助存储器上的数据序列。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;存储状态：数据存放在硬盘中。&lt;/li&gt;
+&lt;li&gt;占用状态：程序对文件进行独占性处理。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;文件的两种类型&#34;&gt;文件的两种类型
+&lt;/h3&gt;&lt;p&gt;所有文件本质上均以二进制形式存储，仅展示方式不同。&lt;/p&gt;
+&lt;h4 id=&#34;文本文件&#34;&gt;文本文件
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;定义&lt;/strong&gt;：由单一特定编码（如UTF-8、GBK）组成的文件。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;本质&lt;/strong&gt;：存储着的长字符串。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;适用&lt;/strong&gt;：&lt;code&gt;.txt&lt;/code&gt;、&lt;code&gt;.py&lt;/code&gt;、&lt;code&gt;.csv&lt;/code&gt; 等。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;二进制文件&#34;&gt;二进制文件
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;定义&lt;/strong&gt;：直接由比特0和1组成，没有统一的字符编码。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;本质&lt;/strong&gt;：具有特定的文件格式（如PNG的图像压缩规则）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;适用&lt;/strong&gt;：&lt;code&gt;.png&lt;/code&gt;、&lt;code&gt;.avi&lt;/code&gt;、&lt;code&gt;.exe&lt;/code&gt;、&lt;code&gt;.zip&lt;/code&gt; 等。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;核心区别&#34;&gt;核心区别
+&lt;/h4&gt;&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;打开方式&lt;/th&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;代码&lt;/th&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;输出结果&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;文本模式&lt;/strong&gt;&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;&lt;code&gt;open(&amp;quot;f.txt&amp;quot;, &amp;quot;rt&amp;quot;)&lt;/code&gt;&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;&lt;code&gt;中国是个伟大的国家!&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;二进制模式&lt;/strong&gt;&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;&lt;code&gt;open(&amp;quot;f.txt&amp;quot;, &amp;quot;rb&amp;quot;)&lt;/code&gt;&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;&lt;code&gt;b&#39;\xd6\xd0\xb9\xfa...&#39;&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;编码的作用&#34;&gt;编码的作用
+&lt;/h3&gt;&lt;p&gt;编码是字符与二进制之间的翻译规则。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;同字不同码：同一文本，使用不同编码，生成的二进制不同。
+&lt;ul&gt;
+&lt;li&gt;“哈”(UTF-8) → &lt;code&gt;E5 93 88&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;“哈”(GBK) → &lt;code&gt;B9 FE&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;同码不同文：同一二进制，使用不同编码解码，得到的文本不同（乱码根源）。&lt;/li&gt;
+&lt;/ul&gt;
+</description>
         </item>
         <item>
         <title>Python正则化专题</title>
@@ -21,7 +83,14 @@
         <pubDate>Sun, 31 May 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/python%E6%AD%A3%E5%88%99%E5%8C%96%E4%B8%93%E9%A2%98/</guid>
-        <description>&lt;img src="https://example.com/p/python%E6%AD%A3%E5%88%99%E5%8C%96%E4%B8%93%E9%A2%98/Garden.png" alt="Featured image of post Python正则化专题" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/python%E6%AD%A3%E5%88%99%E5%8C%96%E4%B8%93%E9%A2%98/Garden.png" alt="Featured image of post Python正则化专题" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;正则表达式语法&lt;/li&gt;
+&lt;li&gt;在Python里使用正则表达式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;正则表达式语法&#34;&gt;正则表达式语法
+&lt;/h2&gt;&lt;h2 id=&#34;在python里使用正则表达式&#34;&gt;在Python里使用正则表达式
+&lt;/h2&gt;</description>
         </item>
         <item>
         <title>Python字符串专题</title>

@@ -226,7 +226,51 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#文件的类型">文件的类型</a>
+      <ol>
+        <li><a href="#文件的定义">文件的定义</a></li>
+        <li><a href="#文件的两种类型">文件的两种类型</a>
+          <ol>
+            <li><a href="#文本文件">文本文件</a></li>
+            <li><a href="#二进制文件">二进制文件</a></li>
+            <li><a href="#核心区别">核心区别</a></li>
+          </ol>
+        </li>
+        <li><a href="#编码的作用">编码的作用</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -309,7 +353,69 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>文件的类型</li>
+<li>文件的打开与关闭</li>
+<li>文件内容读取</li>
+<li>文件数据写入</li>
+<li>文件夹操作</li>
+</ul>
+<h2 id="文件的类型">文件的类型
+</h2><h3 id="文件的定义">文件的定义
+</h3><p>文件是数据的抽象和集合，是辅助存储器上的数据序列。</p>
+<ul>
+<li>存储状态：数据存放在硬盘中。</li>
+<li>占用状态：程序对文件进行独占性处理。</li>
+</ul>
+<h3 id="文件的两种类型">文件的两种类型
+</h3><p>所有文件本质上均以二进制形式存储，仅展示方式不同。</p>
+<h4 id="文本文件">文本文件
+</h4><ul>
+<li><strong>定义</strong>：由单一特定编码（如UTF-8、GBK）组成的文件。</li>
+<li><strong>本质</strong>：存储着的长字符串。</li>
+<li><strong>适用</strong>：<code>.txt</code>、<code>.py</code>、<code>.csv</code> 等。</li>
+</ul>
+<h4 id="二进制文件">二进制文件
+</h4><ul>
+<li><strong>定义</strong>：直接由比特0和1组成，没有统一的字符编码。</li>
+<li><strong>本质</strong>：具有特定的文件格式（如PNG的图像压缩规则）。</li>
+<li><strong>适用</strong>：<code>.png</code>、<code>.avi</code>、<code>.exe</code>、<code>.zip</code> 等。</li>
+</ul>
+<h4 id="核心区别">核心区别
+</h4><div class="table-wrapper"><table>
+	<thead>
+			<tr>
+					<th style="text-align: left">打开方式</th>
+					<th style="text-align: left">代码</th>
+					<th style="text-align: left">输出结果</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td style="text-align: left"><strong>文本模式</strong></td>
+					<td style="text-align: left"><code>open(&quot;f.txt&quot;, &quot;rt&quot;)</code></td>
+					<td style="text-align: left"><code>中国是个伟大的国家!</code></td>
+			</tr>
+			<tr>
+					<td style="text-align: left"><strong>二进制模式</strong></td>
+					<td style="text-align: left"><code>open(&quot;f.txt&quot;, &quot;rb&quot;)</code></td>
+					<td style="text-align: left"><code>b'\xd6\xd0\xb9\xfa...'</code></td>
+			</tr>
+	</tbody>
+</table></div>
+<h3 id="编码的作用">编码的作用
+</h3><p>编码是字符与二进制之间的翻译规则。</p>
+<ul>
+<li>同字不同码：同一文本，使用不同编码，生成的二进制不同。
+<ul>
+<li>“哈”(UTF-8) → <code>E5 93 88</code></li>
+<li>“哈”(GBK) → <code>B9 FE</code></li>
+</ul>
+</li>
+<li>同码不同文：同一二进制，使用不同编码解码，得到的文本不同（乱码根源）。</li>
+</ul>
+
 </section>
 
 

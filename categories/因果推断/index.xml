@@ -152,7 +152,260 @@ $$\ln L = \sum_{y_i &gt; 0} \ln\left[ \frac{1}{\sigma}\phi\left(\frac{y_i - X_i\
 &lt;/div&gt;
 &lt;p&gt;&lt;em&gt;注意：构造归并数据（Tobit）似然函数时，必须基于一个严格前提，即假设被归并（如取值为0）的样本与未受限制的观测样本具有相同的分布（如同为正态分布）；若该假设不成立（即不可观测部分与可观测部分的分布特性存在差异），则无法构建有效的似然函数，导致最大似然估计失效，此时应采用Heckman两步估计法作为替代方案，以修正样本选择带来的偏误。&lt;/em&gt;&lt;/p&gt;
 &lt;h2 id=&#34;固定效应面板数据模型&#34;&gt;固定效应面板数据模型
-&lt;/h2&gt;</description>
+&lt;/h2&gt;&lt;h3 id=&#34;基本概念&#34;&gt;基本概念
+&lt;/h3&gt;&lt;h4 id=&#34;面板数据定义&#34;&gt;面板数据定义
+&lt;/h4&gt;&lt;p&gt;面板数据（Panel Data，也称平行数据、纵向数据）是在时间序列上取多个截面，每个截面同时选取相同个体构成的样本数据，兼具截面维度和时间维度。&lt;/p&gt;
+&lt;h4 id=&#34;面板数据的优势&#34;&gt;面板数据的优势
+&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;增加自由度，提升统计推断有效性；&lt;/li&gt;
+&lt;li&gt;降低变量间共线性，改善参数估计效率；&lt;/li&gt;
+&lt;li&gt;帮助识别竞争模型的合理性，减少估计偏差。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;固定效应与随机效应的区别&#34;&gt;固定效应与随机效应的区别
+&lt;/h4&gt;&lt;p&gt;两类模型的核心差异是对&lt;strong&gt;不可观测的个体异质性&lt;/strong&gt;的处理假设：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;固定效应模型：认为不可观测的个体特征与模型中的解释变量相关，将这些特征纳入截距项，以截距差异刻画个体异质性，通过对截距的估计控制个体效应。&lt;/li&gt;
+&lt;li&gt;随机效应模型：认为不可观测的个体特征与解释变量无关，将其纳入随机干扰项，通过特殊的估计方法处理。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;实际应用中更常用固定效应：经济场景中未观测到的个体因素（如地区禀赋、企业特质）与已纳入模型的变量（如收入、投资）普遍存在相关性，若误用随机效应会因内生性导致估计偏误，固定效应可有效规避这一问题。&lt;/p&gt;
+&lt;h3 id=&#34;模型概览&#34;&gt;模型概览
+&lt;/h3&gt;&lt;h4 id=&#34;六类经典线性面板模型&#34;&gt;六类经典线性面板模型
+&lt;/h4&gt;&lt;p&gt;记 $i$ 为截面个体、$t$ 为时间、$Y$ 为被解释变量、$X$ 为解释变量向量、$\alpha$ 为截距、$\beta$ 为系数向量、$\mu$ 为随机干扰项：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;变系数模型&lt;/strong&gt;：$Y_{it}=\alpha_i + X_{it}\beta_i + \mu_{it}$，个体间截距、系数均存在差异。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;变截距模型&lt;/strong&gt;：$Y_{it}=\alpha_i + X_{it}\beta + \mu_{it}$，个体间截距不同，系数无差异。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;截距系数不变模型&lt;/strong&gt;：$Y_{it}=\alpha + X_{it}\beta + \mu_{it}$，个体间截距、系数均无差异，等价于混合回归模型。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;不变截距变系数模型&lt;/strong&gt;：$Y_{it}=\alpha + X_{it}\beta_i + \mu_{it}$，个体间截距相同，系数有差异，实际应用极少。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;时点变系数模型&lt;/strong&gt;：$Y_{it}=\alpha_t + X_{it}\beta_t + \mu_{it}$，不同时点截距、系数存在差异，实际应用较少。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;双向固定效应模型&lt;/strong&gt;：$Y_{it}=\alpha_i + \gamma_t + X_{it}\beta + \mu_{it}$，同时控制个体异质性和时点异质性，截距随个体、时间变化，系数无差异，是常用模型形式。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;模型选择的f检验&#34;&gt;模型选择的F检验
+&lt;/h4&gt;&lt;p&gt;通过约束检验判断模型形式，核心是先检验截距差异，再检验系数差异：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;检验“截距、系数均不变”（模型3） vs “截距变、系数不变”（模型2）：
+
+$$F=\frac{(RSS_3-RSS_2)/(n-1)}{RSS_2/(nT-n-K)} \sim F(n-1,nT-n-K)$$
+其中 $RSS$ 为对应模型的残差平方和，$n$ 为个体数，$T$ 为时间长度，$K$ 为解释变量个数。若拒绝原假设，说明存在个体截距差异。&lt;/li&gt;
+&lt;li&gt;进一步检验“截距变、系数不变”（模型2） vs “截距、系数均变”（模型1）：
+
+$$F=\frac{(RSS_2-RSS_1)/[(n-1)K]}{RSS_1/[nT-n(K+1)]} \sim F((n-1)K,nT-n(K+1))$$
+若拒绝原假设，说明个体间系数也存在差异。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;参数估计方法&#34;&gt;参数估计方法
+&lt;/h3&gt;&lt;h4 id=&#34;固定效应变截距模型估计&#34;&gt;固定效应变截距模型估计
+&lt;/h4&gt;&lt;h5 id=&#34;最小二乘虚拟变量法&#34;&gt;最小二乘虚拟变量法
+&lt;/h5&gt;&lt;p&gt;为每个个体设置虚拟变量，直接将模型改写为包含个体虚拟变量的多元回归：
+&lt;/p&gt;
+$$\begin{pmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{pmatrix} = \begin{pmatrix} \iota_T &amp; X_1 &amp; I_T &amp; 0 &amp; \dots &amp; 0 \\ \iota_T &amp; X_2 &amp; 0 &amp; I_T &amp; \dots &amp; 0 \\ \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ \iota_T &amp; X_n &amp; 0 &amp; 0 &amp; \dots &amp; I_T \end{pmatrix} \begin{pmatrix} \alpha \\ \beta \\ \alpha_1 \\ \alpha_2 \\ \vdots \\ \alpha_n \end{pmatrix} + \begin{pmatrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_n \end{pmatrix}$$&lt;p&gt;
+通过OLS直接估计所有参数，其中 $\iota_T$ 为全1向量，$\alpha_i$ 为个体固定效应。&lt;/p&gt;
+&lt;h5 id=&#34;组内估计法&#34;&gt;组内估计法
+&lt;/h5&gt;&lt;p&gt;先对数据进行“组内离差”变换，消去个体固定效应：
+对每个变量计算个体均值：$\bar{Y}&lt;em&gt;i = \frac{1}{T}\sum&lt;/em&gt;{t=1}^T Y_{it}$，$\bar{X}&lt;em&gt;i = \frac{1}{T}\sum&lt;/em&gt;{t=1}^T X_{it}$
+做离差变换：$Y_{it}-\bar{Y}&lt;em&gt;i = (X&lt;/em&gt;{it}-\bar{X}&lt;em&gt;i)\beta + (\mu&lt;/em&gt;{it}-\bar{\mu}_i)$
+对变换后的模型做OLS估计，得到 $\hat{\beta}$，再代入原模型计算个体效应估计值：$\hat{\alpha}_i = \bar{Y}_i - \bar{X}_i\hat{\beta}$。&lt;/p&gt;
+&lt;h4 id=&#34;固定效应变系数模型估计&#34;&gt;固定效应变系数模型估计
+&lt;/h4&gt;&lt;h5 id=&#34;截面个体不相关场景&#34;&gt;截面个体不相关场景
+&lt;/h5&gt;&lt;p&gt;若不同个体的随机干扰项无协方差（$E(\mu_i\mu_j&amp;rsquo;)=0$），可直接对每个个体单独做时间序列OLS估计，结果与系统估计等价，无信息损失。&lt;/p&gt;
+&lt;h5 id=&#34;截面个体相关场景&#34;&gt;截面个体相关场景
+&lt;/h5&gt;&lt;p&gt;若不同个体的随机干扰项存在同期相关，采用可行广义最小二乘法（GLS）：
+先对每个个体单独估计，得到残差并计算个体间协方差矩阵的一致估计 $\hat{V}$，再做GLS估计：
+&lt;/p&gt;
+$$\hat{\beta}_{GLS} = \left( \sum_{i=1}^n X_i&#39;\hat{V}^{-1}X_i \right)^{-1} \left( \sum_{i=1}^n X_i&#39;\hat{V}^{-1}Y_i \right)$$&lt;p&gt;实际应用中变系数模型使用较少：一方面多数研究更关注“平均意义”的结构参数，另一方面当时间维度较短时，变系数模型自由度不足，难以得到有效估计，此时通常退回到变截距模型。&lt;/p&gt;
+&lt;h3 id=&#34;实例演示-2&#34;&gt;实例演示
+&lt;/h3&gt;&lt;p&gt;这里使用李子奈《计量经济学第五版》第六章课后习题10作为例子进行演示：&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;例2.png&#34; alt=&#34;例1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;p&gt;下面给出Stata代码：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;32
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;33
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;34
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;35
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;36
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;37
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;38
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;39
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;40
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;41
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;42
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;43
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;44
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;45
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;46
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;47
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;48
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;49
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;50
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;51
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;52
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;53
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;54
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;55
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;56
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;57
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;58
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;59
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;60
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;61
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;62
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;63
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;64
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// Q1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X if Country == 1  // 1代表美国
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X if Country == 2  // 2代表加拿大
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X if Country == 3  // 3代表英国
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// Q2 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// Q3
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;destring Year, replace
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;xtset Country Year
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// 最小二乘虚拟变量
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tab Country,gen(dum)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X dum*,nocons
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// 组内估计
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;xtreg Y X,fe
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// Q4
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// Stata的df_m是不包含截距项自由度的，需要自己调整
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// Step1 检验截距系数不变模型 VS 变系数模型
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar RSS_R = e(rss)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar df_R = e(df_m)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar N = e(N)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X if Country == 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar RSS_U1 = e(rss)  
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar df_U1 = e(df_m)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X if Country == 2  
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar RSS_U2 = e(rss)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar df_U2 = e(df_m)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X if Country == 3  
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar RSS_U3 = e(rss)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar df_U3 = e(df_m)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar RSS_U = RSS_U1 + RSS_U2 + RSS_U3
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar df_U = df_U1 + df_U2 + df_U3
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar F = (RSS_R - RSS_U) / (df_U - df_R + 2) / RSS_U * (N - df_U - 3)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;display F
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;display Ftail(df_U - df_R + 2, N - df_U - 3, F)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// Step2 检验固定效应变截距模型 VS 变系数模型
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X dum*,nocons
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ereturn list
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar RSS_fe = e(rss)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar df_fe = e(df_m)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar N = e(N)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X if Country == 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar RSS_U1 = e(rss)  
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar df_U1 = e(df_m)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X if Country == 2  
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar RSS_U2 = e(rss)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar df_U2 = e(df_m)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X if Country == 3  
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar RSS_U3 = e(rss)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar df_U3 = e(df_m)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar RSS_U = RSS_U1 + RSS_U2 + RSS_U3
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar df_U = df_U1 + df_U2 + df_U3
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar F = (RSS_fe - RSS_U) / (df_U - df_fe + 3) / RSS_U * (N - df_U - 3)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;display F
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;display Ftail(df_U - df_fe + 3,N - df_U - 3,F)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;前三问的结果如下,结果不多赘述，请自行观察结果。
+&lt;strong&gt;Q1:&lt;/strong&gt;
+&lt;strong&gt;美国&lt;/strong&gt;&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;Res05.png&#34; alt=&#34;例1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;加拿大&lt;/strong&gt;&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;Res06.png&#34; alt=&#34;例1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;英国&lt;/strong&gt;&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;Res07.png&#34; alt=&#34;例1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Q2:&lt;/strong&gt;
+&lt;strong&gt;总体回归&lt;/strong&gt;&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;Res08.png&#34; alt=&#34;例1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Q3:&lt;/strong&gt;
+&lt;strong&gt;固定效应变截距模型&lt;/strong&gt;&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;Res09.png&#34; alt=&#34;例1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Q4:&lt;/strong&gt;
+&lt;em&gt;截距系数不变模型检验（H₀：截距系数不变；H₁：变系数）&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;F统计量公式&lt;/strong&gt;：
+&lt;/p&gt;
+$$ F = \frac{(RSS_R - RSS_U) / [(N-1)(K+1)]}{RSS_U / [NT - N(K+1)]} \sim F\big((N-1)(K+1),\ NT - N(K+1)\big) $$&lt;p&gt;
+（$ RSS_R $为受约束模型残差平方和，$ RSS_U $为无约束模型残差平方和；$ N $为个体数，$ K $为解释变量数，$ T $为时间期数）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Stata结果&lt;/strong&gt;：
+$ F = 6.64 $，对应p值 $ 0.0002 $。
+解读：在1%显著性水平下，p值＜0.01，拒绝原假设，说明“截距系数不变模型”不适合。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;固定效应变截距模型检验（H₀：固定效应变截距；H₁：变系数）&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;F统计量公式&lt;/strong&gt;：
+&lt;/p&gt;
+$$ F = \frac{(RSS_{fe} - RSS_U) / [K(N-1)]}{RSS_U / [NT - N(K+1)]} \sim F\big((N-1)K,\ NT - N(K+1)\big) $$&lt;p&gt;
+（$ RSS_{fe} $为固定效应模型残差平方和）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Stata结果&lt;/strong&gt;：
+$ F = 1.644724 $，对应p值 $ 0.2025892 $。
+解读：在5%显著性水平下，p值＞0.05，&lt;strong&gt;不拒绝原假设&lt;/strong&gt;，说明“固定效应变截距模型”更合适。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;最终结论：通过两次F检验，固定效应变截距模型是更优选择。&lt;/strong&gt;&lt;/p&gt;
+</description>
         </item>
         <item>
         <title>计量经济学 05</title>

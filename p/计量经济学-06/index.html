@@ -269,7 +269,30 @@
         </li>
       </ol>
     </li>
-    <li><a href="#固定效应面板数据模型">固定效应面板数据模型</a></li>
+    <li><a href="#固定效应面板数据模型">固定效应面板数据模型</a>
+      <ol>
+        <li><a href="#基本概念">基本概念</a>
+          <ol>
+            <li><a href="#面板数据定义">面板数据定义</a></li>
+            <li><a href="#面板数据的优势">面板数据的优势</a></li>
+            <li><a href="#固定效应与随机效应的区别">固定效应与随机效应的区别</a></li>
+          </ol>
+        </li>
+        <li><a href="#模型概览">模型概览</a>
+          <ol>
+            <li><a href="#六类经典线性面板模型">六类经典线性面板模型</a></li>
+            <li><a href="#模型选择的f检验">模型选择的F检验</a></li>
+          </ol>
+        </li>
+        <li><a href="#参数估计方法">参数估计方法</a>
+          <ol>
+            <li><a href="#固定效应变截距模型估计">固定效应变截距模型估计</a></li>
+            <li><a href="#固定效应变系数模型估计">固定效应变系数模型估计</a></li>
+          </ol>
+        </li>
+        <li><a href="#实例演示-2">实例演示</a></li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -500,7 +523,260 @@ $$\ln L = \sum_{y_i > 0} \ln\left[ \frac{1}{\sigma}\phi\left(\frac{y_i - X_i\bet
 </div>
 <p><em>注意：构造归并数据（Tobit）似然函数时，必须基于一个严格前提，即假设被归并（如取值为0）的样本与未受限制的观测样本具有相同的分布（如同为正态分布）；若该假设不成立（即不可观测部分与可观测部分的分布特性存在差异），则无法构建有效的似然函数，导致最大似然估计失效，此时应采用Heckman两步估计法作为替代方案，以修正样本选择带来的偏误。</em></p>
 <h2 id="固定效应面板数据模型">固定效应面板数据模型
-</h2>
+</h2><h3 id="基本概念">基本概念
+</h3><h4 id="面板数据定义">面板数据定义
+</h4><p>面板数据（Panel Data，也称平行数据、纵向数据）是在时间序列上取多个截面，每个截面同时选取相同个体构成的样本数据，兼具截面维度和时间维度。</p>
+<h4 id="面板数据的优势">面板数据的优势
+</h4><ol>
+<li>增加自由度，提升统计推断有效性；</li>
+<li>降低变量间共线性，改善参数估计效率；</li>
+<li>帮助识别竞争模型的合理性，减少估计偏差。</li>
+</ol>
+<h4 id="固定效应与随机效应的区别">固定效应与随机效应的区别
+</h4><p>两类模型的核心差异是对<strong>不可观测的个体异质性</strong>的处理假设：</p>
+<ul>
+<li>固定效应模型：认为不可观测的个体特征与模型中的解释变量相关，将这些特征纳入截距项，以截距差异刻画个体异质性，通过对截距的估计控制个体效应。</li>
+<li>随机效应模型：认为不可观测的个体特征与解释变量无关，将其纳入随机干扰项，通过特殊的估计方法处理。</li>
+</ul>
+<p>实际应用中更常用固定效应：经济场景中未观测到的个体因素（如地区禀赋、企业特质）与已纳入模型的变量（如收入、投资）普遍存在相关性，若误用随机效应会因内生性导致估计偏误，固定效应可有效规避这一问题。</p>
+<h3 id="模型概览">模型概览
+</h3><h4 id="六类经典线性面板模型">六类经典线性面板模型
+</h4><p>记 $i$ 为截面个体、$t$ 为时间、$Y$ 为被解释变量、$X$ 为解释变量向量、$\alpha$ 为截距、$\beta$ 为系数向量、$\mu$ 为随机干扰项：</p>
+<ol>
+<li><strong>变系数模型</strong>：$Y_{it}=\alpha_i + X_{it}\beta_i + \mu_{it}$，个体间截距、系数均存在差异。</li>
+<li><strong>变截距模型</strong>：$Y_{it}=\alpha_i + X_{it}\beta + \mu_{it}$，个体间截距不同，系数无差异。</li>
+<li><strong>截距系数不变模型</strong>：$Y_{it}=\alpha + X_{it}\beta + \mu_{it}$，个体间截距、系数均无差异，等价于混合回归模型。</li>
+<li><strong>不变截距变系数模型</strong>：$Y_{it}=\alpha + X_{it}\beta_i + \mu_{it}$，个体间截距相同，系数有差异，实际应用极少。</li>
+<li><strong>时点变系数模型</strong>：$Y_{it}=\alpha_t + X_{it}\beta_t + \mu_{it}$，不同时点截距、系数存在差异，实际应用较少。</li>
+<li><strong>双向固定效应模型</strong>：$Y_{it}=\alpha_i + \gamma_t + X_{it}\beta + \mu_{it}$，同时控制个体异质性和时点异质性，截距随个体、时间变化，系数无差异，是常用模型形式。</li>
+</ol>
+<h4 id="模型选择的f检验">模型选择的F检验
+</h4><p>通过约束检验判断模型形式，核心是先检验截距差异，再检验系数差异：</p>
+<ol>
+<li>检验“截距、系数均不变”（模型3） vs “截距变、系数不变”（模型2）：
+
+$$F=\frac{(RSS_3-RSS_2)/(n-1)}{RSS_2/(nT-n-K)} \sim F(n-1,nT-n-K)$$
+其中 $RSS$ 为对应模型的残差平方和，$n$ 为个体数，$T$ 为时间长度，$K$ 为解释变量个数。若拒绝原假设，说明存在个体截距差异。</li>
+<li>进一步检验“截距变、系数不变”（模型2） vs “截距、系数均变”（模型1）：
+
+$$F=\frac{(RSS_2-RSS_1)/[(n-1)K]}{RSS_1/[nT-n(K+1)]} \sim F((n-1)K,nT-n(K+1))$$
+若拒绝原假设，说明个体间系数也存在差异。</li>
+</ol>
+<h3 id="参数估计方法">参数估计方法
+</h3><h4 id="固定效应变截距模型估计">固定效应变截距模型估计
+</h4><h5 id="最小二乘虚拟变量法">最小二乘虚拟变量法
+</h5><p>为每个个体设置虚拟变量，直接将模型改写为包含个体虚拟变量的多元回归：
+</p>
+$$\begin{pmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{pmatrix} = \begin{pmatrix} \iota_T & X_1 & I_T & 0 & \dots & 0 \\ \iota_T & X_2 & 0 & I_T & \dots & 0 \\ \vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\ \iota_T & X_n & 0 & 0 & \dots & I_T \end{pmatrix} \begin{pmatrix} \alpha \\ \beta \\ \alpha_1 \\ \alpha_2 \\ \vdots \\ \alpha_n \end{pmatrix} + \begin{pmatrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_n \end{pmatrix}$$<p>
+通过OLS直接估计所有参数，其中 $\iota_T$ 为全1向量，$\alpha_i$ 为个体固定效应。</p>
+<h5 id="组内估计法">组内估计法
+</h5><p>先对数据进行“组内离差”变换，消去个体固定效应：
+对每个变量计算个体均值：$\bar{Y}<em>i = \frac{1}{T}\sum</em>{t=1}^T Y_{it}$，$\bar{X}<em>i = \frac{1}{T}\sum</em>{t=1}^T X_{it}$
+做离差变换：$Y_{it}-\bar{Y}<em>i = (X</em>{it}-\bar{X}<em>i)\beta + (\mu</em>{it}-\bar{\mu}_i)$
+对变换后的模型做OLS估计，得到 $\hat{\beta}$，再代入原模型计算个体效应估计值：$\hat{\alpha}_i = \bar{Y}_i - \bar{X}_i\hat{\beta}$。</p>
+<h4 id="固定效应变系数模型估计">固定效应变系数模型估计
+</h4><h5 id="截面个体不相关场景">截面个体不相关场景
+</h5><p>若不同个体的随机干扰项无协方差（$E(\mu_i\mu_j&rsquo;)=0$），可直接对每个个体单独做时间序列OLS估计，结果与系统估计等价，无信息损失。</p>
+<h5 id="截面个体相关场景">截面个体相关场景
+</h5><p>若不同个体的随机干扰项存在同期相关，采用可行广义最小二乘法（GLS）：
+先对每个个体单独估计，得到残差并计算个体间协方差矩阵的一致估计 $\hat{V}$，再做GLS估计：
+</p>
+$$\hat{\beta}_{GLS} = \left( \sum_{i=1}^n X_i'\hat{V}^{-1}X_i \right)^{-1} \left( \sum_{i=1}^n X_i'\hat{V}^{-1}Y_i \right)$$<p>实际应用中变系数模型使用较少：一方面多数研究更关注“平均意义”的结构参数，另一方面当时间维度较短时，变系数模型自由度不足，难以得到有效估计，此时通常退回到变截距模型。</p>
+<h3 id="实例演示-2">实例演示
+</h3><p>这里使用李子奈《计量经济学第五版》第六章课后习题10作为例子进行演示：</p>
+<div align="center">
+  <img src="例2.png" alt="例1" width="800">
+</div>
+<p>下面给出Stata代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// Q1
+</span></span><span class="line"><span class="cl">reg Y X if Country == 1  // 1代表美国
+</span></span><span class="line"><span class="cl">reg Y X if Country == 2  // 2代表加拿大
+</span></span><span class="line"><span class="cl">reg Y X if Country == 3  // 3代表英国
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// Q2 
+</span></span><span class="line"><span class="cl">reg Y X 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// Q3
+</span></span><span class="line"><span class="cl">destring Year, replace
+</span></span><span class="line"><span class="cl">xtset Country Year
+</span></span><span class="line"><span class="cl">// 最小二乘虚拟变量
+</span></span><span class="line"><span class="cl">tab Country,gen(dum)
+</span></span><span class="line"><span class="cl">reg Y X dum*,nocons
+</span></span><span class="line"><span class="cl">// 组内估计
+</span></span><span class="line"><span class="cl">xtreg Y X,fe
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// Q4
+</span></span><span class="line"><span class="cl">// Stata的df_m是不包含截距项自由度的，需要自己调整
+</span></span><span class="line"><span class="cl">// Step1 检验截距系数不变模型 VS 变系数模型
+</span></span><span class="line"><span class="cl">reg Y X
+</span></span><span class="line"><span class="cl">scalar RSS_R = e(rss)
+</span></span><span class="line"><span class="cl">scalar df_R = e(df_m)
+</span></span><span class="line"><span class="cl">scalar N = e(N)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reg Y X if Country == 1
+</span></span><span class="line"><span class="cl">scalar RSS_U1 = e(rss)  
+</span></span><span class="line"><span class="cl">scalar df_U1 = e(df_m)
+</span></span><span class="line"><span class="cl">reg Y X if Country == 2  
+</span></span><span class="line"><span class="cl">scalar RSS_U2 = e(rss)
+</span></span><span class="line"><span class="cl">scalar df_U2 = e(df_m)
+</span></span><span class="line"><span class="cl">reg Y X if Country == 3  
+</span></span><span class="line"><span class="cl">scalar RSS_U3 = e(rss)
+</span></span><span class="line"><span class="cl">scalar df_U3 = e(df_m)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">scalar RSS_U = RSS_U1 + RSS_U2 + RSS_U3
+</span></span><span class="line"><span class="cl">scalar df_U = df_U1 + df_U2 + df_U3
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">scalar F = (RSS_R - RSS_U) / (df_U - df_R + 2) / RSS_U * (N - df_U - 3)
+</span></span><span class="line"><span class="cl">display F
+</span></span><span class="line"><span class="cl">display Ftail(df_U - df_R + 2, N - df_U - 3, F)
+</span></span><span class="line"><span class="cl">// Step2 检验固定效应变截距模型 VS 变系数模型
+</span></span><span class="line"><span class="cl">reg Y X dum*,nocons
+</span></span><span class="line"><span class="cl">ereturn list
+</span></span><span class="line"><span class="cl">scalar RSS_fe = e(rss)
+</span></span><span class="line"><span class="cl">scalar df_fe = e(df_m)
+</span></span><span class="line"><span class="cl">scalar N = e(N)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reg Y X if Country == 1
+</span></span><span class="line"><span class="cl">scalar RSS_U1 = e(rss)  
+</span></span><span class="line"><span class="cl">scalar df_U1 = e(df_m)
+</span></span><span class="line"><span class="cl">reg Y X if Country == 2  
+</span></span><span class="line"><span class="cl">scalar RSS_U2 = e(rss)
+</span></span><span class="line"><span class="cl">scalar df_U2 = e(df_m)
+</span></span><span class="line"><span class="cl">reg Y X if Country == 3  
+</span></span><span class="line"><span class="cl">scalar RSS_U3 = e(rss)
+</span></span><span class="line"><span class="cl">scalar df_U3 = e(df_m)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">scalar RSS_U = RSS_U1 + RSS_U2 + RSS_U3
+</span></span><span class="line"><span class="cl">scalar df_U = df_U1 + df_U2 + df_U3
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">scalar F = (RSS_fe - RSS_U) / (df_U - df_fe + 3) / RSS_U * (N - df_U - 3)
+</span></span><span class="line"><span class="cl">display F
+</span></span><span class="line"><span class="cl">display Ftail(df_U - df_fe + 3,N - df_U - 3,F)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>前三问的结果如下,结果不多赘述，请自行观察结果。
+<strong>Q1:</strong>
+<strong>美国</strong></p>
+<div align="center">
+  <img src="Res05.png" alt="例1" width="800">
+</div>
+<p><strong>加拿大</strong></p>
+<div align="center">
+  <img src="Res06.png" alt="例1" width="800">
+</div>
+<p><strong>英国</strong></p>
+<div align="center">
+  <img src="Res07.png" alt="例1" width="800">
+</div>
+<p><strong>Q2:</strong>
+<strong>总体回归</strong></p>
+<div align="center">
+  <img src="Res08.png" alt="例1" width="800">
+</div>
+<p><strong>Q3:</strong>
+<strong>固定效应变截距模型</strong></p>
+<div align="center">
+  <img src="Res09.png" alt="例1" width="800">
+</div>
+<p><strong>Q4:</strong>
+<em>截距系数不变模型检验（H₀：截距系数不变；H₁：变系数）</em></p>
+<ul>
+<li>
+<p><strong>F统计量公式</strong>：
+</p>
+$$ F = \frac{(RSS_R - RSS_U) / [(N-1)(K+1)]}{RSS_U / [NT - N(K+1)]} \sim F\big((N-1)(K+1),\ NT - N(K+1)\big) $$<p>
+（$ RSS_R $为受约束模型残差平方和，$ RSS_U $为无约束模型残差平方和；$ N $为个体数，$ K $为解释变量数，$ T $为时间期数）</p>
+</li>
+<li>
+<p><strong>Stata结果</strong>：
+$ F = 6.64 $，对应p值 $ 0.0002 $。
+解读：在1%显著性水平下，p值＜0.01，拒绝原假设，说明“截距系数不变模型”不适合。</p>
+</li>
+</ul>
+<p><em>固定效应变截距模型检验（H₀：固定效应变截距；H₁：变系数）</em></p>
+<ul>
+<li>
+<p><strong>F统计量公式</strong>：
+</p>
+$$ F = \frac{(RSS_{fe} - RSS_U) / [K(N-1)]}{RSS_U / [NT - N(K+1)]} \sim F\big((N-1)K,\ NT - N(K+1)\big) $$<p>
+（$ RSS_{fe} $为固定效应模型残差平方和）</p>
+</li>
+<li>
+<p><strong>Stata结果</strong>：
+$ F = 1.644724 $，对应p值 $ 0.2025892 $。
+解读：在5%显著性水平下，p值＞0.05，<strong>不拒绝原假设</strong>，说明“固定效应变截距模型”更合适。</p>
+</li>
+</ul>
+<p><strong>最终结论：通过两次F检验，固定效应变截距模型是更优选择。</strong></p>
+
 </section>
 
 

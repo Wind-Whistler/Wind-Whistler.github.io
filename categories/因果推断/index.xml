@@ -390,8 +390,8 @@ $$ F = \frac{(RSS_R - RSS_U) / [(N-1)(K+1)]}{RSS_U / [NT - N(K+1)]} \sim F\big((
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;Stata结果&lt;/strong&gt;：
-$ F = 6.64 $，对应p值 $ 0.0002 $。
-解读：在1%显著性水平下，p值＜0.01，拒绝原假设，说明“截距系数不变模型”不适合。&lt;/p&gt;
+$ F = 6.64 $，对应p值 $ 0.0002 $。&lt;/p&gt;
+&lt;p&gt;解读：在1%显著性水平下，p值＜0.01，拒绝原假设，说明“截距系数不变模型”不适合。&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;em&gt;固定效应变截距模型检验（H₀：固定效应变截距；H₁：变系数）&lt;/em&gt;&lt;/p&gt;
@@ -404,8 +404,8 @@ $$ F = \frac{(RSS_{fe} - RSS_U) / [K(N-1)]}{RSS_U / [NT - N(K+1)]} \sim F\big((N
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;Stata结果&lt;/strong&gt;：
-$ F = 1.644724 $，对应p值 $ 0.2025892 $。
-解读：在5%显著性水平下，p值＞0.05，&lt;strong&gt;不拒绝原假设&lt;/strong&gt;，说明“固定效应变截距模型”更合适。&lt;/p&gt;
+$ F = 1.644724 $，对应p值 $ 0.2025892 $。&lt;/p&gt;
+&lt;p&gt;解读：在5%显著性水平下，p值＞0.05，&lt;strong&gt;不拒绝原假设&lt;/strong&gt;，说明“固定效应变截距模型”更合适。&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;最终结论：通过两次F检验，固定效应变截距模型是更优选择。&lt;/strong&gt;&lt;/p&gt;

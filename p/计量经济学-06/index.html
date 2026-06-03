@@ -434,14 +434,10 @@ $$<h5 id="求解参数">求解参数
 </div>
 比较3种假设下的对数似然函数值可见，随着截断区间的缩小，抽取同一个样本的概率增大，致使对数似然函数值增大。
 <h4 id="用ols估计会怎么样">用OLS估计会怎么样
-</h4><p><strong>下面使用数学推导证明此时OLS估计有偏：</strong>
-$E(y|y &gt; a) = \int_{a}^{+\infty} y \cdot \frac{\frac{1}{\sigma}\phi\left( \frac{y - B^T x}{\sigma} \right)}{1 - \Phi\left( \frac{a - B^T x}{\sigma} \right)} dy$</p>
-<p>令 $z = \frac{y - B^T x}{\sigma}$，则 $y = B^T x + z\sigma$，$dy = \sigma \cdot dz$</p>
-<p>$\Rightarrow I = \int_{\alpha}^{+\infty} (B^T x + z\sigma) \cdot \frac{\phi(z)}{1 - \Phi(\alpha)} dz$</p>
-<p>$= B^T x \cdot \int_{\alpha}^{+\infty} \frac{\phi(z)}{1 - \Phi(\alpha)} dz + \sigma \cdot \int_{\alpha}^{+\infty} \frac{z \cdot \phi(z)}{1 - \Phi(\alpha)} dz$</p>
-<p>$= B^T x - \frac{\sigma}{1 - \Phi(\alpha)} \cdot \phi(z) \bigg|_{\alpha}^{+\infty}$</p>
-<p>$= B^T x + \frac{\sigma}{1 - \Phi(\alpha)} \cdot \phi(\alpha)$</p>
-<p>可见截断破坏了误差项均值为零的假设，引入了一个依赖于自变量的非线性修正项（逆米尔斯比率）。OLS 无法识别并分离出这一项，导致将其混淆为截距或斜率的一部分，从而产生系统性偏差。</p>
+</h4><p><strong>下面使用数学推导证明此时OLS估计有偏：</strong><br>
+</p>
+$$E(y|y > a) = \int_{a}^{+\infty} y \cdot \frac{\frac{1}{\sigma}\phi\left( \frac{y - B^T x}{\sigma} \right)}{1 - \Phi\left( \frac{a - B^T x}{\sigma} \right)} dy$$<p>令 $z = \frac{y - B^T x}{\sigma}$，则 $y = B^T x + z\sigma$，$dy = \sigma \cdot dz$</p>
+$$\Rightarrow I = \int_{\alpha}^{+\infty} (B^T x + z\sigma) \cdot \frac{\phi(z)}{1 - \Phi(\alpha)} dz$$$$= B^T x \cdot \int_{\alpha}^{+\infty} \frac{\phi(z)}{1 - \Phi(\alpha)} dz + \sigma \cdot \int_{\alpha}^{+\infty} \frac{z \cdot \phi(z)}{1 - \Phi(\alpha)} dz$$$$= B^T x - \frac{\sigma}{1 - \Phi(\alpha)} \cdot \phi(z) \bigg|_{\alpha}^{+\infty}$$$$= B^T x + \frac{\sigma}{1 - \Phi(\alpha)} \cdot \phi(\alpha)$$<p>可见截断破坏了误差项均值为零的假设，引入了一个依赖于自变量的非线性修正项（逆米尔斯比率）。OLS 无法识别并分离出这一项，导致将其混淆为截距或斜率的一部分，从而产生系统性偏差。</p>
 <h3 id="归并问题">归并问题
 </h3><h4 id="截断与归并的区别">截断与归并的区别
 </h4><p><strong>截断</strong>

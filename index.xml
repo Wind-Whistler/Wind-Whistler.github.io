@@ -487,7 +487,8 @@ $ F = 1.644724 $，对应p值 $ 0.2025892 $。&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;同码不同文：同一二进制，使用不同编码解码，得到的文本不同（乱码根源）。&lt;/li&gt;
 &lt;/ul&gt;
-</description>
+&lt;h2 id=&#34;文件的打开与关闭&#34;&gt;文件的打开与关闭
+&lt;/h2&gt;</description>
         </item>
         <item>
         <title>Python正则化专题</title>

@@ -2064,7 +2064,126 @@ $$ \hat{m}^{(t)} = m^{(t)} / (1 - \beta_1^t), \quad \hat{v}^{(t)} = v^{(t)} / (1
         <pubDate>Sat, 02 May 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/</guid>
-        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/Ruin.png" alt="Featured image of post 深度学习05" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/Ruin.png" alt="Featured image of post 深度学习05" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;MLP与CNN的局限&lt;/li&gt;
+&lt;li&gt;RNN原理&lt;/li&gt;
+&lt;li&gt;RNN前向传播与反向传播&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;mlp与cnn的局限&#34;&gt;MLP与CNN的局限
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;架构共性&lt;/strong&gt;：均为定长输入 → 定长输出，隐含样本独立同分布（i.i.d.）假设。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;无法处理的场景&lt;/strong&gt;：
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;任务类型&lt;/th&gt;
+					&lt;th&gt;示例&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;不定长序列→定长类别&lt;/td&gt;
+					&lt;td&gt;姓名（如“张三”“李清照”）→性别预测&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;定长→不定长序列&lt;/td&gt;
+					&lt;td&gt;图片→文字描述（Image Caption）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;不定长→不定长（一一对应）&lt;/td&gt;
+					&lt;td&gt;视频逐帧分类&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;不定长→不定长（无对应）&lt;/td&gt;
+					&lt;td&gt;机器翻译（如“我的梦”→“My Dream”）&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;本质缺陷&lt;/strong&gt;：无法建模序列中元素的前后依赖关系（如自然语言、时间序列、语音等）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;rnn原理&#34;&gt;RNN原理
+&lt;/h2&gt;&lt;h3 id=&#34;直观理解&#34;&gt;直观理解
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;核心创新&lt;/strong&gt;：引入隐藏状态 $h_t$ 作为“内部记忆”，打破i.i.d.假设。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;变量含义&lt;/strong&gt;：
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;符号&lt;/th&gt;
+					&lt;th&gt;含义&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;$x_t$&lt;/td&gt;
+					&lt;td&gt;时间步 $t$ 的输入（如姓名的第 $t$ 个字符的One-hot向量）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;$h_t$&lt;/td&gt;
+					&lt;td&gt;时间步 $t$ 的隐藏状态（记忆当前及历史信息，仅由 $x_t$ 和 $h_{t-1}$ 决定）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;$y_t$&lt;/td&gt;
+					&lt;td&gt;时间步 $t$ 的输出（由 $h_t$ 映射得到，&lt;strong&gt;不参与 $h$ 的传递&lt;/strong&gt;）&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;数学定义&#34;&gt;数学定义
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;隐藏状态更新&lt;/strong&gt;（记忆更新）：
+
+$$h_t = \tanh(W_{hh} h_{t-1} + W_{xh} x_t)$$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;输出预测&lt;/strong&gt;：
+
+$$y_t = W_{hy} h_t$$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;关键特性&lt;/strong&gt;：所有时间步共享同一套权重（$W_{hh}, W_{xh}, W_{hy}$），可处理任意长度序列。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RNN的工作流程如下图所示：&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;RNN.png&#34; alt=&#34;封面&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;h3 id=&#34;与统计模型的关联&#34;&gt;与统计模型的关联
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;向量自回归（VAR）&lt;/strong&gt;：线性时间序列模型 $h_t = c + A h_{t-1}$，若 $c = B x_t$，则退化为 $h_t = B x_t + A h_{t-1}$，是RNN的线性特例。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;非线性扩展&lt;/strong&gt;：RNN通过 $\tanh$ 激活函数，将线性自回归升级为非线性序列建模。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;rnn前向传播与反向传播&#34;&gt;RNN前向传播与反向传播
+&lt;/h2&gt;&lt;h3 id=&#34;前向传播与损失函数&#34;&gt;前向传播与损失函数
+&lt;/h3&gt;&lt;p&gt;根据任务类型，损失函数为各时间步交叉熵的总和：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;任务类型&lt;/th&gt;
+					&lt;th&gt;损失计算方式&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;序列分类（如姓名→性别）&lt;/td&gt;
+					&lt;td&gt;仅取&lt;strong&gt;最后时刻 $h_T$&lt;/strong&gt; 计算交叉熵（忽略中间 $y_t$）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;序列生成（下一词预测）&lt;/td&gt;
+					&lt;td&gt;逐时间步计算交叉熵（如输入“唐”→预测“纳”，真实标签“纳”对应概率的负对数）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Seq2Seq（如机器翻译）&lt;/td&gt;
+					&lt;td&gt;编码器压缩输入序列，解码器逐词生成，总损失为各输出词交叉熵之和&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;反向传播bptt&#34;&gt;反向传播：BPTT
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;原理&lt;/strong&gt;：沿时间轴链式求导，梯度从最后时刻 $L_T$ 反向传递至初始时刻：
+
+$$\frac{\partial L_T}{\partial h_1} = \frac{\partial L_T}{\partial h_T} \cdot \prod_{k=2}^T \frac{\partial h_k}{\partial h_{k-1}}, \quad \frac{\partial h_k}{\partial h_{k-1}} = \tanh&#39;(\cdot) W_{hh}$$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;缺陷&lt;/strong&gt;：长期依赖下易出现&lt;strong&gt;梯度消失/爆炸&lt;/strong&gt;（后续通过LSTM/GRU解决）。&lt;/li&gt;
+&lt;/ul&gt;
+</description>
         </item>
         <item>
         <title>分布式计算 05</title>

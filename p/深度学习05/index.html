@@ -226,7 +226,52 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#mlp与cnn的局限">MLP与CNN的局限</a></li>
+    <li><a href="#rnn原理">RNN原理</a>
+      <ol>
+        <li><a href="#直观理解">直观理解</a></li>
+        <li><a href="#数学定义">数学定义</a></li>
+        <li><a href="#与统计模型的关联">与统计模型的关联</a></li>
+      </ol>
+    </li>
+    <li><a href="#rnn前向传播与反向传播">RNN前向传播与反向传播</a>
+      <ol>
+        <li><a href="#前向传播与损失函数">前向传播与损失函数</a></li>
+        <li><a href="#反向传播bptt">反向传播：BPTT</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -323,7 +368,126 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>MLP与CNN的局限</li>
+<li>RNN原理</li>
+<li>RNN前向传播与反向传播</li>
+</ul>
+<h2 id="mlp与cnn的局限">MLP与CNN的局限
+</h2><ul>
+<li><strong>架构共性</strong>：均为定长输入 → 定长输出，隐含样本独立同分布（i.i.d.）假设。</li>
+<li><strong>无法处理的场景</strong>：
+<div class="table-wrapper"><table>
+	<thead>
+			<tr>
+					<th>任务类型</th>
+					<th>示例</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>不定长序列→定长类别</td>
+					<td>姓名（如“张三”“李清照”）→性别预测</td>
+			</tr>
+			<tr>
+					<td>定长→不定长序列</td>
+					<td>图片→文字描述（Image Caption）</td>
+			</tr>
+			<tr>
+					<td>不定长→不定长（一一对应）</td>
+					<td>视频逐帧分类</td>
+			</tr>
+			<tr>
+					<td>不定长→不定长（无对应）</td>
+					<td>机器翻译（如“我的梦”→“My Dream”）</td>
+			</tr>
+	</tbody>
+</table></div>
+</li>
+<li><strong>本质缺陷</strong>：无法建模序列中元素的前后依赖关系（如自然语言、时间序列、语音等）。</li>
+</ul>
+<h2 id="rnn原理">RNN原理
+</h2><h3 id="直观理解">直观理解
+</h3><ul>
+<li><strong>核心创新</strong>：引入隐藏状态 $h_t$ 作为“内部记忆”，打破i.i.d.假设。</li>
+<li><strong>变量含义</strong>：
+<div class="table-wrapper"><table>
+	<thead>
+			<tr>
+					<th>符号</th>
+					<th>含义</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>$x_t$</td>
+					<td>时间步 $t$ 的输入（如姓名的第 $t$ 个字符的One-hot向量）</td>
+			</tr>
+			<tr>
+					<td>$h_t$</td>
+					<td>时间步 $t$ 的隐藏状态（记忆当前及历史信息，仅由 $x_t$ 和 $h_{t-1}$ 决定）</td>
+			</tr>
+			<tr>
+					<td>$y_t$</td>
+					<td>时间步 $t$ 的输出（由 $h_t$ 映射得到，<strong>不参与 $h$ 的传递</strong>）</td>
+			</tr>
+	</tbody>
+</table></div>
+</li>
+</ul>
+<h3 id="数学定义">数学定义
+</h3><ul>
+<li><strong>隐藏状态更新</strong>（记忆更新）：
+
+$$h_t = \tanh(W_{hh} h_{t-1} + W_{xh} x_t)$$</li>
+<li><strong>输出预测</strong>：
+
+$$y_t = W_{hy} h_t$$</li>
+<li><strong>关键特性</strong>：所有时间步共享同一套权重（$W_{hh}, W_{xh}, W_{hy}$），可处理任意长度序列。</li>
+<li><strong>RNN的工作流程如下图所示：</strong></li>
+</ul>
+<div align="center">
+  <img src="RNN.png" alt="封面" width="800">
+</div>
+<h3 id="与统计模型的关联">与统计模型的关联
+</h3><ul>
+<li><strong>向量自回归（VAR）</strong>：线性时间序列模型 $h_t = c + A h_{t-1}$，若 $c = B x_t$，则退化为 $h_t = B x_t + A h_{t-1}$，是RNN的线性特例。</li>
+<li><strong>非线性扩展</strong>：RNN通过 $\tanh$ 激活函数，将线性自回归升级为非线性序列建模。</li>
+</ul>
+<h2 id="rnn前向传播与反向传播">RNN前向传播与反向传播
+</h2><h3 id="前向传播与损失函数">前向传播与损失函数
+</h3><p>根据任务类型，损失函数为各时间步交叉熵的总和：</p>
+<div class="table-wrapper"><table>
+	<thead>
+			<tr>
+					<th>任务类型</th>
+					<th>损失计算方式</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>序列分类（如姓名→性别）</td>
+					<td>仅取<strong>最后时刻 $h_T$</strong> 计算交叉熵（忽略中间 $y_t$）</td>
+			</tr>
+			<tr>
+					<td>序列生成（下一词预测）</td>
+					<td>逐时间步计算交叉熵（如输入“唐”→预测“纳”，真实标签“纳”对应概率的负对数）</td>
+			</tr>
+			<tr>
+					<td>Seq2Seq（如机器翻译）</td>
+					<td>编码器压缩输入序列，解码器逐词生成，总损失为各输出词交叉熵之和</td>
+			</tr>
+	</tbody>
+</table></div>
+<h3 id="反向传播bptt">反向传播：BPTT
+</h3><ul>
+<li><strong>原理</strong>：沿时间轴链式求导，梯度从最后时刻 $L_T$ 反向传递至初始时刻：
+
+$$\frac{\partial L_T}{\partial h_1} = \frac{\partial L_T}{\partial h_T} \cdot \prod_{k=2}^T \frac{\partial h_k}{\partial h_{k-1}}, \quad \frac{\partial h_k}{\partial h_{k-1}} = \tanh'(\cdot) W_{hh}$$</li>
+<li><strong>缺陷</strong>：长期依赖下易出现<strong>梯度消失/爆炸</strong>（后续通过LSTM/GRU解决）。</li>
+</ul>
+
 </section>
 
 

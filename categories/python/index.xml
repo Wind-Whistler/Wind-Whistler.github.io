@@ -2069,6 +2069,8 @@ $$ \hat{m}^{(t)} = m^{(t)} / (1 - \beta_1^t), \quad \hat{v}^{(t)} = v^{(t)} / (1
 &lt;li&gt;MLP与CNN的局限&lt;/li&gt;
 &lt;li&gt;RNN原理&lt;/li&gt;
 &lt;li&gt;RNN前向传播与反向传播&lt;/li&gt;
+&lt;li&gt;LSTM&lt;/li&gt;
+&lt;li&gt;总结&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;mlp与cnn的局限&#34;&gt;MLP与CNN的局限
 &lt;/h2&gt;&lt;ul&gt;
@@ -2181,8 +2183,131 @@ $$y_t = W_{hy} h_t$$&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;原理&lt;/strong&gt;：沿时间轴链式求导，梯度从最后时刻 $L_T$ 反向传递至初始时刻：
 
 $$\frac{\partial L_T}{\partial h_1} = \frac{\partial L_T}{\partial h_T} \cdot \prod_{k=2}^T \frac{\partial h_k}{\partial h_{k-1}}, \quad \frac{\partial h_k}{\partial h_{k-1}} = \tanh&#39;(\cdot) W_{hh}$$&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;缺陷&lt;/strong&gt;：长期依赖下易出现&lt;strong&gt;梯度消失/爆炸&lt;/strong&gt;（后续通过LSTM/GRU解决）。&lt;/li&gt;
 &lt;/ul&gt;
+&lt;h3 id=&#34;梯度消失&#34;&gt;梯度消失
+&lt;/h3&gt;&lt;p&gt;尽管RNN具备记忆功能，但由于其特殊的网络结构，RNN存在梯度消失的问题。&lt;br&gt;
+基于上述 BPTT 的链式法则，梯度消失主要由以下两个因素共同导致：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;成因分类&lt;/th&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;数学表达与解释&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;激活函数饱和&lt;/strong&gt;&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;$\tanh&amp;rsquo;(z) \in (0, 1]$，当输入值较大或较小时，导数趋近于 0。&lt;br&gt;在连乘过程中，只要大部分时间步处于饱和区，梯度就会被显著压缩。&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;权重矩阵连乘&lt;/strong&gt;&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;连乘项中包含 $W_{hh}^{T-1}$。从线性代数角度看，若 $W_{hh}$ 的最大奇异值 $&amp;lt; 1$，多次连乘后会指数级衰减至 0；即便 $\tanh&amp;rsquo;$ 不恒为 0，矩阵连乘也会导致梯度消失。&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;结论&lt;/strong&gt;：由于梯度在时间轴上经历了大量小于 1 的因子（$\tanh&amp;rsquo;$ 和 $W_{hh}$）的连乘，早期时间步的梯度 $\frac{\partial L_T}{\partial h_1}$ 会指数级趋近于 0，导致模型无法学习长距离依赖关系。&lt;/p&gt;
+&lt;p&gt;为此学者又在RNN的基础上进行改进，提出了LSTM。&lt;/p&gt;
+&lt;h2 id=&#34;lstm&#34;&gt;LSTM
+&lt;/h2&gt;&lt;h3 id=&#34;设计初衷&#34;&gt;设计初衷
+&lt;/h3&gt;&lt;p&gt;为解决基础RNN的梯度消失/爆炸问题（源于 $\tanh&amp;rsquo;(\cdot)$ 连乘与 $W_{hh}$ 连乘的指数衰减），LSTM引入门控机制与细胞状态，构建梯度“高速公路”，缓解长距离依赖捕捉困难。&lt;/p&gt;
+&lt;h3 id=&#34;核心组件与作用&#34;&gt;核心组件与作用
+&lt;/h3&gt;&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;组件&lt;/th&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;符号&lt;/th&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;激活函数&lt;/th&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;作用&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;遗忘门&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;$f_t$&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;$\sigma$&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;控制上一时刻细胞状态 $C_{t-1}$ 的保留比例（1=全保留，0=全遗忘）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;输入门&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;$i_t$&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;$\sigma$&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;控制当前候选状态 $\tilde{C}_t$ 的写入强度&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;候选状态&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;$g_t$&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;$\tanh$&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;生成当前时刻的新信息（范围 $[-1,1]$）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;输出门&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;$o_t$&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;$\sigma$&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;控制当前细胞状态 $C_t$ 对外输出的比例&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;细胞状态-c_t&#34;&gt;细胞状态 $C_t$
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;本质&lt;/strong&gt;：贯穿时间轴的“传送带”，信息可直线传递，几乎无衰减。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;梯度特性&lt;/strong&gt;：梯度从 $C_t$ 传向 $C_{t-1}$ 时仅与遗忘门 $f_t$ &lt;strong&gt;逐元素相乘&lt;/strong&gt;，无直接矩阵乘法，避免连乘导致的梯度消失。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;核心计算公式&#34;&gt;核心计算公式
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;门控与候选状态生成&lt;/strong&gt;（由 $h_{t-1}$ 与 $x_t$ 拼接后经线性变换得到）：
+
+$$
+\begin{pmatrix} i_t \\ f_t \\ o_t \\ g_t \end{pmatrix}
+=
+\begin{pmatrix} \sigma \\ \sigma \\ \sigma \\ \tanh \end{pmatrix}
+W
+\begin{pmatrix} h_{t-1} \\ x_t \end{pmatrix}
+$$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;细胞状态更新&lt;/strong&gt;（加法更新，核心缓解梯度消失）：
+
+$$
+C_t = f_t \odot C_{t-1} + i_t \odot g_t
+$$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;隐藏状态输出&lt;/strong&gt;（过滤后对外输出）：
+
+$$
+h_t = o_t \odot \tanh(C_t)
+$$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;下图演示了LSTM如何工作：&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;LSTM.png&#34; alt=&#34;封面&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;p&gt;从这个图我们可以更直观的理解为什么LSTM能避免梯度消失，RNN在反向传播时，需要反复对tanh函数求导，由于导数小于1，连乘下去就会导致梯度消失。而LSTM在反向传播时，只需要对tanh求一次导，接下来都是CT和CT-1之间直接求导，这样就不会存在梯度消失的问题了。&lt;/p&gt;
+&lt;h3 id=&#34;与rnn的区别&#34;&gt;与RNN的区别
+&lt;/h3&gt;&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;对比项&lt;/th&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;基础RNN&lt;/th&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;LSTM&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;状态更新&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;乘法更新 $h_t=\tanh(W_{hh}h_{t-1}+W_{xh}x_t)$&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;加法更新 $C_t=f_t\odot C_{t-1}+i_t\odot g_t$&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;梯度路径&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;$\prod \tanh&amp;rsquo;(\cdot)W_{hh}$（易消失）&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;$\prod f_t$（可控制，遗忘门≈1时梯度直通）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;记忆与输出&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;共用 $h_t$（记忆与输出耦合）&lt;/td&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;分离 $C_t$（长期记忆）与 $h_t$（当前输出）&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结
+&lt;/h2&gt;&lt;p&gt;RNN擅长处理变长序列，但基础RNN存在梯度消失问题，难以捕捉长距离依赖。为此引入LSTM/GRU，通过门控机制和加法更新构建梯度“高速公路”，缓解了该问题。然而，面对极长序列，LSTM仍无法完美记忆开头信息，这推动了注意力机制的发展，通过动态聚焦关键信息来弥补这一缺陷。&lt;/p&gt;
 </description>
         </item>
         <item>

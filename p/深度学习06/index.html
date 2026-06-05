@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en-us" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本章节介绍深度学习中的循环神经网络">
-<title>深度学习05</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本章节介绍深度学习中的一些训练技巧">
+<title>深度学习06</title>
 
-<link rel='canonical' href='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/'>
+<link rel='canonical' href='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/'>
 
-<link rel="stylesheet" href="/scss/style.min.86591c898bd806857815fbb8c47e8d3fed97c133b78e83d9bfc27b164dd0aa2b.css"><meta property='og:title' content="深度学习05">
-<meta property='og:description' content="本章节介绍深度学习中的循环神经网络">
-<meta property='og:url' content='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/'>
+<link rel="stylesheet" href="/scss/style.min.86591c898bd806857815fbb8c47e8d3fed97c133b78e83d9bfc27b164dd0aa2b.css"><meta property='og:title' content="深度学习06">
+<meta property='og:description' content="本章节介绍深度学习中的一些训练技巧">
+<meta property='og:url' content='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/'>
 <meta property='og:site_name' content='Wind Whistler'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-02T00:00:00&#43;00:00'/><meta property='og:image' content='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/Ruin.png' />
-<meta name="twitter:title" content="深度学习05">
-<meta name="twitter:description" content="本章节介绍深度学习中的循环神经网络"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/Ruin.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-10T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-10T00:00:00&#43;00:00'/><meta property='og:image' content='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/Ruin.png' />
+<meta name="twitter:title" content="深度学习06">
+<meta name="twitter:description" content="本章节介绍深度学习中的一些训练技巧"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/Ruin.png' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -226,75 +226,19 @@
     </ol>
 </aside>
 
-    <aside class="sidebar right-sidebar sticky">
-        
-            
-                
-    <section class="widget archives">
-        <div class="widget-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <line x1="5" y1="9" x2="19" y2="9" />
-  <line x1="5" y1="15" x2="19" y2="15" />
-  <line x1="11" y1="4" x2="7" y2="20" />
-  <line x1="17" y1="4" x2="13" y2="20" />
-</svg>
-
-
-
-        </div>
-        <h2 class="widget-title section-title">目录</h2>
-        
-        <div class="widget--toc">
-            <nav id="TableOfContents">
-  <ol>
-    <li><a href="#本期内容">本期内容</a></li>
-    <li><a href="#mlp与cnn的局限">MLP与CNN的局限</a></li>
-    <li><a href="#rnn原理">RNN原理</a>
-      <ol>
-        <li><a href="#直观理解">直观理解</a></li>
-        <li><a href="#数学定义">数学定义</a></li>
-        <li><a href="#与统计模型的关联">与统计模型的关联</a></li>
-      </ol>
-    </li>
-    <li><a href="#rnn前向传播与反向传播">RNN前向传播与反向传播</a>
-      <ol>
-        <li><a href="#前向传播与损失函数">前向传播与损失函数</a></li>
-        <li><a href="#反向传播bptt">反向传播：BPTT</a></li>
-        <li><a href="#梯度消失">梯度消失</a></li>
-      </ol>
-    </li>
-    <li><a href="#lstm">LSTM</a>
-      <ol>
-        <li><a href="#设计初衷">设计初衷</a></li>
-        <li><a href="#核心组件与作用">核心组件与作用</a></li>
-        <li><a href="#细胞状态-c_t">细胞状态 $C_t$</a></li>
-        <li><a href="#核心计算公式">核心计算公式</a></li>
-        <li><a href="#与rnn的区别">与RNN的区别</a></li>
-      </ol>
-    </li>
-    <li><a href="#总结">总结</a></li>
-  </ol>
-</nav>
-        </div>
-    </section>
-
-            
-        
-    </aside>
-
+    
 
             <main class="main full-width">
     <article class="has-image main-article">
     <header class="article-header">
         <div class="article-image">
-            <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/">
-                <img src="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/Ruin_hu_8f4ac1eaebfda17e.png"
-                        srcset="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/Ruin_hu_8f4ac1eaebfda17e.png 800w, /p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/Ruin_hu_ba97ef21b7be095a.png 1600w"
+            <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/">
+                <img src="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/Ruin_hu_8f4ac1eaebfda17e.png"
+                        srcset="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/Ruin_hu_8f4ac1eaebfda17e.png 800w, /p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/Ruin_hu_ba97ef21b7be095a.png 1600w"
                         width="800" 
                         height="450" 
                         loading="lazy"
-                        alt="Featured image of post 深度学习05" />
+                        alt="Featured image of post 深度学习06" />
                 
             </a>
         </div>
@@ -337,12 +281,12 @@
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/">深度学习05</a>
+            <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/">深度学习06</a>
         </h2>
     
         
         <h3 class="article-subtitle">
-            本章节介绍深度学习中的循环神经网络
+            本章节介绍深度学习中的一些训练技巧
         </h3>
         
     </div>
@@ -363,7 +307,7 @@
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published" datetime='2026-05-02T00:00:00Z'>2026-05-02</time>
+                <time class="article-time--published" datetime='2026-05-10T00:00:00Z'>2026-05-10</time>
             </div>
         
 
@@ -379,251 +323,7 @@
     <section class="article-content">
     
     
-    <h2 id="本期内容">本期内容
-</h2><ul>
-<li>MLP与CNN的局限</li>
-<li>RNN原理</li>
-<li>RNN前向传播与反向传播</li>
-<li>LSTM</li>
-<li>总结</li>
-</ul>
-<h2 id="mlp与cnn的局限">MLP与CNN的局限
-</h2><ul>
-<li><strong>架构共性</strong>：均为定长输入 → 定长输出，隐含样本独立同分布（i.i.d.）假设。</li>
-<li><strong>无法处理的场景</strong>：
-<div class="table-wrapper"><table>
-	<thead>
-			<tr>
-					<th>任务类型</th>
-					<th>示例</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td>不定长序列→定长类别</td>
-					<td>姓名（如“张三”“李清照”）→性别预测</td>
-			</tr>
-			<tr>
-					<td>定长→不定长序列</td>
-					<td>图片→文字描述（Image Caption）</td>
-			</tr>
-			<tr>
-					<td>不定长→不定长（一一对应）</td>
-					<td>视频逐帧分类</td>
-			</tr>
-			<tr>
-					<td>不定长→不定长（无对应）</td>
-					<td>机器翻译（如“我的梦”→“My Dream”）</td>
-			</tr>
-	</tbody>
-</table></div>
-</li>
-<li><strong>本质缺陷</strong>：无法建模序列中元素的前后依赖关系（如自然语言、时间序列、语音等）。</li>
-</ul>
-<h2 id="rnn原理">RNN原理
-</h2><h3 id="直观理解">直观理解
-</h3><ul>
-<li><strong>核心创新</strong>：引入隐藏状态 $h_t$ 作为“内部记忆”，打破i.i.d.假设。</li>
-<li><strong>变量含义</strong>：
-<div class="table-wrapper"><table>
-	<thead>
-			<tr>
-					<th>符号</th>
-					<th>含义</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td>$x_t$</td>
-					<td>时间步 $t$ 的输入（如姓名的第 $t$ 个字符的One-hot向量）</td>
-			</tr>
-			<tr>
-					<td>$h_t$</td>
-					<td>时间步 $t$ 的隐藏状态（记忆当前及历史信息，仅由 $x_t$ 和 $h_{t-1}$ 决定）</td>
-			</tr>
-			<tr>
-					<td>$y_t$</td>
-					<td>时间步 $t$ 的输出（由 $h_t$ 映射得到，<strong>不参与 $h$ 的传递</strong>）</td>
-			</tr>
-	</tbody>
-</table></div>
-</li>
-</ul>
-<h3 id="数学定义">数学定义
-</h3><ul>
-<li><strong>隐藏状态更新</strong>（记忆更新）：
-
-$$h_t = \tanh(W_{hh} h_{t-1} + W_{xh} x_t)$$</li>
-<li><strong>输出预测</strong>：
-
-$$y_t = W_{hy} h_t$$</li>
-<li><strong>关键特性</strong>：所有时间步共享同一套权重（$W_{hh}, W_{xh}, W_{hy}$），可处理任意长度序列。</li>
-<li><strong>RNN的工作流程如下图所示：</strong></li>
-</ul>
-<div align="center">
-  <img src="RNN.png" alt="封面" width="800">
-</div>
-<h3 id="与统计模型的关联">与统计模型的关联
-</h3><ul>
-<li><strong>向量自回归（VAR）</strong>：线性时间序列模型 $h_t = c + A h_{t-1}$，若 $c = B x_t$，则退化为 $h_t = B x_t + A h_{t-1}$，是RNN的线性特例。</li>
-<li><strong>非线性扩展</strong>：RNN通过 $\tanh$ 激活函数，将线性自回归升级为非线性序列建模。</li>
-</ul>
-<h2 id="rnn前向传播与反向传播">RNN前向传播与反向传播
-</h2><h3 id="前向传播与损失函数">前向传播与损失函数
-</h3><p>根据任务类型，损失函数为各时间步交叉熵的总和：</p>
-<div class="table-wrapper"><table>
-	<thead>
-			<tr>
-					<th>任务类型</th>
-					<th>损失计算方式</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td>序列分类（如姓名→性别）</td>
-					<td>仅取<strong>最后时刻 $h_T$</strong> 计算交叉熵（忽略中间 $y_t$）</td>
-			</tr>
-			<tr>
-					<td>序列生成（下一词预测）</td>
-					<td>逐时间步计算交叉熵（如输入“唐”→预测“纳”，真实标签“纳”对应概率的负对数）</td>
-			</tr>
-			<tr>
-					<td>Seq2Seq（如机器翻译）</td>
-					<td>编码器压缩输入序列，解码器逐词生成，总损失为各输出词交叉熵之和</td>
-			</tr>
-	</tbody>
-</table></div>
-<h3 id="反向传播bptt">反向传播：BPTT
-</h3><ul>
-<li><strong>原理</strong>：沿时间轴链式求导，梯度从最后时刻 $L_T$ 反向传递至初始时刻：
-
-$$\frac{\partial L_T}{\partial h_1} = \frac{\partial L_T}{\partial h_T} \cdot \prod_{k=2}^T \frac{\partial h_k}{\partial h_{k-1}}, \quad \frac{\partial h_k}{\partial h_{k-1}} = \tanh'(\cdot) W_{hh}$$</li>
-</ul>
-<h3 id="梯度消失">梯度消失
-</h3><p>尽管RNN具备记忆功能，但由于其特殊的网络结构，RNN存在梯度消失的问题。<br>
-基于上述 BPTT 的链式法则，梯度消失主要由以下两个因素共同导致：</p>
-<div class="table-wrapper"><table>
-	<thead>
-			<tr>
-					<th style="text-align: left">成因分类</th>
-					<th style="text-align: left">数学表达与解释</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td style="text-align: left"><strong>激活函数饱和</strong></td>
-					<td style="text-align: left">$\tanh&rsquo;(z) \in (0, 1]$，当输入值较大或较小时，导数趋近于 0。<br>在连乘过程中，只要大部分时间步处于饱和区，梯度就会被显著压缩。</td>
-			</tr>
-			<tr>
-					<td style="text-align: left"><strong>权重矩阵连乘</strong></td>
-					<td style="text-align: left">连乘项中包含 $W_{hh}^{T-1}$。从线性代数角度看，若 $W_{hh}$ 的最大奇异值 $&lt; 1$，多次连乘后会指数级衰减至 0；即便 $\tanh&rsquo;$ 不恒为 0，矩阵连乘也会导致梯度消失。</td>
-			</tr>
-	</tbody>
-</table></div>
-<p><strong>结论</strong>：由于梯度在时间轴上经历了大量小于 1 的因子（$\tanh&rsquo;$ 和 $W_{hh}$）的连乘，早期时间步的梯度 $\frac{\partial L_T}{\partial h_1}$ 会指数级趋近于 0，导致模型无法学习长距离依赖关系。</p>
-<p>为此学者又在RNN的基础上进行改进，提出了LSTM。</p>
-<h2 id="lstm">LSTM
-</h2><h3 id="设计初衷">设计初衷
-</h3><p>为解决基础RNN的梯度消失/爆炸问题（源于 $\tanh&rsquo;(\cdot)$ 连乘与 $W_{hh}$ 连乘的指数衰减），LSTM引入门控机制与细胞状态，构建梯度“高速公路”，缓解长距离依赖捕捉困难。</p>
-<h3 id="核心组件与作用">核心组件与作用
-</h3><div class="table-wrapper"><table>
-	<thead>
-			<tr>
-					<th style="text-align: left">组件</th>
-					<th style="text-align: left">符号</th>
-					<th style="text-align: left">激活函数</th>
-					<th style="text-align: left">作用</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td style="text-align: left">遗忘门</td>
-					<td style="text-align: left">$f_t$</td>
-					<td style="text-align: left">$\sigma$</td>
-					<td style="text-align: left">控制上一时刻细胞状态 $C_{t-1}$ 的保留比例（1=全保留，0=全遗忘）</td>
-			</tr>
-			<tr>
-					<td style="text-align: left">输入门</td>
-					<td style="text-align: left">$i_t$</td>
-					<td style="text-align: left">$\sigma$</td>
-					<td style="text-align: left">控制当前候选状态 $\tilde{C}_t$ 的写入强度</td>
-			</tr>
-			<tr>
-					<td style="text-align: left">候选状态</td>
-					<td style="text-align: left">$g_t$</td>
-					<td style="text-align: left">$\tanh$</td>
-					<td style="text-align: left">生成当前时刻的新信息（范围 $[-1,1]$）</td>
-			</tr>
-			<tr>
-					<td style="text-align: left">输出门</td>
-					<td style="text-align: left">$o_t$</td>
-					<td style="text-align: left">$\sigma$</td>
-					<td style="text-align: left">控制当前细胞状态 $C_t$ 对外输出的比例</td>
-			</tr>
-	</tbody>
-</table></div>
-<h3 id="细胞状态-c_t">细胞状态 $C_t$
-</h3><ul>
-<li><strong>本质</strong>：贯穿时间轴的“传送带”，信息可直线传递，几乎无衰减。</li>
-<li><strong>梯度特性</strong>：梯度从 $C_t$ 传向 $C_{t-1}$ 时仅与遗忘门 $f_t$ <strong>逐元素相乘</strong>，无直接矩阵乘法，避免连乘导致的梯度消失。</li>
-</ul>
-<h3 id="核心计算公式">核心计算公式
-</h3><ol>
-<li><strong>门控与候选状态生成</strong>（由 $h_{t-1}$ 与 $x_t$ 拼接后经线性变换得到）：
-
-$$
-\begin{pmatrix} i_t \\ f_t \\ o_t \\ g_t \end{pmatrix}
-=
-\begin{pmatrix} \sigma \\ \sigma \\ \sigma \\ \tanh \end{pmatrix}
-W
-\begin{pmatrix} h_{t-1} \\ x_t \end{pmatrix}
-$$</li>
-<li><strong>细胞状态更新</strong>（加法更新，核心缓解梯度消失）：
-
-$$
-C_t = f_t \odot C_{t-1} + i_t \odot g_t
-$$</li>
-<li><strong>隐藏状态输出</strong>（过滤后对外输出）：
-
-$$
-h_t = o_t \odot \tanh(C_t)
-$$</li>
-</ol>
-<p>下图演示了LSTM如何工作：</p>
-<div align="center">
-  <img src="LSTM.png" alt="封面" width="800">
-</div>
-<p>从这个图我们可以更直观的理解为什么LSTM能避免梯度消失，RNN在反向传播时，需要反复对tanh函数求导，由于导数小于1，连乘下去就会导致梯度消失。而LSTM在反向传播时，只需要对tanh求一次导，接下来都是CT和CT-1之间直接求导，这样就不会存在梯度消失的问题了。</p>
-<h3 id="与rnn的区别">与RNN的区别
-</h3><div class="table-wrapper"><table>
-	<thead>
-			<tr>
-					<th style="text-align: left">对比项</th>
-					<th style="text-align: left">基础RNN</th>
-					<th style="text-align: left">LSTM</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td style="text-align: left">状态更新</td>
-					<td style="text-align: left">乘法更新 $h_t=\tanh(W_{hh}h_{t-1}+W_{xh}x_t)$</td>
-					<td style="text-align: left">加法更新 $C_t=f_t\odot C_{t-1}+i_t\odot g_t$</td>
-			</tr>
-			<tr>
-					<td style="text-align: left">梯度路径</td>
-					<td style="text-align: left">$\prod \tanh&rsquo;(\cdot)W_{hh}$（易消失）</td>
-					<td style="text-align: left">$\prod f_t$（可控制，遗忘门≈1时梯度直通）</td>
-			</tr>
-			<tr>
-					<td style="text-align: left">记忆与输出</td>
-					<td style="text-align: left">共用 $h_t$（记忆与输出耦合）</td>
-					<td style="text-align: left">分离 $C_t$（长期记忆）与 $h_t$（当前输出）</td>
-			</tr>
-	</tbody>
-</table></div>
-<h2 id="总结">总结
-</h2><p>RNN擅长处理变长序列，但基础RNN存在梯度消失问题，难以捕捉长距离依赖。为此引入LSTM/GRU，通过门控机制和加法更新构建梯度“高速公路”，缓解了该问题。然而，面对极长序列，LSTM仍无法完美记忆开头信息，这推动了注意力机制的发展，通过动态聚焦关键信息来弥补这一缺陷。</p>
-
+    
 </section>
 
 
@@ -679,15 +379,15 @@ $$</li>
             
                 
 <article class="has-image">
-    <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/">
+    <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/">
         
         
             <div class="article-image">
-                <img src="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/Ruin.142265fb55dea43ae5144e2bd76415ed_hu_51ad5fcc096b5506.png" 
+                <img src="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/Ruin.142265fb55dea43ae5144e2bd76415ed_hu_51ad5fcc096b5506.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
-                        alt="Featured image of post 深度学习06"
+                        alt="Featured image of post 深度学习05"
                         
                         data-hash="md5-FCJl&#43;1XepDrlFE4r12QV7Q==">
                 
@@ -695,7 +395,7 @@ $$</li>
         
 
         <div class="article-details">
-            <h2 class="article-title">深度学习06</h2>
+            <h2 class="article-title">深度学习05</h2>
         </div>
     </a>
 </article>

@@ -7,7 +7,15 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Wind Whistler</copyright>
-        <lastBuildDate>Sat, 02 May 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/categories/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sun, 10 May 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/categories/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>深度学习06</title>
+        <link>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/</link>
+        <pubDate>Sun, 10 May 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/</guid>
+        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/Ruin.png" alt="Featured image of post 深度学习06" /&gt;</description>
+        </item>
+        <item>
         <title>深度学习05</title>
         <link>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/</link>
         <pubDate>Sat, 02 May 2026 00:00:00 +0000</pubDate>

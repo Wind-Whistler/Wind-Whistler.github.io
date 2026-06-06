@@ -226,7 +226,72 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#多重共线性">多重共线性</a>
+      <ol>
+        <li><a href="#多重共线性的概念">多重共线性的概念</a></li>
+        <li><a href="#多重共线性的后果">多重共线性的后果</a></li>
+        <li><a href="#多重共线性解决方案">多重共线性解决方案</a>
+          <ol>
+            <li><a href="#多重共线性的检测">多重共线性的检测</a></li>
+            <li><a href="#多重共线性的解决">多重共线性的解决</a></li>
+          </ol>
+        </li>
+        <li><a href="#代码演示">代码演示</a></li>
+      </ol>
+    </li>
+    <li><a href="#异方差">异方差</a>
+      <ol>
+        <li><a href="#异方差的概念">异方差的概念</a></li>
+        <li><a href="#异方差的后果">异方差的后果</a></li>
+        <li><a href="#异方差的检验">异方差的检验</a>
+          <ol>
+            <li><a href="#图示法">图示法</a></li>
+            <li><a href="#bp检验">BP检验</a></li>
+            <li><a href="#怀特检验">怀特检验</a></li>
+          </ol>
+        </li>
+        <li><a href="#异方差修正">异方差修正</a>
+          <ol>
+            <li><a href="#加权最小二乘法">加权最小二乘法</a></li>
+            <li><a href="#异方差稳健标准误法">异方差稳健标准误法</a></li>
+          </ol>
+        </li>
+        <li><a href="#代码演示-1">代码演示</a></li>
+      </ol>
+    </li>
+    <li><a href="#内生性">内生性</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -316,7 +381,416 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>多重共线性</li>
+<li>异方差</li>
+<li>内生性</li>
+</ul>
+<h2 id="多重共线性">多重共线性
+</h2><h3 id="多重共线性的概念">多重共线性的概念
+</h3><p><strong>完全多重共线性</strong></p>
+<ul>
+<li><strong>定义</strong>：模型中的解释变量之间存在严格的线性关系。</li>
+<li><strong>数学表述</strong>：存在一组不全为零的常数 c₁, c₂, …, ck，使得等式
+
+$$c_1X_{i1} + c_2X_{i2} + ... + c_kX_{ik} = 0$$
+对所有样本点 <em>i</em> 都成立。</li>
+<li><strong>后果</strong>：此时，OLS估计量中的 $(X^T X)^{-1}$ 矩阵不存在，<strong>无法求得唯一的参数估计量</strong>。</li>
+</ul>
+<p><strong>近似多重共线性</strong></p>
+<ul>
+<li><strong>定义</strong>：模型中的解释变量之间存在<strong>高度相关</strong>但非完全精确的线性关系。</li>
+<li><strong>数学表述</strong>：存在一组不全为零的常数 c₁, c₂, …, ck，使得等式
+
+$$c_1X_{i1} + c_2X_{i2} + ... + c_kX_{ik} + v_i \approx 0$$
+近似成立，其中 $v_i$ 为随机误差项。</li>
+<li><strong>核心后果</strong>：此时 $(X^T X)$ 矩阵接近奇异（其行列式 $|X^T X| \approx 0$），导致参数估计量的方差 $Cov(\hat{\beta})=\sigma^2(X^T X)^{-1}$ 变得<strong>非常大</strong>，估计量不再“有效”，统计推断（如t检验）可能失效。</li>
+</ul>
+<h3 id="多重共线性的后果">多重共线性的后果
+</h3><ol>
+<li>
+<p>完全多重共线性：参数估计量不存在</p>
+<ul>
+<li><strong>原因</strong>：当解释变量间存在严格的线性关系（完全共线性）时，矩阵 $(X^T X)$ 是奇异矩阵，其逆矩阵 $(X^T X)^{-1}$ 不存在。</li>
+<li><strong>后果</strong>：由于OLS估计量 $\hat{\beta} = (X^T X)^{-1}X^T Y$ 的计算依赖于 $(X^T X)^{-1}$，因此在该情况下<strong>无法得到任何参数的估计值</strong>。</li>
+</ul>
+</li>
+<li>
+<p>近似多重共线性：参数估计量方差增大，失去有效性（非有效）</p>
+<ul>
+<li><strong>原因</strong>：当解释变量间高度相关但非完全相关（近似共线性）时，矩阵 $(X^T X)$ 的行列式 $|X^T X| \approx 0$，其逆矩阵 $(X^T X)^{-1}$ 的<strong>主对角线元素变得非常大</strong>。</li>
+<li><strong>后果</strong>：根据参数估计量的方差-协方差矩阵公式 $Cov(\hat{\beta}) = \sigma^2 (X^T X)^{-1}$，参数估计量的<strong>方差会急剧增大</strong>。虽然估计量仍具有无偏性，但其<strong>方差不再是最小的</strong>，因此在“线性无偏估计量”中<strong>不再具有“有效性”</strong>，即OLS估计量<strong>非有效</strong>。</li>
+</ul>
+</li>
+<li>
+<p>参数估计量的经济意义不合理</p>
+<ul>
+<li><strong>原因</strong>：当两个变量高度共线时，它们对被解释变量的影响是“共同”施加的，难以剥离。</li>
+<li><strong>后果</strong>：单个参数估计值（如 $\hat{\beta}_1$）<strong>不再能准确反映</strong>对应变量（$X_1$）与被解释变量之间的独立结构关系。该系数可能失去应有的经济含义，甚至出现符号与理论预期相反的“反常”现象。</li>
+</ul>
+</li>
+<li>
+<p>变量的显著性检验和模型的预测功能失效</p>
+<ul>
+<li><strong>对显著性检验的影响</strong>：由于参数估计量的方差 $s_{\hat{\beta}_i}$ 变得很大，用于检验变量显著性的 <strong>t 统计量</strong> $t = \hat{\beta}<em>i / s</em>{\hat{\beta}_i}$ 的值会变小。这可能导致本应显著的变量被误判为不显著，<strong>使得t检验失去意义</strong>。</li>
+<li><strong>对预测功能的影响</strong>：参数方差增大会导致<strong>预测值的置信区间过宽</strong>，使得预测的精度大大降低，<strong>模型的预测功能失效</strong>。</li>
+</ul>
+</li>
+</ol>
+<p>注意：多重共线性并不违背OLS的基本假设，因此OLS估计量仍保持无偏性和线性性。其所有问题都出在“统计推断”环节——即基于估计量方差进行的假设检验、置信区间构建和预测。</p>
+<h3 id="多重共线性解决方案">多重共线性解决方案
+</h3><h4 id="多重共线性的检测">多重共线性的检测
+</h4><h5 id="是否存在多重共线性">是否存在多重共线性？
+</h5><ul>
+<li><strong>对于两个解释变量</strong>：计算二者的简单相关系数 \(r\)。若 \(|r|\) 接近1，则可能存在较强的多重共线性。</li>
+<li><strong>对于多个解释变量</strong>：采用<strong>综合统计检验法</strong>。如果在OLS回归结果中，模型的整体 \(R^2\) 与 \(F\) 值都很大，但多数解释变量的 \(t\) 检验值不显著（\(p\) 值大），则说明各变量对 \(Y\) 的联合作用显著，但单个变量的独立作用因共线性而难以分辨，提示存在多重共线性。</li>
+</ul>
+<h5 id="哪些变量之间存在共线性">哪些变量之间存在共线性？
+</h5><ul>
+<li>
+<p><strong>方差膨胀因子法</strong>：</p>
+<ol>
+<li>为每个解释变量 \(X_j\) 做<strong>辅助回归</strong>，即以 \(X_j\) 为被解释变量，对其他所有解释变量进行回归，得到拟合优度 \(R_j^2\)。</li>
+<li>计算该变量的<strong>方差膨胀因子</strong>：\(VIF_j = \frac{1}{1 - R_j^2}\)。</li>
+<li><strong>判断准则</strong>：如果所有 \(VIF\) 的<strong>平均值大于2</strong>，且<strong>最大值大于10</strong>，则认为存在严重的多重共线性。</li>
+</ol>
+</li>
+<li>
+<p><strong>逐步回归法</strong>：</p>
+<ul>
+<li><strong>向后逐步回归</strong>：从包含所有变量的模型开始，逐个剔除 \(t\) 值不显著的变量。如果剔除某个变量后，模型的拟合优度 \(R^2\) 变化很小，则说明该变量可能与其它变量存在共线性，而非独立的解释变量。</li>
+<li><strong>向前逐步回归</strong>：从空模型开始，逐个引入变量。如果引入新变量后，模型的拟合优度 \(R^2\) 变化很不显著，则说明新引入的变量与模型中已有变量存在共线性。</li>
+</ul>
+</li>
+</ul>
+<h4 id="多重共线性的解决">多重共线性的解决
+</h4><h5 id="第一类方法排除引起共线性的变量">第一类方法：排除引起共线性的变量
+</h5><ul>
+<li><strong>操作</strong>：通过上述检验（特别是逐步回归法）找出并<strong>剔除</strong>与其他变量高度相关、且经济意义相对次要的解释变量。</li>
+<li><strong>注意</strong>：剔除变量后，<strong>剩余解释变量参数的经济含义和数值都可能发生变化</strong>，因为被剔除变量的影响会部分地由剩余变量承担。</li>
+</ul>
+<h5 id="第二类方法减小参数估计量的方差">第二类方法：减小参数估计量的方差
+</h5><p>多重共线性的主要后果是参数估计量的方差非常大。此类方法旨在直接改善估计的稳定性。</p>
+<ul>
+<li><strong>增加样本容量</strong>：理论上可以减小参数估计量的方差，但实践中往往难以获得更多数据。</li>
+<li><strong>采用有偏估计方法</strong>：例如<strong>岭回归、主成分回归</strong>等。这些方法通过<strong>主动引入一个小的偏差，来换取方差的大幅降低</strong>，从而在综合指标（如均方误差MSE）上可能优于OLS估计。这类方法不直接解决变量间的相关性，而是致力于改善“估计量方差过大”这一后果。</li>
+</ul>
+<h3 id="代码演示">代码演示
+</h3><p>这里以李子奈《计量经济学：第五版》第111页的案例进行演示。</p>
+<div align="center">
+  <img src="MLEX.png" alt="Q1" width="800">
+</div>
+<p>下面给出第一步回归的代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 回归模型
+</span></span><span class="line"><span class="cl">gen lnY = ln(Y)
+</span></span><span class="line"><span class="cl">gen lnX1 = log(X1)
+</span></span><span class="line"><span class="cl">gen lnX2 = log(X2)
+</span></span><span class="line"><span class="cl">gen lnX3 = log(X3)
+</span></span><span class="line"><span class="cl">gen lnX4 = log(X4)
+</span></span><span class="line"><span class="cl">gen lnX5 = log(X5)
+</span></span><span class="line"><span class="cl">gen lnX6 = log(X6)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reg lnY lnX1 lnX2 lnX3 lnX4 lnX5 lnX6
+</span></span><span class="line"><span class="cl">estat vif
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>得到如下结果：</p>
+<div align="center">
+  <img src="Res01.png" alt="Q1" width="800">
+</div>
+根据综合统计检验法，回归结果的拟合优度和F检验都很显著，但是部分变量的t检验不显著，说明各变量间存在共线性使得模型无法识别各变量对Y的独立作用。
+<p>同时给出方差膨胀因子VIF的结果:</p>
+<div align="center">
+  <img src="VIF.png" alt="Q1" width="300">
+</div>
+<p>结果表明模型存在多重共线性。
+进一步查看各变量间的相关系数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 查看相关系数
+</span></span><span class="line"><span class="cl">corr lnX1 lnX2 lnX3 lnX4 lnX5 lnX6
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>相关系数表如下：</p>
+<div align="center">
+  <img src="Corr.png" alt="Q1" width="800">
+</div>
+<p>发现lnX1,lnX2,lnX3之间存在显著相关关系，lnX3和lnX6之间也存在明显相关关系，下面使用向前逐步回归来解决模型多重共线性问题。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">//向前逐步回归
+</span></span><span class="line"><span class="cl">stepwise reg lnY lnX1 lnX2 lnX3 lnX4 lnX5 lnX6,pe(0.1)  //设定标准为0.1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">//向后逐步回归
+</span></span><span class="line"><span class="cl">stepwise reg lnY lnX1 lnX2 lnX3 lnX4 lnX5 lnX6,pr(0.1)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最终得到如下结果：</p>
+<div align="center">
+  <img src="Step.png" alt="Q1" width="800">
+</div>
+根据综合统计检验法，判定模型不存在严重多重共线性，因此确定上述模型为最终模型。
+<h2 id="异方差">异方差
+</h2><h3 id="异方差的概念">异方差的概念
+</h3><ul>
+<li>
+<p><strong>经典假设</strong>：在经典线性回归模型（CLRM）的高斯-马尔可夫假设中，要求随机误差项 $\mu_i$ 满足“同方差性”，即其方差对所有观测点 $i$ 均为相同的常数 $\sigma^2$：
+</p>
+$$\text{Var}(\mu_i) = E(\mu_i^2) = \sigma^2$$<p>
+此时，随机误差项的方差-协方差矩阵为：
+</p>
+$$\text{Cov}(\mathbf{\mu}) = E(\mathbf{\mu}\mathbf{\mu}^T) = \sigma^2 \mathbf{I}$$<p>
+其中 $\mathbf{I}$ 是单位矩阵。</p>
+</li>
+<li>
+<p><strong>异方差的定义</strong>：当“同方差性”假设被违背时，即随机误差项的方差<strong>不再是一个常数</strong>，而是随观测点的不同而变化，就认为出现了<strong>异方差性</strong>。
+</p>
+$$\text{Var}(\mu_i) = E(\mu_i^2) = \sigma_i^2$$<p>
+此时，方差-协方差矩阵是一个<strong>对角线元素各不相同</strong>的对角矩阵，不再是 $\sigma^2 \mathbf{I}$。</p>
+</li>
+</ul>
+<h3 id="异方差的后果">异方差的后果
+</h3><p>异方差不违背“零均值”和“无自相关”的假设，但破坏了“同方差”假设。这会引发一系列严重后果：</p>
+<ol>
+<li>
+<p>参数估计量“非有效”</p>
+<ul>
+<li><strong>OLS估计量仍然是无偏的、一致的</strong>，因为无偏性的证明不依赖于同方差假设。</li>
+<li>然而，高斯-马尔可夫定理证明OLS估计量是“最佳线性无偏估计量”（BLUE）的前提是所有经典假设（包括同方差）都成立。一旦存在异方差，<strong>OLS估计量在所有线性无偏估计量中不再具有最小的方差</strong>，即<strong>不再“有效”</strong>。</li>
+<li>在大样本下，OLS估计量虽具有一致性，但<strong>仍不具有渐近有效性</strong>。</li>
+</ul>
+</li>
+<li>
+<p>标准误差的估计失效，导致统计推断全部失效</p>
+<ul>
+<li>参数估计量方差的公式 $Cov(\hat{\beta}) = \sigma^2 (X^T X)^{-1}$ 在同方差下成立。在异方差下，这个公式是<strong>错误的</strong>。</li>
+<li>基于此错误公式计算的<strong>参数标准误</strong> $s_{\hat{\beta}_i}$ 也是错误的。</li>
+<li>由于后续所有的<strong>统计推断</strong>都依赖于 $s_{\hat{\beta}_i}$，导致以下全部失效：
+<ul>
+<li><strong>t检验和F检验失去意义</strong>：用于判断变量显著性的t统计量 $t = \hat{\beta}<em>i / s</em>{\hat{\beta}_i}$ 不再服从t分布，其结论不可信。</li>
+<li><strong>置信区间构建不准确</strong>：基于错误标准误构造的置信区间宽度和覆盖率均不准确。</li>
+<li><strong>模型的预测功能失效</strong>：预测值的置信区间同样依赖于参数方差，错误的方差估计会使预测区间精度严重下降，失去预测价值。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="异方差的检验">异方差的检验
+</h3><p><strong>核心思路</strong>：由于我们无法观测到随机扰动项的真实方差 $\sigma_i^2$，我们通过OLS估计得到的残差平方 $\tilde{e}_i^2$ 来近似它。然后检验 $\tilde{e}_i^2$ 是否与模型中的解释变量存在系统性关系。如果存在，则表明存在异方差。</p>
+<h4 id="图示法">图示法
+</h4><ul>
+<li><strong>操作</strong>：用OLS法估计原模型，得到残差 $\tilde{e}_i$ 或残差平方 $\tilde{e}_i^2$。然后绘制 $\tilde{e}_i^2$ 与某个解释变量 $X_j$ 或拟合值 $\hat{Y}$ 的散点图。</li>
+<li><strong>判断</strong>：如果散点图呈现出明显的、有规律的变化趋势（如单调递增/递减的喇叭形、U形、倒U形等），而非围绕一条斜率为零的直线随机分布，则提示可能存在异方差。这是一种直观但不够精确的判断方法。</li>
+</ul>
+<h4 id="bp检验">BP检验
+</h4><ul>
+<li><strong>操作</strong>：
+<ol>
+<li>用OLS法估计原模型 $Y_i=\beta_0+\beta_1X_{i1}+&hellip;+\beta_kX_{ik}+\mu_i$，得到残差平方 $\tilde{e}_i^2$。</li>
+<li>构造并估计辅助回归模型：$\tilde{e}<em>i^2=\delta_0+\delta_1X</em>{i1}+&hellip;+\delta_kX_{ik}+\epsilon_i$。</li>
+<li>检验辅助回归方程中所有解释变量系数的联合显著性。</li>
+</ol>
+</li>
+<li><strong>检验统计量</strong>：
+<ul>
+<li><strong>F检验</strong>：$F=\frac{R_{\tilde{e}^2}^2/k}{(1-R_{\tilde{e}^2}^2)/(n-k-1)} \sim F(k, n-k-1)$</li>
+<li><strong>LM检验（拉格朗日乘子检验）</strong>：$LM = nR_{\tilde{e}^2}^2 \sim \chi^2(k)$</li>
+</ul>
+</li>
+<li><strong>原假设 $H_0$</strong>：$\delta_1=\delta_2=&hellip;=\delta_k=0$（即同方差）。</li>
+<li><strong>判断</strong>：如果F统计量或LM统计量在给定显著性水平下是显著的，则拒绝同方差的原假设，认为存在异方差。</li>
+</ul>
+<h4 id="怀特检验">怀特检验
+</h4><ul>
+<li><strong>操作</strong>：怀特检验是BP检验的推广，它不仅检验方差与解释变量的线性关系，还检验了与解释变量的平方项、交叉项等非线性关系。
+<ol>
+<li>用OLS法估计原模型，得到残差平方 $\tilde{e}_i^2$。</li>
+<li>构造并估计辅助回归模型。以二元模型为例，辅助回归包含所有解释变量、它们的平方项以及交叉项：$\tilde{e}<em>i^2=\alpha_0+\alpha_1X</em>{i1}+\alpha_2X_{i2}+\alpha_3X_{i1}^2+\alpha_4X_{i2}^2+\alpha_5X_{i1}X_{i2}+\epsilon_i$。</li>
+<li>检验该辅助回归方程中所有解释变量（原变量、平方项、交叉项）系数的联合显著性。</li>
+</ol>
+</li>
+<li><strong>检验统计量</strong>：
+<ul>
+<li><strong>F检验</strong>：形式同BP检验，但自由度 $h$ 为辅助回归中解释变量的个数（不包括常数项）。</li>
+<li><strong>LM检验</strong>：$LM = nR_{\tilde{e}^2}^2 \sim \chi^2(h)$</li>
+</ul>
+</li>
+<li><strong>原假设 $H_0$</strong>：所有系数（除常数项）均为0（即同方差）。</li>
+<li><strong>判断</strong>：如果检验统计量显著，则拒绝同方差的原假设，认为存在异方差。<strong>优点</strong>是能探测更复杂的异方差形式；<strong>缺点</strong>是当解释变量较多时，辅助回归会引入大量变量，可能损失自由度或引致多重共线性。实践中有时会去掉交叉项以简化。</li>
+</ul>
+<h3 id="异方差修正">异方差修正
+</h3><p>异方差的根源在于随机扰动项的方差不再为常数，而是与解释变量相关，即 $Var(\mu_i) = \sigma_i^2 = f(X_{ji}) \sigma^2$。其修正的核心目标是重新获得有效的统计推断。</p>
+<p><strong>主要方法如下：</strong></p>
+<h4 id="加权最小二乘法">加权最小二乘法
+</h4><p>这是处理已知（或可合理假设）异方差结构的最直接方法。</p>
+<ul>
+<li><strong>核心思想</strong>：对原模型进行加权变换，赋予方差较小的观测值更大的权重，赋予方差较大的观测值更小的权重，从而将<strong>异方差模型转化为同方差模型</strong>，然后对变换后的模型应用OLS。</li>
+<li><strong>操作步骤</strong>：
+<ol>
+<li><strong>假设并估计方差函数</strong>：假设 $\sigma_i^2 = f(X_i)$ 具有指数形式，即 $ln(e_i^2) = \alpha_0 + \alpha_1 X_i + &hellip;$。用OLS回归估计此方程，得到拟合值 $\widehat{ln(e_i^2)}$。</li>
+<li><strong>构造权重</strong>：计算 $\hat{\sigma_i} = \sqrt{exp(\widehat{ln(e_i^2)})}$，其倒数 $w_i = 1/\hat{\sigma_i}$ 即为标准差权重。由于WLS的权重应为<strong>方差的倒数</strong>，因此最终权重为 $w2_i = w_i^2 = 1/\hat{\sigma_i}^2$。</li>
+<li><strong>执行WLS回归</strong>：在Stata中，使用命令 <code>reg Y X [aw=w2]</code> 进行回归，其中 <code>aw=</code> 选项代表使用分析权重（Analytic Weight）。</li>
+</ol>
+</li>
+<li><strong>结果</strong>：WLS估计量 $\hat{\beta}_{WLS}$ 是BLUE估计量，其方差-协方差矩阵的估计是正确的，基于此的统计推断有效。</li>
+<li><strong>后续检验</strong>：可对加权变换后的新模型再次进行异方差检验（如BP检验），以确认异方差问题是否已被消除。</li>
+</ul>
+<h4 id="异方差稳健标准误法">异方差稳健标准误法
+</h4><p>当异方差的具体形式未知，或样本容量较大时，这是最常用且最便捷的方法。</p>
+<ul>
+<li><strong>核心思想</strong>：<strong>不改变</strong>OLS的参数点估计值 $\hat{\beta}_{OLS}$，但<strong>修正其方差-协方差矩阵的估计公式</strong>，从而计算出“对异方差稳健的”标准误。</li>
+<li><strong>操作</strong>：在Stata中，在常规OLS回归命令后直接添加 <code>, robust</code> 选项即可，如 <code>reg Y X, robust</code>。</li>
+<li><strong>优点</strong>：
+<ul>
+<li>操作极其简单，无需预设异方差形式。</li>
+<li>在大样本下，基于“稳健标准误”进行的t检验、F检验和构建的置信区间是有效的。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：得到的估计量方差并非理论上的最小值（即非有效），但具有一致性。其核心价值在于提供了在异方差存在时进行<strong>正确统计推断</strong>的工具。</li>
+</ul>
+<h3 id="代码演示-1">代码演示
+</h3><p>这里使用李子奈《计量经济学：第五版》第四章课后习题第12题为例：</p>
+<div align="center">
+  <img src="Q2.png" alt="Q1" width="800">
+</div>
+<p><strong>Q1:</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// Q1
+</span></span><span class="line"><span class="cl">reg Y X
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>得到如下结果：</p>
+<div align="center">
+  <img src="Res02.png" alt="Q1" width="800">
+</div>
+<p><strong>Q2:</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// Q2
+</span></span><span class="line"><span class="cl">reg Y X 
+</span></span><span class="line"><span class="cl">predict e,residual
+</span></span><span class="line"><span class="cl">gen e2 = e^2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">//BP Test
+</span></span><span class="line"><span class="cl">reg e2 X
+</span></span><span class="line"><span class="cl">scalar R2 = _N * e(r2)
+</span></span><span class="line"><span class="cl">display R2
+</span></span><span class="line"><span class="cl">scalar p_value = chi2tail(1, R2)
+</span></span><span class="line"><span class="cl">display p_value
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>得到如下结果：</p>
+<div align="center">
+  <img src="Res03.png" alt="Q1" width="800">
+</div>
+<div align="center">
+  <img src="chi1.png" alt="Q1" width="800">
+</div>
+BP检验显著，这表明模型存在异方差。
+<p><strong>Q3:</strong>
+因为要估计正确的参数，所以这边使用WLS进行估计。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// Q3
+</span></span><span class="line"><span class="cl">gen loge2 = ln(e2)
+</span></span><span class="line"><span class="cl">reg loge2 X
+</span></span><span class="line"><span class="cl">predict y_hat
+</span></span><span class="line"><span class="cl">gen w = 1 / sqrt(exp(y_hat))
+</span></span><span class="line"><span class="cl">gen w2 = w ^ 2
+</span></span><span class="line"><span class="cl">reg Y X [aw = w2]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// 检验是否还存在异方差
+</span></span><span class="line"><span class="cl">gen new_Y = w * Y
+</span></span><span class="line"><span class="cl">gen new_X = w * X
+</span></span><span class="line"><span class="cl">gen new_b = w
+</span></span><span class="line"><span class="cl">reg new_Y new_b new_X, nocons //无常数项回归
+</span></span><span class="line"><span class="cl">predict es, residual
+</span></span><span class="line"><span class="cl">gen es2 = es ^ 2
+</span></span><span class="line"><span class="cl">reg es2 new_X new_b  // 用加权数据做BP检验
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// 如果不追求估计参数也可以用robust sd
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>WLS估计结果如下：</p>
+<div align="center">
+  <img src="Res04.png" alt="Q1" width="800">
+</div>
+对WLS模型再次做BP检验，结果如下：
+<div align="center">
+  <img src="BP.png" alt="Q1" width="800">
+</div>
+发现F检验不显著，说明异方差性被消除。  
+<p>最后，如果不要求估计参数，我们一般也可以直接用稳健标准误来确保统计推断的可靠性。使用稳健标准误结果如下：</p>
+<div align="center">
+  <img src="Res05.png" alt="Q1" width="800">
+</div>
+<h2 id="内生性">内生性
+</h2>
 </section>
 
 

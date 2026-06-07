@@ -4408,7 +4408,8 @@ $$\text{Var}(\mu_i) = E(\mu_i^2) = \sigma_i^2$$&lt;p&gt;
 &lt;li&gt;&lt;strong&gt;操作&lt;/strong&gt;：
 &lt;ol&gt;
 &lt;li&gt;用OLS法估计原模型 $Y_i=\beta_0+\beta_1X_{i1}+&amp;hellip;+\beta_kX_{ik}+\mu_i$，得到残差平方 $\tilde{e}_i^2$。&lt;/li&gt;
-&lt;li&gt;构造并估计辅助回归模型：$\tilde{e}&lt;em&gt;i^2=\delta_0+\delta_1X&lt;/em&gt;{i1}+&amp;hellip;+\delta_kX_{ik}+\epsilon_i$。&lt;/li&gt;
+&lt;li&gt;构造并估计辅助回归模型：
+$$\tilde{e}_i^2=\delta_0+\delta_1X_{i1}+...+\delta_kX_{ik}+\epsilon_i$$&lt;/li&gt;
 &lt;li&gt;检验辅助回归方程中所有解释变量系数的联合显著性。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/li&gt;
@@ -4426,7 +4427,8 @@ $$\text{Var}(\mu_i) = E(\mu_i^2) = \sigma_i^2$$&lt;p&gt;
 &lt;li&gt;&lt;strong&gt;操作&lt;/strong&gt;：怀特检验是BP检验的推广，它不仅检验方差与解释变量的线性关系，还检验了与解释变量的平方项、交叉项等非线性关系。
 &lt;ol&gt;
 &lt;li&gt;用OLS法估计原模型，得到残差平方 $\tilde{e}_i^2$。&lt;/li&gt;
-&lt;li&gt;构造并估计辅助回归模型。以二元模型为例，辅助回归包含所有解释变量、它们的平方项以及交叉项：$\tilde{e}&lt;em&gt;i^2=\alpha_0+\alpha_1X&lt;/em&gt;{i1}+\alpha_2X_{i2}+\alpha_3X_{i1}^2+\alpha_4X_{i2}^2+\alpha_5X_{i1}X_{i2}+\epsilon_i$。&lt;/li&gt;
+&lt;li&gt;构造并估计辅助回归模型。以二元模型为例，辅助回归包含所有解释变量、它们的平方项以及交叉项：
+$$\tilde{e}_i^2=\alpha_0+\alpha_1X_{i1}+\alpha_2X_{i2}+\alpha_3X_{i1}^2+\alpha_4X_{i2}^2+\alpha_5X_{i1}X_{i2}+\epsilon_i$$&lt;/li&gt;
 &lt;li&gt;检验该辅助回归方程中所有解释变量（原变量、平方项、交叉项）系数的联合显著性。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/li&gt;
@@ -4753,7 +4755,155 @@ $$\tilde{\mu}_i = \alpha_0 + \alpha_1 Z_{i1} + \alpha_2 Z_{i2} + ... + \alpha_m 
 &lt;li&gt;如果 $F$ 检验显著，或 $J$ 统计量对应的 $p$ 值很小（如 $p &amp;lt; 0.05$），则&lt;strong&gt;拒绝原假设 $H_0$&lt;/strong&gt;。这表明至少有一个工具变量不是外生的（与 $\mu$ 相关），工具变量集的有效性受到怀疑，需要重新审视工具变量的选择。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h4 id=&#34;代码实例&#34;&gt;代码实例
-&lt;/h4&gt;</description>
+&lt;/h4&gt;&lt;p&gt;这里以李子奈《计量经济学：第五版》第四章课后习题14题为例。&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;Q14.png&#34; alt=&#34;Q1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Q1:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;结果如下：&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;Res06.png&#34; alt=&#34;Q1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+根据宏观经济理论，一个地区的总消费量和地区GDP通常有着双向影响关系，这导致模型中的X和Y可能存在反向因果的问题，因此GDP和随机扰动项有可能有同期相关的问题，是可疑的内生变量，因此该模型存在内生解释变量问题。
+&lt;p&gt;&lt;strong&gt;Q2:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ivregress 2sls Y (X1 = X2)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;结果如下：&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;Res07.png&#34; alt=&#34;Q1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Q3:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg X1 X2 X3 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;predict X_hat
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X_hat 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;结果如下：&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;Res08.png&#34; alt=&#34;Q1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Q4:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ivregress 2sls Y (X1 = X2 X3)  // 过度识别检验
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;estat overid
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;结果如下：&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;OV.png&#34; alt=&#34;Q1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+对应卡方检验的P值为0.3627，不能拒绝原假设，因此认为EX及POP具有外生性
+&lt;p&gt;&lt;strong&gt;Q5:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg X1 X2 X3  // Hausman检验
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;predict e,res
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg Y X1 e  //这里引入原来的X1和一次误差
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;结果如下：&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;HA.png&#34; alt=&#34;Q1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+对应随机扰动项e的t检验显著，因此认为原模型存在内生性。
+&lt;h2 id=&#34;模型设定偏误&#34;&gt;模型设定偏误
+&lt;/h2&gt;&lt;h3 id=&#34;三类设定偏误类型&#34;&gt;三类设定偏误类型
+&lt;/h3&gt;&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;类型&lt;/th&gt;
+					&lt;th&gt;具体表现&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;遗漏相关变量&lt;/td&gt;
+					&lt;td&gt;真实模型含$X_1、X_2$，但误设为仅含$X_1$的模型&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;纳入无关变量&lt;/td&gt;
+					&lt;td&gt;真实模型仅含$X_1、X_2$，但误设为含$X_1、X_2、X_3$（$X_3$无关）的模型&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;函数形式错误&lt;/td&gt;
+					&lt;td&gt;真实模型为对数形式$\ln Y=\beta_0+\beta_1X_1+\mu$，但误设为线性形式$Y=\beta_0+\beta_1X_1+\mu$&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;对应后果&#34;&gt;对应后果
+&lt;/h3&gt;&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;类型&lt;/th&gt;
+					&lt;th&gt;后果&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;遗漏相关变量&lt;/td&gt;
+					&lt;td&gt;1. 若遗漏变量与已纳入变量相关，参数估计&lt;strong&gt;有偏且非一致&lt;/strong&gt;；&lt;br&gt;2. 随机扰动项方差、参数估计量方差的估计均有偏&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;纳入无关变量&lt;/td&gt;
+					&lt;td&gt;参数估计&lt;strong&gt;无偏，但方差不是最小&lt;/strong&gt;（丧失有效性）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;函数形式错误&lt;/td&gt;
+					&lt;td&gt;偏误是&lt;strong&gt;全方位&lt;/strong&gt;的，所有统计推断结论都可能出错&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;常用检验方法&#34;&gt;常用检验方法
+&lt;/h3&gt;&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;偏误类型&lt;/th&gt;
+					&lt;th&gt;检验方式&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;存在无关变量&lt;/td&gt;
+					&lt;td&gt;直接对无关变量的系数做&lt;code&gt;t检验&lt;/code&gt;/&lt;code&gt;F检验&lt;/code&gt;，若系数不显著则可剔除&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;遗漏变量/函数形式错误&lt;/td&gt;
+					&lt;td&gt;1. &lt;strong&gt;残差图示法&lt;/strong&gt;：看残差与解释变量/时间的散点图，若有趋势、循环或正负交替规律，说明设定有误；&lt;br&gt;2. &lt;strong&gt;RESET检验&lt;/strong&gt;：在原模型中加入被解释变量拟合值的高次幂（$\hat{Y}^2、\hat{Y}^3$），检验新增项是否显著，若不显著则原模型设定合理&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
         </item>
         <item>
         <title>深度学习03</title>

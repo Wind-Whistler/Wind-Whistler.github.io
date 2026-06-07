@@ -4180,6 +4180,7 @@ $$[N, H, W, C]$$&lt;p&gt;
 &lt;li&gt;多重共线性&lt;/li&gt;
 &lt;li&gt;异方差&lt;/li&gt;
 &lt;li&gt;内生性&lt;/li&gt;
+&lt;li&gt;模型设定偏误&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;多重共线性&#34;&gt;多重共线性
 &lt;/h2&gt;&lt;h3 id=&#34;多重共线性的概念&#34;&gt;多重共线性的概念

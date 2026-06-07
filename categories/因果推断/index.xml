@@ -698,6 +698,7 @@ $$&lt;p&gt;这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^
 &lt;li&gt;多重共线性&lt;/li&gt;
 &lt;li&gt;异方差&lt;/li&gt;
 &lt;li&gt;内生性&lt;/li&gt;
+&lt;li&gt;模型设定偏误&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;多重共线性&#34;&gt;多重共线性
 &lt;/h2&gt;&lt;h3 id=&#34;多重共线性的概念&#34;&gt;多重共线性的概念

@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en-us" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本章节介绍分布式随机优化">
-<title>分布式计算 06</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本章节介绍ADMM算法">
+<title>分布式计算 07</title>
 
-<link rel='canonical' href='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-06/'>
+<link rel='canonical' href='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/'>
 
-<link rel="stylesheet" href="/scss/style.min.86591c898bd806857815fbb8c47e8d3fed97c133b78e83d9bfc27b164dd0aa2b.css"><meta property='og:title' content="分布式计算 06">
-<meta property='og:description' content="本章节介绍分布式随机优化">
-<meta property='og:url' content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-06/'>
+<link rel="stylesheet" href="/scss/style.min.86591c898bd806857815fbb8c47e8d3fed97c133b78e83d9bfc27b164dd0aa2b.css"><meta property='og:title' content="分布式计算 07">
+<meta property='og:description' content="本章节介绍ADMM算法">
+<meta property='og:url' content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/'>
 <meta property='og:site_name' content='Wind Whistler'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-20T00:00:00&#43;00:00'/><meta property='og:image' content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-06/Mojo.png' />
-<meta name="twitter:title" content="分布式计算 06">
-<meta name="twitter:description" content="本章节介绍分布式随机优化"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-06/Mojo.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-06-10T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-06-10T00:00:00&#43;00:00'/><meta property='og:image' content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/Mojo.png' />
+<meta name="twitter:title" content="分布式计算 07">
+<meta name="twitter:description" content="本章节介绍ADMM算法"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/Mojo.png' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -249,42 +249,38 @@
             <nav id="TableOfContents">
   <ol>
     <li><a href="#本期内容">本期内容</a></li>
-    <li><a href="#随机优化理论">随机优化理论</a>
+    <li><a href="#优化问题的难点">优化问题的难点</a></li>
+    <li><a href="#admm-算法">ADMM 算法</a>
       <ol>
-        <li><a href="#gd的缺陷与挑战">GD的缺陷与挑战</a></li>
-        <li><a href="#sgd简介">SGD简介</a></li>
-        <li><a href="#sgd理论基础">SGD理论基础</a></li>
-      </ol>
-    </li>
-    <li><a href="#动量法与自适应学习率">动量法与自适应学习率</a>
-      <ol>
-        <li><a href="#动量法">动量法</a>
+        <li><a href="#一般形式">一般形式</a></li>
+        <li><a href="#求解思路">求解思路</a>
           <ol>
-            <li><a href="#为什么要引入动量法">为什么要引入动量法?</a></li>
-            <li><a href="#核心公式">核心公式</a></li>
-            <li><a href="#动量法的缺点">动量法的缺点</a></li>
+            <li><a href="#构造增广拉格朗日函数">构造增广拉格朗日函数</a></li>
+            <li><a href="#step1固定-z-和-u更新-x">Step1:固定 $z$ 和 $u$，更新 $x$</a></li>
+            <li><a href="#step2固定-x-和-u更新-z">Step2:固定 $x$ 和 $u$，更新 $z$</a></li>
+            <li><a href="#step3更新-u">Step3:更新 $u$</a></li>
           </ol>
         </li>
-        <li><a href="#自适应学习率">自适应学习率</a>
+        <li><a href="#收敛条件">收敛条件</a></li>
+        <li><a href="#例子lasso">例子：Lasso</a>
           <ol>
-            <li><a href="#为什么要引入自适应学习率">为什么要引入自适应学习率?</a></li>
-            <li><a href="#自适应学习率的缺点">自适应学习率的缺点</a></li>
+            <li><a href="#原问题">原问题</a></li>
+            <li><a href="#变量拆分">变量拆分</a></li>
+            <li><a href="#三步更新">三步更新</a></li>
+            <li><a href="#lasso-收敛条件">Lasso 收敛条件</a></li>
           </ol>
         </li>
-      </ol>
-    </li>
-    <li><a href="#adam优化方法">Adam优化方法</a>
-      <ol>
-        <li><a href="#核心思想">核心思想</a></li>
-        <li><a href="#数学公式与直观解读">数学公式与直观解读</a>
+        <li><a href="#例子lad">例子：LAD</a>
           <ol>
-            <li><a href="#第一步计算一阶矩和二阶矩">第一步：计算一阶矩和二阶矩</a></li>
-            <li><a href="#第二步偏差修正">第二步：偏差修正</a></li>
-            <li><a href="#第三步更新参数">第三步：更新参数</a></li>
+            <li><a href="#原问题-1">原问题</a></li>
+            <li><a href="#变量拆分-1">变量拆分</a></li>
+            <li><a href="#三步更新-1">三步更新</a></li>
+            <li><a href="#lad-收敛条件">LAD 收敛条件</a></li>
           </ol>
         </li>
       </ol>
     </li>
+    <li><a href="#代码演示">代码演示</a></li>
   </ol>
 </nav>
         </div>
@@ -299,13 +295,13 @@
     <article class="has-image main-article">
     <header class="article-header">
         <div class="article-image">
-            <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-06/">
-                <img src="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-06/Mojo_hu_8321cbe2ff492ae6.png"
-                        srcset="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-06/Mojo_hu_8321cbe2ff492ae6.png 800w, /p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-06/Mojo_hu_93dd8459a7034e.png 1600w"
+            <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/">
+                <img src="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/Mojo_hu_8321cbe2ff492ae6.png"
+                        srcset="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/Mojo_hu_8321cbe2ff492ae6.png 800w, /p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/Mojo_hu_93dd8459a7034e.png 1600w"
                         width="800" 
                         height="538" 
                         loading="lazy"
-                        alt="Featured image of post 分布式计算 06" />
+                        alt="Featured image of post 分布式计算 07" />
                 
             </a>
         </div>
@@ -348,12 +344,12 @@
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-06/">分布式计算 06</a>
+            <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/">分布式计算 07</a>
         </h2>
     
         
         <h3 class="article-subtitle">
-            本章节介绍分布式随机优化
+            本章节介绍ADMM算法
         </h3>
         
     </div>
@@ -374,7 +370,7 @@
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published" datetime='2026-05-20T00:00:00Z'>2026-05-20</time>
+                <time class="article-time--published" datetime='2026-06-10T00:00:00Z'>2026-06-10</time>
             </div>
         
 
@@ -392,104 +388,111 @@
     
     <h2 id="本期内容">本期内容
 </h2><ul>
-<li>随机优化理论</li>
-<li>动量法与自适应学习率</li>
-<li>Adam优化方法</li>
-<li>随机优化的挑战</li>
+<li>优化问题的难点</li>
+<li>ADMM算法</li>
+<li>代码演示</li>
 </ul>
-<h2 id="随机优化理论">随机优化理论
-</h2><h3 id="gd的缺陷与挑战">GD的缺陷与挑战
-</h3><p>在深度学习训练的早期，我们主要依赖全样本梯度下降(GD)来优化模型。这种方法的核心逻辑非常直观：在每一次参数更新时，都需要遍历并计算全部 $n$ 个观测样本的梯度，然后取平均值作为更新方向。</p>
-<p>虽然这种方法在理论上能提供最精确的下降方向，但在实际的大规模应用场景中，它面临着难以克服的瓶颈：</p>
+<h2 id="优化问题的难点">优化问题的难点
+</h2><p>许多统计机器学习模型可以写成 min L(β) = Σ ℓᵢ(β)。如果 ℓᵢ 足够光滑，我们可以用梯度下降、牛顿法等做优化，还能按行切分数据并行计算。但现实中很多重要问题并不光滑：</p>
+<p><strong>非光滑问题</strong>包括 Lasso（L1正则化）、LAD回归（绝对值损失）、SVM（hinge损失）。这些函数在关键位置不可导，比如绝对值函数在 x=0 处不可导，而 Lasso 的稀疏解恰好落在 βⱼ=0 的位置，传统梯度法直接失效。此外还有带约束的问题，比如 SVM 的参数约束，普通无约束方法无法直接处理。</p>
+<p><strong>现有方法的局限</strong>：次梯度法可以替代梯度，但收敛速度慢、步长选择敏感，在分布式场景中仍然需要频繁通信。分布式优化的核心矛盾是本地计算很快，但参数/梯度通信很贵。</p>
+<p><strong>ADMM的思路</strong>：把同一个变量复制一份，将原问题拆成几个容易的子问题。比如 Lasso 拆成 β 负责光滑损失、z 负责非光滑惩罚，通过约束 β-z=0 让两者一致。这样非光滑部分可以通过近端算子（如软阈值函数）显式计算，光滑部分保持原有方法，交替更新后再调整乘子逐步满足约束。</p>
+<h2 id="admm-算法">ADMM 算法
+</h2><h3 id="一般形式">一般形式
+</h3><p>ADMM 解决如下问题：</p>
+$$
+\min_{x,z} \; f(x) + g(z) \quad \text{s.t.} \quad Ax + Bz = c
+$$<ul>
+<li>$f$ 和 $g$ 通常是凸函数</li>
+<li>$Ax + Bz = c$ 是线性约束</li>
+<li>$x$ 和 $z$ 分别对应问题的不同结构（如光滑部分和非光滑部分）</li>
+</ul>
+<h3 id="求解思路">求解思路
+</h3><h4 id="构造增广拉格朗日函数">构造增广拉格朗日函数
+</h4>$$
+L_\rho(x, z, y) = f(x) + g(z) + y^T(Ax + Bz - c) + \frac{\rho}{2}\|Ax + Bz - c\|_2^2
+$$<ul>
+<li>$y$：拉格朗日乘子，记录约束违反的程度</li>
+<li>$\rho$：惩罚参数，控制“让 $x$ 和 $z$ 保持一致”的力度</li>
+<li>二次项 $\frac{\rho}{2}|\cdot|^2$：让子问题有唯一解，让算法更稳定</li>
+</ul>
+<h4 id="step1固定-z-和-u更新-x">Step1:固定 $z$ 和 $u$，更新 $x$
+</h4>$$
+x^{k+1} = \arg\min_x \; f(x) + \frac{\rho}{2}\|Ax + Bz^k - c + u^k\|_2^2
+$$<p>此时 $z^k$ 和 $u^k$ 是已知常数，子问题通常是光滑优化问题。</p>
+<h4 id="step2固定-x-和-u更新-z">Step2:固定 $x$ 和 $u$，更新 $z$
+</h4>$$
+z^{k+1} = \arg\min_z \; g(z) + \frac{\rho}{2}\|Ax^{k+1} + Bz - c + u^k\|_2^2
+$$<p>此时 $x^{k+1}$ 和 $u^k$ 是已知常数，子问题通常可通过近端算子直接写出显式解。</p>
+<h4 id="step3更新-u">Step3:更新 $u$
+</h4>$$
+u^{k+1} = u^k + Ax^{k+1} + Bz^{k+1} - c
+$$<p>$u$ 记录历史上 $x$ 和 $z$ 不一致的总量，差距越大，下一轮拉回的力度越大。</p>
+<h3 id="收敛条件">收敛条件
+</h3><p>同时观察两个残差：</p>
+<p><strong>原始残差</strong>：衡量约束是否满足</p>
+$$
+r^{k+1} = Ax^{k+1} + Bz^{k+1} - c
+$$<p><strong>对偶残差</strong>：衡量迭代是否稳定</p>
+$$
+s^{k+1} = \rho A^T B (z^{k+1} - z^k)
+$$<p><strong>停止准则</strong>：当 $|r^k| &lt; \varepsilon_{\text{primal}}$ 且 $|s^k| &lt; \varepsilon_{\text{dual}}$ 时，算法收敛。</p>
+<h3 id="例子lasso">例子：Lasso
+</h3><h4 id="原问题">原问题
+</h4>$$
+\min_\beta \; \frac{1}{2}\|y - X\beta\|_2^2 + \lambda\|\beta\|_1
+$$<h4 id="变量拆分">变量拆分
+</h4>$$
+\min_{\beta,z} \; \frac{1}{2}\|y - X\beta\|_2^2 + \lambda\|z\|_1 \quad \text{s.t.} \quad \beta - z = 0
+$$<p>对应标准形式：$f(\beta) = \frac{1}{2}|y - X\beta|_2^2$，$g(z) = \lambda|z|_1$，$A = I$，$B = -I$，$c = 0$</p>
+<h4 id="三步更新">三步更新
+</h4><p><strong>Step 1：更新 $\beta$</strong></p>
+$$
+\beta^{k+1} = (X^TX + \rho I)^{-1}\big(X^Ty + \rho(z^k - u^k)\big)
+$$<p>这是一个带二次惩罚的最小二乘问题，矩阵 $(X^TX + \rho I)$ 只需计算一次。</p>
+<p><strong>Step 2：更新 $z$（软阈值）</strong></p>
+$$
+z^{k+1} = S_{\lambda/\rho}\big(\beta^{k+1} + u^k\big)
+$$<p>其中 $S_\tau(a) = \text{sign}(a) \cdot \max(|a| - \tau, 0)$，逐元素操作。</p>
+<p><strong>Step 3：更新 $u$</strong></p>
+$$
+u^{k+1} = u^k + \beta^{k+1} - z^{k+1}
+$$<h4 id="lasso-收敛条件">Lasso 收敛条件
+</h4><p>代入一般形式，$A = I$，$B = -I$，$c = 0$：</p>
 <ul>
-<li><strong>计算代价高昂</strong>：每一次微小的参数更新，都必须扫描一遍全部 $n$ 个观测数据。当数据量达到亿级时，这种计算量是无法接受的。</li>
-<li><strong>信息冗余</strong>：在大规模数据集中，样本之间往往存在大量相似性。花费巨大算力扫描 10 亿个观测算出的梯度，其方向可能与随机抽样 1000 个观测算出的梯度差异极小，造成了极大的算力浪费。</li>
-<li><strong>内存与流式处理限制</strong>：全量梯度要求将所有数据载入内存，这使得处理实时流式数据变得几乎不可能。</li>
+<li><strong>原始残差</strong>：$r^{k+1} = \beta^{k+1} - z^{k+1}$</li>
+<li><strong>对偶残差</strong>：$s^{k+1} = -\rho (z^{k+1} - z^k)$</li>
 </ul>
-<h3 id="sgd简介">SGD简介
-</h3><p>为了解决上述痛点，随机梯度下降(SGD)应运而生。SGD 的核心思想在于“以偏概全”——利用极小规模的样本(Mini-batch)来近似全局梯度。</p>
-<p>SGD 的更新公式如下：</p>
-$$ \beta^{(t+1)} = \beta^{(t)} - \alpha \cdot \nabla \ell_B(\beta^{(t)}) $$<p>其中 $B$ 代表一个随机抽取的索引子集(Batch Size，通常为 32-102)。相比于全量梯度下降，SGD 带来了显著的优势：</p>
+<p>停止条件：$|\beta^k - z^k| &lt; \varepsilon_{\text{primal}}$ 且 $\rho|z^{k+1} - z^k| &lt; \varepsilon_{\text{dual}}$</p>
+<h3 id="例子lad">例子：LAD
+</h3><h4 id="原问题-1">原问题
+</h4>$$
+\min_\beta \; \|X\beta - y\|_1
+$$<h4 id="变量拆分-1">变量拆分
+</h4>$$
+\min_{\beta,z} \; \|z\|_1 \quad \text{s.t.} \quad X\beta - y - z = 0
+$$<p>对应标准形式：$f(\beta) = 0$，$g(z) = |z|_1$，$A = X$，$B = -I$，$c = y$</p>
+<h4 id="三步更新-1">三步更新
+</h4><p><strong>Step 1：更新 $\beta$</strong></p>
+$$
+\beta^{k+1} = (X^TX)^{-1}X^T(y + z^k - u^k)
+$$<p>这是普通最小二乘，每次重新计算右侧即可。</p>
+<p><strong>Step 2：更新 $z$（软阈值）</strong></p>
+$$
+z^{k+1} = S_{1/\rho}\big(X\beta^{k+1} - y + u^k\big)
+$$<p>阈值是 $1/\rho$，与 Lasso 不同。</p>
+<p><strong>Step 3：更新 $u$</strong></p>
+$$
+u^{k+1} = u^k + X\beta^{k+1} - y - z^{k+1}
+$$<h4 id="lad-收敛条件">LAD 收敛条件
+</h4><p>代入一般形式，$A = X$，$B = -I$，$c = y$：</p>
 <ul>
-<li><strong>极高的迭代频率</strong>：在扫描一遍全量数据的过程中，全量梯度下降只能更新 1 次参数，而 SGD 可以更新 $n/|B|$ 次。这意味着模型能以极快的速度开始学习。</li>
-<li><strong>引入噪声以跳出局部陷阱</strong>：由于 $B$ 是随机抽取的，$\nabla \ell_B$ 本质上是一个随机向量。这种随机性带来的“噪声”反而成为了优点，它赋予了模型动能，有助于跳出鞍点和局部最优解，去寻找更广阔的全局最优区域。</li>
+<li><strong>原始残差</strong>：$r^{k+1} = X\beta^{k+1} - y - z^{k+1}$</li>
+<li><strong>对偶残差</strong>：$s^{k+1} = -\rho X^T (z^{k+1} - z^k)$</li>
 </ul>
-<h3 id="sgd理论基础">SGD理论基础
-</h3><p>当然，使用随机、不精确的梯度来代替真实梯度，在数学上是否可靠？</p>
-<p><strong>Robbins-Monro 条件</strong>为 SGD 的可行性提供了坚实的理论支撑。该定理指出，只要学习率 $\alpha_t$ 满足以下两个条件，即使梯度是随机且含噪的，算法依然能保证收敛到梯度为 0 的点（即极值点）：</p>
-$$ \sum_{t=1}^{\infty} \alpha_t = \infty, \quad \sum_{t=1}^{\infty} \alpha_t^2 < \infty $$<p>这一条件保证了步长总和足以覆盖整个搜索空间（第一项），同时步长的平方和有限以消除随机噪声的影响（第二项）。在实际应用中，虽然理论上常引用 $\alpha_t = 1/t$，但为了平衡收敛速度与稳定性，工程上往往采用 $\alpha_t = 1/\sqrt{t}$ 甚至常数学习率。正是基于这一数学基础，SGD 才成为了现代深度学习优化的基石。</p>
-<h2 id="动量法与自适应学习率">动量法与自适应学习率
-</h2><h3 id="动量法">动量法
-</h3><h4 id="为什么要引入动量法">为什么要引入动量法?
-</h4><p>标准的随机梯度下降虽然计算高效，但在实际优化路径中存在两个显著缺陷，动量法正是为了解决这些问题而提出的：</p>
-<ul>
-<li><strong>震荡严重</strong>：由于SGD仅基于Mini-batch计算梯度，其估计带有随机噪声。在狭长的山谷地形中，SGD往往会在山谷两侧来回剧烈震荡，导致收敛路径曲折，效率低下。</li>
-<li><strong>易陷局部极小值或鞍点</strong>：在平坦区域或鞍点附近，梯度非常小，SGD容易停滞不前，无法有效跳出局部陷阱。</li>
-</ul>
-<p>动量法引入了物理学中的“惯性”概念，通过利用历史梯度的加权平均来更新参数，使得优化过程在方向一致的维度上加速，在震荡的维度上减速。</p>
-<h4 id="核心公式">核心公式
-</h4><p>动量法维护了一个速度变量 $v^{(t)}$，其更新规则如下：</p>
-$$ v^{(t)} = \gamma v^{(t-1)} + \alpha \cdot \nabla \ell_B(\beta^{(t)}) $$<p>
-</p>
-$$ \beta^{(t+1)} = \beta^{(t)} - v^{(t)} $$<p>其中：</p>
-<ul>
-<li>$\gamma$ 是动量系数（通常取0.9），代表保留多少上一时刻的速度。</li>
-<li>$\alpha$ 是学习率。</li>
-<li>$\nabla \ell_B(\beta^{(t)})$ 是当前时刻的梯度。</li>
-</ul>
-<h4 id="动量法的缺点">动量法的缺点
-</h4><p>尽管动量法显著改善了收敛速度和稳定性，但它并非完美无缺：</p>
-<ul>
-<li><strong>超调风险</strong>：由于积累了巨大的惯性，当模型接近极小值点时，可能会因为冲力过大而无法及时停下，直接冲过最低点，导致损失函数值反弹，甚至引发震荡不收敛。</li>
-<li><strong>超参数增加</strong>：引入了一个新的超参数 $\gamma$（动量系数），虽然通常设为0.9效果较好，但这依然增加了模型调参的搜索空间。</li>
-<li><strong>未解决自适应问题</strong>：动量法依然对所有参数使用统一的学习率 $\alpha$。对于稀疏特征或需要不同更新频率的参数，它无法像自适应算法那样自动调整步长。</li>
-</ul>
-<h3 id="自适应学习率">自适应学习率
-</h3><h4 id="为什么要引入自适应学习率">为什么要引入自适应学习率?
-</h4><p>SGD和动量法虽然解决了方向震荡的问题，但它们对所有参数依然采用“一视同仁”的策略——共用同一个全局学习率。这在面对复杂数据分布时存在明显缺陷：</p>
-<ul>
-<li><strong>特征频率差异</strong>：在稀疏数据中，有些特征（参数）非常罕见，有些则非常频繁。对于罕见特征，我们需要更大的步长来快速学习；对于频繁特征，则需要更小的步长以防震荡。固定学习率无法兼顾这两者。</li>
-<li><strong>地形适应性差</strong>：不同的参数所处的损失函数曲面形态不同。有的方向平坦，有的方向陡峭。统一的步长容易导致在陡峭方向发散，或在平坦方向停滞。</li>
-</ul>
-<p>自适应学习率的核心思想是：不再使用全局统一的学习率，而是为每一个参数单独定制学习率。它根据参数梯度的历史信息自动调整步长：</p>
-<ul>
-<li>对于历史梯度大（频繁更新、震荡剧烈）的参数，自动减小学习率。</li>
-<li>对于历史梯度小（更新稀疏、变化缓慢）的参数，自动增大学习率。</li>
-</ul>
-<h4 id="自适应学习率的缺点">自适应学习率的缺点
-</h4><p>虽然自适应方法（如AdaGrad、RMSprop、Adam）在实践中收敛极快，但也存在一些理论上的隐患：</p>
-<ul>
-<li><strong>收敛性证明的缺失</strong>：相比于SGD，自适应算法在某些非凸问题上可能无法保证收敛到最优解，甚至可能出现“不收敛”的情况（尽管在实践中通过调整参数通常能避免）。</li>
-<li><strong>泛化能力差异</strong>：许多研究表明，虽然Adam等算法训练速度极快，但最终找到的解在测试集上的表现（泛化能力）往往不如经过精心调参的SGD+动量。SGD倾向于收敛到“平坦”的极小值，而自适应算法容易收敛到“尖锐”的极小值。</li>
-<li><strong>内存消耗大</strong>：由于需要为每个参数维护额外的状态变量（如历史梯度平方），自适应算法的内存占用通常高于SGD。</li>
-</ul>
-<h2 id="adam优化方法">Adam优化方法
-</h2><h3 id="核心思想">核心思想
-</h3><p>Adam 结合了动量法和自适应学习率两种思想：</p>
-<ul>
-<li><strong>一阶矩估计 ($m_t$)</strong>：利用梯度的指数移动平均，模拟动量，用于平滑震荡、冲过鞍点。</li>
-<li><strong>二阶矩估计 ($v_t$)</strong>：利用梯度平方的指数移动平均，用于衡量地形的陡峭程度，实现自适应调整。</li>
-</ul>
-<h3 id="数学公式与直观解读">数学公式与直观解读
-</h3><h4 id="第一步计算一阶矩和二阶矩">第一步：计算一阶矩和二阶矩
-</h4><ul>
-<li><strong>一阶矩（动量项）</strong>：
-
-$$ m^{(t)} = \beta_1 m^{(t-1)} + (1 - \beta_1) g^{(t)} $$</li>
-</ul>
-<p><strong>解读</strong>：这一项体现了动量法的思想。$\beta_1 m^{(t-1)}$代表过去的动量，保留了之前的速度惯性。$(1 - \beta_1) g^{(t)}$代表当前的梯度，提供了新的推力。两者结合，使得更新方向既考虑了历史趋势，又响应了当前地形。</p>
-<ul>
-<li><strong>二阶矩（陡峭程度）</strong>：
-
-$$ v^{(t)} = \beta_2 v^{(t-1)} + (1 - \beta_2) g^{(t)} \odot g^{(t)} $$</li>
-</ul>
-<p><strong>解读</strong>：这一项用于衡量参数的陡峭程度。$\beta_2 v^{(t-1)}$代表之前的陡峭程度（历史累积）。$(1 - \beta_2) g^{(t)} \odot g^{(t)}$代表当前的陡峭程度（当前梯度的平方）。$v^{(t)}$ 综合反映了该参数方向上的总体波动情况。</p>
-<h4 id="第二步偏差修正">第二步：偏差修正
-</h4><p>由于 $m$ 和 $v$ 初始化为0，早期估计会偏小，因此需要修正：
-</p>
-$$ \hat{m}^{(t)} = m^{(t)} / (1 - \beta_1^t), \quad \hat{v}^{(t)} = v^{(t)} / (1 - \beta_2^t) $$<h4 id="第三步更新参数">第三步：更新参数
-</h4>$$ \beta^{(t+1)} = \beta^{(t)} - \frac{\alpha}{\sqrt{\hat{v}^{(t)}} + \epsilon} \odot \hat{m}^{(t)} $$<p><strong>解读</strong>：这里体现了自适应学习率的机制。算法根据$v_t$（陡峭程度）来动态调整步长：如果某方向陡峭（$v_t$ 大），分母变大，步长自动缩小，防止震荡；如果某方向平坦（$v_t$ 小），分母变小，步长自动放大，加快收敛。</p>
-
+<p>停止条件：$|X\beta^k - y - z^k| &lt; \varepsilon_{\text{primal}}$ 且 $\rho|X^T(z^{k+1} - z^k)| &lt; \varepsilon_{\text{dual}}$</p>
+<h2 id="代码演示">代码演示
+</h2>
 </section>
 
 
@@ -545,15 +548,15 @@ $$ \hat{m}^{(t)} = m^{(t)} / (1 - \beta_1^t), \quad \hat{v}^{(t)} = v^{(t)} / (1
             
                 
 <article class="has-image">
-    <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/">
+    <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-06/">
         
         
             <div class="article-image">
-                <img src="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/Mojo.7b1cda79110afd9caea5c356ff252b0e_hu_90d0654421629c30.png" 
+                <img src="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-06/Mojo.7b1cda79110afd9caea5c356ff252b0e_hu_90d0654421629c30.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
-                        alt="Featured image of post 分布式计算 07"
+                        alt="Featured image of post 分布式计算 06"
                         
                         data-hash="md5-exzaeREK/ZyupcNW/yUrDg==">
                 
@@ -561,7 +564,7 @@ $$ \hat{m}^{(t)} = m^{(t)} / (1 - \beta_1^t), \quad \hat{v}^{(t)} = v^{(t)} / (1
         
 
         <div class="article-details">
-            <h2 class="article-title">分布式计算 07</h2>
+            <h2 class="article-title">分布式计算 06</h2>
         </div>
     </a>
 </article>

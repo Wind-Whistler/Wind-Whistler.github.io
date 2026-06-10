@@ -7,7 +7,121 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Wind Whistler</copyright>
-        <lastBuildDate>Mon, 01 Jun 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/categories/python/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Wed, 10 Jun 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/categories/python/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>分布式计算 07</title>
+        <link>https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/</link>
+        <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/</guid>
+        <description>&lt;img src="https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/Mojo.png" alt="Featured image of post 分布式计算 07" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;优化问题的难点&lt;/li&gt;
+&lt;li&gt;ADMM算法&lt;/li&gt;
+&lt;li&gt;代码演示&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;优化问题的难点&#34;&gt;优化问题的难点
+&lt;/h2&gt;&lt;p&gt;许多统计机器学习模型可以写成 min L(β) = Σ ℓᵢ(β)。如果 ℓᵢ 足够光滑，我们可以用梯度下降、牛顿法等做优化，还能按行切分数据并行计算。但现实中很多重要问题并不光滑：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;非光滑问题&lt;/strong&gt;包括 Lasso（L1正则化）、LAD回归（绝对值损失）、SVM（hinge损失）。这些函数在关键位置不可导，比如绝对值函数在 x=0 处不可导，而 Lasso 的稀疏解恰好落在 βⱼ=0 的位置，传统梯度法直接失效。此外还有带约束的问题，比如 SVM 的参数约束，普通无约束方法无法直接处理。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;现有方法的局限&lt;/strong&gt;：次梯度法可以替代梯度，但收敛速度慢、步长选择敏感，在分布式场景中仍然需要频繁通信。分布式优化的核心矛盾是本地计算很快，但参数/梯度通信很贵。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;ADMM的思路&lt;/strong&gt;：把同一个变量复制一份，将原问题拆成几个容易的子问题。比如 Lasso 拆成 β 负责光滑损失、z 负责非光滑惩罚，通过约束 β-z=0 让两者一致。这样非光滑部分可以通过近端算子（如软阈值函数）显式计算，光滑部分保持原有方法，交替更新后再调整乘子逐步满足约束。&lt;/p&gt;
+&lt;h2 id=&#34;admm-算法&#34;&gt;ADMM 算法
+&lt;/h2&gt;&lt;h3 id=&#34;一般形式&#34;&gt;一般形式
+&lt;/h3&gt;&lt;p&gt;ADMM 解决如下问题：&lt;/p&gt;
+$$
+\min_{x,z} \; f(x) + g(z) \quad \text{s.t.} \quad Ax + Bz = c
+$$&lt;ul&gt;
+&lt;li&gt;$f$ 和 $g$ 通常是凸函数&lt;/li&gt;
+&lt;li&gt;$Ax + Bz = c$ 是线性约束&lt;/li&gt;
+&lt;li&gt;$x$ 和 $z$ 分别对应问题的不同结构（如光滑部分和非光滑部分）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;求解思路&#34;&gt;求解思路
+&lt;/h3&gt;&lt;h4 id=&#34;构造增广拉格朗日函数&#34;&gt;构造增广拉格朗日函数
+&lt;/h4&gt;$$
+L_\rho(x, z, y) = f(x) + g(z) + y^T(Ax + Bz - c) + \frac{\rho}{2}\|Ax + Bz - c\|_2^2
+$$&lt;ul&gt;
+&lt;li&gt;$y$：拉格朗日乘子，记录约束违反的程度&lt;/li&gt;
+&lt;li&gt;$\rho$：惩罚参数，控制“让 $x$ 和 $z$ 保持一致”的力度&lt;/li&gt;
+&lt;li&gt;二次项 $\frac{\rho}{2}|\cdot|^2$：让子问题有唯一解，让算法更稳定&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;step1固定-z-和-u更新-x&#34;&gt;Step1:固定 $z$ 和 $u$，更新 $x$
+&lt;/h4&gt;$$
+x^{k+1} = \arg\min_x \; f(x) + \frac{\rho}{2}\|Ax + Bz^k - c + u^k\|_2^2
+$$&lt;p&gt;此时 $z^k$ 和 $u^k$ 是已知常数，子问题通常是光滑优化问题。&lt;/p&gt;
+&lt;h4 id=&#34;step2固定-x-和-u更新-z&#34;&gt;Step2:固定 $x$ 和 $u$，更新 $z$
+&lt;/h4&gt;$$
+z^{k+1} = \arg\min_z \; g(z) + \frac{\rho}{2}\|Ax^{k+1} + Bz - c + u^k\|_2^2
+$$&lt;p&gt;此时 $x^{k+1}$ 和 $u^k$ 是已知常数，子问题通常可通过近端算子直接写出显式解。&lt;/p&gt;
+&lt;h4 id=&#34;step3更新-u&#34;&gt;Step3:更新 $u$
+&lt;/h4&gt;$$
+u^{k+1} = u^k + Ax^{k+1} + Bz^{k+1} - c
+$$&lt;p&gt;$u$ 记录历史上 $x$ 和 $z$ 不一致的总量，差距越大，下一轮拉回的力度越大。&lt;/p&gt;
+&lt;h3 id=&#34;收敛条件&#34;&gt;收敛条件
+&lt;/h3&gt;&lt;p&gt;同时观察两个残差：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;原始残差&lt;/strong&gt;：衡量约束是否满足&lt;/p&gt;
+$$
+r^{k+1} = Ax^{k+1} + Bz^{k+1} - c
+$$&lt;p&gt;&lt;strong&gt;对偶残差&lt;/strong&gt;：衡量迭代是否稳定&lt;/p&gt;
+$$
+s^{k+1} = \rho A^T B (z^{k+1} - z^k)
+$$&lt;p&gt;&lt;strong&gt;停止准则&lt;/strong&gt;：当 $|r^k| &amp;lt; \varepsilon_{\text{primal}}$ 且 $|s^k| &amp;lt; \varepsilon_{\text{dual}}$ 时，算法收敛。&lt;/p&gt;
+&lt;h3 id=&#34;例子lasso&#34;&gt;例子：Lasso
+&lt;/h3&gt;&lt;h4 id=&#34;原问题&#34;&gt;原问题
+&lt;/h4&gt;$$
+\min_\beta \; \frac{1}{2}\|y - X\beta\|_2^2 + \lambda\|\beta\|_1
+$$&lt;h4 id=&#34;变量拆分&#34;&gt;变量拆分
+&lt;/h4&gt;$$
+\min_{\beta,z} \; \frac{1}{2}\|y - X\beta\|_2^2 + \lambda\|z\|_1 \quad \text{s.t.} \quad \beta - z = 0
+$$&lt;p&gt;对应标准形式：$f(\beta) = \frac{1}{2}|y - X\beta|_2^2$，$g(z) = \lambda|z|_1$，$A = I$，$B = -I$，$c = 0$&lt;/p&gt;
+&lt;h4 id=&#34;三步更新&#34;&gt;三步更新
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;Step 1：更新 $\beta$&lt;/strong&gt;&lt;/p&gt;
+$$
+\beta^{k+1} = (X^TX + \rho I)^{-1}\big(X^Ty + \rho(z^k - u^k)\big)
+$$&lt;p&gt;这是一个带二次惩罚的最小二乘问题，矩阵 $(X^TX + \rho I)$ 只需计算一次。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Step 2：更新 $z$（软阈值）&lt;/strong&gt;&lt;/p&gt;
+$$
+z^{k+1} = S_{\lambda/\rho}\big(\beta^{k+1} + u^k\big)
+$$&lt;p&gt;其中 $S_\tau(a) = \text{sign}(a) \cdot \max(|a| - \tau, 0)$，逐元素操作。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Step 3：更新 $u$&lt;/strong&gt;&lt;/p&gt;
+$$
+u^{k+1} = u^k + \beta^{k+1} - z^{k+1}
+$$&lt;h4 id=&#34;lasso-收敛条件&#34;&gt;Lasso 收敛条件
+&lt;/h4&gt;&lt;p&gt;代入一般形式，$A = I$，$B = -I$，$c = 0$：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;原始残差&lt;/strong&gt;：$r^{k+1} = \beta^{k+1} - z^{k+1}$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;对偶残差&lt;/strong&gt;：$s^{k+1} = -\rho (z^{k+1} - z^k)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;停止条件：$|\beta^k - z^k| &amp;lt; \varepsilon_{\text{primal}}$ 且 $\rho|z^{k+1} - z^k| &amp;lt; \varepsilon_{\text{dual}}$&lt;/p&gt;
+&lt;h3 id=&#34;例子lad&#34;&gt;例子：LAD
+&lt;/h3&gt;&lt;h4 id=&#34;原问题-1&#34;&gt;原问题
+&lt;/h4&gt;$$
+\min_\beta \; \|X\beta - y\|_1
+$$&lt;h4 id=&#34;变量拆分-1&#34;&gt;变量拆分
+&lt;/h4&gt;$$
+\min_{\beta,z} \; \|z\|_1 \quad \text{s.t.} \quad X\beta - y - z = 0
+$$&lt;p&gt;对应标准形式：$f(\beta) = 0$，$g(z) = |z|_1$，$A = X$，$B = -I$，$c = y$&lt;/p&gt;
+&lt;h4 id=&#34;三步更新-1&#34;&gt;三步更新
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;Step 1：更新 $\beta$&lt;/strong&gt;&lt;/p&gt;
+$$
+\beta^{k+1} = (X^TX)^{-1}X^T(y + z^k - u^k)
+$$&lt;p&gt;这是普通最小二乘，每次重新计算右侧即可。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Step 2：更新 $z$（软阈值）&lt;/strong&gt;&lt;/p&gt;
+$$
+z^{k+1} = S_{1/\rho}\big(X\beta^{k+1} - y + u^k\big)
+$$&lt;p&gt;阈值是 $1/\rho$，与 Lasso 不同。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Step 3：更新 $u$&lt;/strong&gt;&lt;/p&gt;
+$$
+u^{k+1} = u^k + X\beta^{k+1} - y - z^{k+1}
+$$&lt;h4 id=&#34;lad-收敛条件&#34;&gt;LAD 收敛条件
+&lt;/h4&gt;&lt;p&gt;代入一般形式，$A = X$，$B = -I$，$c = y$：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;原始残差&lt;/strong&gt;：$r^{k+1} = X\beta^{k+1} - y - z^{k+1}$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;对偶残差&lt;/strong&gt;：$s^{k+1} = -\rho X^T (z^{k+1} - z^k)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;停止条件：$|X\beta^k - y - z^k| &amp;lt; \varepsilon_{\text{primal}}$ 且 $\rho|X^T(z^{k+1} - z^k)| &amp;lt; \varepsilon_{\text{dual}}$&lt;/p&gt;
+&lt;h2 id=&#34;代码演示&#34;&gt;代码演示
+&lt;/h2&gt;</description>
+        </item>
+        <item>
         <title>Python文件专题</title>
         <link>https://example.com/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/</link>
         <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>

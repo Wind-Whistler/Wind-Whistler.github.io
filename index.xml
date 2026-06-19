@@ -8547,8 +8547,8 @@ $$&lt;p&gt;其中：&lt;/p&gt;
         
         <guid>https://example.com/p/</guid>
         <description>&lt;p&gt;date: 2026-06-19
-title: 分布式计算 09
-description: 本章节介绍Lasso分布式ADMM
+title: 分布式计算09
+description: 本章节介绍带正则项的⼀致性ADMM
 categories: [
 &amp;ldquo;Python&amp;rdquo;,
 &amp;ldquo;计算机编程&amp;rdquo;,

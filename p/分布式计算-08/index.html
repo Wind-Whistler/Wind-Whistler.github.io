@@ -226,7 +226,54 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#一致性优化">一致性优化</a></li>
+    <li><a href="#一致性admm与分布式梯度下降的区别">一致性ADMM与分布式梯度下降的区别</a></li>
+    <li><a href="#ray-actor">Ray Actor</a>
+      <ol>
+        <li><a href="#ray-task缺陷">Ray Task缺陷</a></li>
+        <li><a href="#ray-actor优势">Ray Actor优势</a></li>
+      </ol>
+    </li>
+    <li><a href="#代码演示">代码演示</a>
+      <ol>
+        <li><a href="#step1准备工作">Step1:准备工作</a></li>
+        <li><a href="#step2创建ray-actor">Step2:创建Ray Actor</a></li>
+        <li><a href="#step3数据准备">Step3:数据准备</a></li>
+        <li><a href="#step4训练模型">Step4:训练模型</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -323,7 +370,271 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>一致性优化</li>
+<li>一致性ADMM与分布式梯度下降的区别</li>
+<li>Ray Actor</li>
+<li>代码演示</li>
+</ul>
+<h2 id="一致性优化">一致性优化
+</h2><p>一致性优化将分布式问题转化为带约束的ADMM形式。假设数据按行切分到N个节点，每个节点有局部目标函数 \( f_i(\theta) \)，所有节点需使用同一个参数 \(\theta\)。</p>
+<p>引入局部参数 \(\theta_i\) 和全局共识变量 \(z\)，构造约束优化问题：</p>
+\[
+\begin{aligned}
+\min_{\theta_1,\ldots,\theta_N, z} &\sum_{i=1}^N f_i(\theta_i) \\
+\text{s.t.} &\quad \theta_i - z = 0, \quad i=1,\ldots,N.
+\end{aligned}
+\]<p>代入ADMM标准形式，得到一致性ADMM的缩放形式迭代公式：</p>
+\[
+\begin{aligned}
+\theta_i^{k+1} &= \arg\min_{\theta_i} \left\{ f_i(\theta_i) + \frac{\rho}{2} \|\theta_i - z^k + u_i^k\|_2^2 \right\}, \quad i=1,\ldots,N, \\[4pt]
+z^{k+1} &= \frac{1}{N} \sum_{i=1}^N \left( \theta_i^{k+1} + u_i^k \right), \\[4pt]
+u_i^{k+1} &= u_i^k + \theta_i^{k+1} - z^{k+1}, \quad i=1,\ldots,N.
+\end{aligned}
+\]<p>其中第一步和第三步对不同节点完全独立，可并行计算。局部子问题等价于对每个 \(f_i\) 计算近端算子。</p>
+<p>可进一步化简。由于 \(\bar{u}^{k+1}=0\)，有 \(z^{k+2} = \bar{\theta}^{k+2}\)，迭代公式可简化为：</p>
+\[
+\begin{aligned}
+\theta_i^{k+1} &= \arg\min_{\theta_i} \left\{ f_i(\theta_i) + \frac{\rho}{2} \|\theta_i - \bar{\theta}^k + u_i^k\|_2^2 \right\}, \\[4pt]
+u_i^{k+1} &= u_i^k + \theta_i^{k+1} - \bar{\theta}^{k+1}.
+\end{aligned}
+\]<p>以分布式Logistic回归为例，局部子问题为在原目标函数上加一个L2惩罚项，使其不偏离全局共识。</p>
+<p>收敛判断条件：</p>
+<ul>
+<li>原始残差：\( r_i^k = \theta_i^k - z^k \)，全局原始残差为 \(\|r^k\|_2^2 = \sum_{i=1}^N \|\theta_i^k - z^k\|_2^2\)</li>
+<li>对偶残差：\(\|s^k\|_2^2 = \rho^2 N \|z^k - z^{k-1}\|_2^2\)</li>
+</ul>
+<p>通信模式：每轮广播全局参数 \(z^k\)（或 \(\bar{x}^k\)），收集各节点 \(x_i^{k+1}\) 计算 \(\bar{x}^{k+1}\)。</p>
+<h2 id="一致性admm与分布式梯度下降的区别">一致性ADMM与分布式梯度下降的区别
+</h2><div class="table-wrapper"><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>分布式梯度下降（Ray Task）</th>
+					<th>一致性ADMM（Ray Actor）</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>每轮计算</td>
+					<td>计算局部梯度</td>
+					<td>解局部优化子问题</td>
+			</tr>
+			<tr>
+					<td>中心节点</td>
+					<td>聚合梯度并更新参数</td>
+					<td>对局部参数求平均</td>
+			</tr>
+			<tr>
+					<td>通信内容</td>
+					<td>梯度（向量）</td>
+					<td>参数与对偶变量（向量）</td>
+			</tr>
+			<tr>
+					<td>本地计算量</td>
+					<td>轻（一次梯度计算）</td>
+					<td>重（解一个优化子问题）</td>
+			</tr>
+			<tr>
+					<td>迭代轮数</td>
+					<td>多（梯度下降收敛慢）</td>
+					<td>少（ADMM收敛更快）</td>
+			</tr>
+			<tr>
+					<td>状态维护</td>
+					<td>无状态，算完即销毁</td>
+					<td>有状态，需长期保存局部变量</td>
+			</tr>
+	</tbody>
+</table></div>
+<p>核心权衡：ADMM用更多的本地计算换取更少的通信轮数。</p>
+<h2 id="ray-actor">Ray Actor
+</h2><h3 id="ray-task缺陷">Ray Task缺陷
+</h3><p>一致性ADMM中，每个工作节点需长期保存：</p>
+<ul>
+<li>本地数据块 \(D_i\)</li>
+<li>局部变量 \(x_i\)</li>
+<li>对偶变量 \(u_i\)</li>
+<li>可复用的矩阵分解或缓存结果</li>
+</ul>
+<p>如果用Ray Task，头部节点每轮需将所有状态（\(z\), \(u_i\), 甚至数据 \(D_i\)）传给Task，再回收结果，存在三个问题：</p>
+<ol>
+<li>状态由头部节点维护，管理成本高</li>
+<li>通信开销大，尤其当数据块或缓存对象很大时</li>
+<li>代码表达不自然，数学上属于局部问题的变量却集中在头部节点</li>
+</ol>
+<h3 id="ray-actor优势">Ray Actor优势
+</h3><p>Ray Actor是带状态的远程对象，适合多轮迭代、需要保存状态的场景：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@ray.remote</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Worker</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_i</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">data_i</span> <span class="o">=</span> <span class="n">data_i</span>   <span class="c1"># 数据存储在本地</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">u_i</span> <span class="o">=</span> <span class="mi">0</span>           <span class="c1"># 对偶变量存储在本地</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 只需接收全局变量z，自行更新x_i和u_i</span>
+</span></span><span class="line"><span class="cl">        <span class="o">...</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>优势总结：</p>
+<ul>
+<li><strong>本地存储数据</strong>：初始化时接收并保存本地数据，无需每轮重复传输</li>
+<li><strong>本地维护状态</strong>：\(x_i\) 和 \(u_i\) 存储在Actor内部，头部节点只需管理全局变量 \(z\)</li>
+<li><strong>通信量小</strong>：每轮只广播 \(z\) 并收集少量信息（如 \(\theta_i\)），大幅降低通信开销</li>
+<li><strong>代码自然</strong>：数学结构与代码结构一一对应，易于理解和维护</li>
+</ul>
+<div class="table-wrapper"><table>
+	<thead>
+			<tr>
+					<th>场景</th>
+					<th>更适合的工具</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>一次性、相互独立的计算</td>
+					<td>Ray Task</td>
+			</tr>
+			<tr>
+					<td>多轮迭代、需要保存状态</td>
+					<td>Ray Actor</td>
+			</tr>
+			<tr>
+					<td>Bootstrap、交叉验证、蒙特卡洛</td>
+					<td>Ray Task</td>
+			</tr>
+			<tr>
+					<td>一致性ADMM、参数服务器、模拟环境</td>
+					<td>Ray Actor</td>
+			</tr>
+	</tbody>
+</table></div>
+<h2 id="代码演示">代码演示
+</h2><p>这一部分展示用Ray.Actor实现线性回归。</p>
+<h3 id="step1准备工作">Step1:准备工作
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ray</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="step2创建ray-actor">Step2:创建Ray Actor
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@ray.remote</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Reg</span><span class="p">:</span>  <span class="c1"># 定义一个类  实现Ray.Actor</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">):</span>  <span class="c1"># 这里存放各个Actor需要的数据</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># 后面定义一些在Actor内的方法</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">Loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">beta</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Y</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">@</span> <span class="n">beta</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">grad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">beta</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">@</span> <span class="n">beta</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="step3数据准备">Step3:数据准备
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 构造一份模拟数据</span>
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span>
+</span></span><span class="line"><span class="cl"><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">beta_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">beta_true</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="mi">1</span><span class="p">)))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 创建数据时都要注意形状</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 按行切分成 m 个数据块</span>
+</span></span><span class="line"><span class="cl"><span class="n">X_blocks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">y_blocks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">workers</span> <span class="o">=</span> <span class="p">[</span><span class="n">Reg</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">)</span> <span class="k">for</span> <span class="n">X</span><span class="p">,</span><span class="n">Y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X_blocks</span><span class="p">,</span><span class="n">y_blocks</span><span class="p">)]</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="step4训练模型">Step4:训练模型
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>  <span class="c1"># 注意形状</span>
+</span></span><span class="line"><span class="cl"><span class="n">loss</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="n">ray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">Loss</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">beta</span><span class="p">))</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="n">ray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">beta</span><span class="p">))</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">beta</span> <span class="o">-=</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="n">grad</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&#34;loss.png&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最终损失曲线如下:</p>
+<div align="center">
+  <img src="loss.png" alt="封面" width="800">
+</div>
 </section>
 
 

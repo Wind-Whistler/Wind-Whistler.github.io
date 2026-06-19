@@ -434,8 +434,7 @@ $ F = 1.644724 $，对应p值 $ 0.2025892 $。&lt;/p&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;时间序列模型的序列相关性&#34;&gt;时间序列模型的序列相关性
 &lt;/h2&gt;&lt;h3 id=&#34;为什么会有序列相关性&#34;&gt;为什么会有序列相关性？
-&lt;/h3&gt;&lt;p&gt;根据你提供的文本，序列相关性产生的原因主要可以归纳为以下三点：&lt;/p&gt;
-&lt;ol&gt;
+&lt;/h3&gt;&lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;经济变量固有的惯性&lt;/strong&gt;
 大多数经济时间序列（如GDP、价格、消费等）都有“惯性”或“记忆性”。本期的数值往往受上一期数值的影响，导致随机扰动项在时间上前后关联，从而产生序列相关性（通常表现为正相关）。&lt;/p&gt;
@@ -542,8 +541,9 @@ $$&lt;p&gt;当样本量 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^{n}
 $$
 \text{D.W.} \approx 2 \left( 1 - \frac{\sum_{t=2}^{n} e_t e_{t-1}}{\sum_{t=1}^{n} e_t^2} \right) = 2(1 - \hat{\rho})
 $$&lt;p&gt;这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^{n} e_{t-1}^2$、$\sum_{t=1}^{n} e_t^2$ 大致相等。&lt;br&gt;
-在模型残差的序列相关性分析中，DW统计量与自相关系数存在明确的对应关系：若残差存在明显的&lt;strong&gt;正自相关&lt;/strong&gt;，自相关系数趋近于1，DW统计量则接近0；若存在明显的&lt;strong&gt;负自相关&lt;/strong&gt;，自相关系数趋近于-1，DW统计量则接近4；仅在&lt;strong&gt;无自相关&lt;/strong&gt;的情况下，DW统计量才会在2左右。因此，我们可以通过观察DW值是否接近0、2或4来初步判断相关性的方向，但为了进行准确的统计推断，具体的临界值判断仍需查阅DW检验表。&lt;br&gt;
-下面给出DW检验的Stata实现:&lt;/p&gt;
+在模型残差的序列相关性分析中，DW统计量与自相关系数存在明确的对应关系：若残差存在明显的&lt;strong&gt;正自相关&lt;/strong&gt;，自相关系数趋近于1，DW统计量则接近0；若存在明显的&lt;strong&gt;负自相关&lt;/strong&gt;，自相关系数趋近于-1，DW统计量则接近4；仅在&lt;strong&gt;无自相关&lt;/strong&gt;的情况下，DW统计量才会在2左右。因此，我们可以通过观察DW值是否接近0、2或4来初步判断相关性的方向，但为了进行准确的统计推断，具体的临界值判断仍需查阅DW检验表。
+下面将以李子奈《计量经济学：第五版》表5.1.1的数据为例进行实例演示。&lt;br&gt;
+首先给出DW检验的Stata实现:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -580,7 +580,11 @@ $$&lt;p&gt;这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;display dw
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h4 id=&#34;gb-test&#34;&gt;GB Test
+&lt;/div&gt;&lt;p&gt;结果如下：&lt;/p&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;Pic01.png&#34; alt=&#34;例1&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;h4 id=&#34;gb-test&#34;&gt;GB Test
 &lt;/h4&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -596,15 +600,15 @@ $$&lt;p&gt;这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg e lnX L.e 
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg e lnX L.e   // 滞后一期检验
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar R1 = e(r2)
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;display (_N - 1)* R1
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;display chiprob(1,(_N - 1)* R1)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg e lnX L.e L2.e
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg e lnX L.e L2.e  // 滞后两期检验
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar R2 = e(r2)
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;display (_N - 2)* R1
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;display chiprob(2,(_N - 2) * R2)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg e lnX L.e L2.e L3.e
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg e lnX L.e L2.e L3.e  // 滞后三期检验
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scalar R3 = e(r2)
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;display chiprob(3,(_N - 3) * R3)
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
@@ -638,6 +642,9 @@ $$&lt;p&gt;这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// 自动实现
@@ -664,6 +671,9 @@ $$&lt;p&gt;这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;est store PW
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reg es c_new lnX_new L.es L2.es   //如果没有序列相关性了就可以不往下做，如果还有序列相关性就进行再一次迭代
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// 代码直接实现广义差分法
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;prais Y X
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h4 id=&#34;稳健标准误&#34;&gt;稳健标准误

@@ -398,8 +398,7 @@
 </ul>
 <h2 id="时间序列模型的序列相关性">时间序列模型的序列相关性
 </h2><h3 id="为什么会有序列相关性">为什么会有序列相关性？
-</h3><p>根据你提供的文本，序列相关性产生的原因主要可以归纳为以下三点：</p>
-<ol>
+</h3><ol>
 <li>
 <p><strong>经济变量固有的惯性</strong>
 大多数经济时间序列（如GDP、价格、消费等）都有“惯性”或“记忆性”。本期的数值往往受上一期数值的影响，导致随机扰动项在时间上前后关联，从而产生序列相关性（通常表现为正相关）。</p>
@@ -506,8 +505,9 @@ $$<p>当样本量 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^{n} e_{t-
 $$
 \text{D.W.} \approx 2 \left( 1 - \frac{\sum_{t=2}^{n} e_t e_{t-1}}{\sum_{t=1}^{n} e_t^2} \right) = 2(1 - \hat{\rho})
 $$<p>这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^{n} e_{t-1}^2$、$\sum_{t=1}^{n} e_t^2$ 大致相等。<br>
-在模型残差的序列相关性分析中，DW统计量与自相关系数存在明确的对应关系：若残差存在明显的<strong>正自相关</strong>，自相关系数趋近于1，DW统计量则接近0；若存在明显的<strong>负自相关</strong>，自相关系数趋近于-1，DW统计量则接近4；仅在<strong>无自相关</strong>的情况下，DW统计量才会在2左右。因此，我们可以通过观察DW值是否接近0、2或4来初步判断相关性的方向，但为了进行准确的统计推断，具体的临界值判断仍需查阅DW检验表。<br>
-下面给出DW检验的Stata实现:</p>
+在模型残差的序列相关性分析中，DW统计量与自相关系数存在明确的对应关系：若残差存在明显的<strong>正自相关</strong>，自相关系数趋近于1，DW统计量则接近0；若存在明显的<strong>负自相关</strong>，自相关系数趋近于-1，DW统计量则接近4；仅在<strong>无自相关</strong>的情况下，DW统计量才会在2左右。因此，我们可以通过观察DW值是否接近0、2或4来初步判断相关性的方向，但为了进行准确的统计推断，具体的临界值判断仍需查阅DW检验表。
+下面将以李子奈《计量经济学：第五版》表5.1.1的数据为例进行实例演示。<br>
+首先给出DW检验的Stata实现:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -544,7 +544,11 @@ $$<p>这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^{n} e_
 </span></span><span class="line"><span class="cl">display dw
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="gb-test">GB Test
+</div><p>结果如下：</p>
+<div align="center">
+  <img src="Pic01.png" alt="例1" width="800">
+</div>
+<h4 id="gb-test">GB Test
 </h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -560,15 +564,15 @@ $$<p>这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^{n} e_
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">reg e lnX L.e 
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">reg e lnX L.e   // 滞后一期检验
 </span></span><span class="line"><span class="cl">scalar R1 = e(r2)
 </span></span><span class="line"><span class="cl">display (_N - 1)* R1
 </span></span><span class="line"><span class="cl">display chiprob(1,(_N - 1)* R1)
-</span></span><span class="line"><span class="cl">reg e lnX L.e L2.e
+</span></span><span class="line"><span class="cl">reg e lnX L.e L2.e  // 滞后两期检验
 </span></span><span class="line"><span class="cl">scalar R2 = e(r2)
 </span></span><span class="line"><span class="cl">display (_N - 2)* R1
 </span></span><span class="line"><span class="cl">display chiprob(2,(_N - 2) * R2)
-</span></span><span class="line"><span class="cl">reg e lnX L.e L2.e L3.e
+</span></span><span class="line"><span class="cl">reg e lnX L.e L2.e L3.e  // 滞后三期检验
 </span></span><span class="line"><span class="cl">scalar R3 = e(r2)
 </span></span><span class="line"><span class="cl">display chiprob(3,(_N - 3) * R3)
 </span></span></code></pre></td></tr></table>
@@ -602,6 +606,9 @@ $$<p>这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^{n} e_
 </span><span class="lnt">22
 </span><span class="lnt">23
 </span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 自动实现
@@ -628,6 +635,9 @@ $$<p>这是因为当 $n$ 较大时，$\sum_{t=2}^{n} e_t^2$、$\sum_{t=2}^{n} e_
 </span></span><span class="line"><span class="cl">est store PW
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">reg es c_new lnX_new L.es L2.es   //如果没有序列相关性了就可以不往下做，如果还有序列相关性就进行再一次迭代
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// 代码直接实现广义差分法
+</span></span><span class="line"><span class="cl">prais Y X
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="稳健标准误">稳健标准误

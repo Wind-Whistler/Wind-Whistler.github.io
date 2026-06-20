@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en-us" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本章节介绍Python与文件的交互操作">
-<title>Python文件专题</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本章节介绍Transformer模型的结构与应用">
+<title>深度学习07</title>
 
-<link rel='canonical' href='https://example.com/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/'>
+<link rel='canonical' href='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/'>
 
-<link rel="stylesheet" href="/scss/style.min.86591c898bd806857815fbb8c47e8d3fed97c133b78e83d9bfc27b164dd0aa2b.css"><meta property='og:title' content="Python文件专题">
-<meta property='og:description' content="本章节介绍Python与文件的交互操作">
-<meta property='og:url' content='https://example.com/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/'>
+<link rel="stylesheet" href="/scss/style.min.86591c898bd806857815fbb8c47e8d3fed97c133b78e83d9bfc27b164dd0aa2b.css"><meta property='og:title' content="深度学习07">
+<meta property='og:description' content="本章节介绍Transformer模型的结构与应用">
+<meta property='og:url' content='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/'>
 <meta property='og:site_name' content='Wind Whistler'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-06-01T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-06-01T00:00:00&#43;00:00'/><meta property='og:image' content='https://example.com/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/Garden.png' />
-<meta name="twitter:title" content="Python文件专题">
-<meta name="twitter:description" content="本章节介绍Python与文件的交互操作"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://example.com/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/Garden.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-06-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-06-20T00:00:00&#43;00:00'/><meta property='og:image' content='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/Ruin.png' />
+<meta name="twitter:title" content="深度学习07">
+<meta name="twitter:description" content="本章节介绍Transformer模型的结构与应用"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/Ruin.png' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -248,21 +248,36 @@
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#本期内容">本期内容</a></li>
-    <li><a href="#文件的类型">文件的类型</a>
+    <li><a href="#深度学习第-14-讲注意力机制与-transformer">深度学习第 14 讲：注意力机制与 Transformer</a>
       <ol>
-        <li><a href="#文件的定义">文件的定义</a></li>
-        <li><a href="#文件的两种类型">文件的两种类型</a>
+        <li><a href="#一注意力机制attention-mechanism">一、注意力机制（Attention Mechanism）</a>
           <ol>
-            <li><a href="#文本文件">文本文件</a></li>
-            <li><a href="#二进制文件">二进制文件</a></li>
-            <li><a href="#核心区别">核心区别</a></li>
+            <li><a href="#1-核心直觉">1. 核心直觉</a></li>
+            <li><a href="#2-在机器翻译中的应用早期经典">2. 在机器翻译中的应用（早期经典）</a></li>
+            <li><a href="#3-常见的打分函数">3. 常见的打分函数</a></li>
           </ol>
         </li>
-        <li><a href="#编码的作用">编码的作用</a></li>
+        <li><a href="#二自注意力机制self-attention">二、自注意力机制（Self-Attention）</a>
+          <ol>
+            <li><a href="#1-qkv-模式">1. QKV 模式</a></li>
+            <li><a href="#2-自注意力定义">2. 自注意力定义</a></li>
+            <li><a href="#3-与传统模型的对比">3. 与传统模型的对比</a></li>
+            <li><a href="#4-缩放点积注意力公式">4. 缩放点积注意力公式</a></li>
+          </ol>
+        </li>
+        <li><a href="#三transformer">三、Transformer</a>
+          <ol>
+            <li><a href="#1-概述">1. 概述</a></li>
+            <li><a href="#2-架构类型">2. 架构类型</a></li>
+            <li><a href="#3-decoder-only-transformer-工作流程">3. Decoder-only Transformer 工作流程</a></li>
+            <li><a href="#4-构建-transformer-块的核心组件">4. 构建 Transformer 块的核心组件</a></li>
+            <li><a href="#5-解决的两个关键问题">5. 解决的两个关键问题</a></li>
+            <li><a href="#6-完整图景decoder-only">6. 完整图景（Decoder-only）</a></li>
+            <li><a href="#7-成功原因">7. 成功原因</a></li>
+          </ol>
+        </li>
       </ol>
     </li>
-    <li><a href="#文件的打开与关闭">文件的打开与关闭</a></li>
   </ol>
 </nav>
         </div>
@@ -277,13 +292,13 @@
     <article class="has-image main-article">
     <header class="article-header">
         <div class="article-image">
-            <a href="/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/">
-                <img src="/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/Garden_hu_385a7c67b281789.png"
-                        srcset="/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/Garden_hu_385a7c67b281789.png 800w, /p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/Garden_hu_7353bdfbf2bb56e9.png 1600w"
+            <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/">
+                <img src="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/Ruin_hu_8f4ac1eaebfda17e.png"
+                        srcset="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/Ruin_hu_8f4ac1eaebfda17e.png 800w, /p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/Ruin_hu_ba97ef21b7be095a.png 1600w"
                         width="800" 
                         height="450" 
                         loading="lazy"
-                        alt="Featured image of post Python文件专题" />
+                        alt="Featured image of post 深度学习07" />
                 
             </a>
         </div>
@@ -307,17 +322,31 @@
                 计算机编程
             </a>
         
+            
+            
+            
+            <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0/" style="background-color: hsl(64, 60%, 84%); color: hsl(64, 60%, 15%);">
+                统计学习
+            </a>
+        
+            
+            
+            
+            <a href="/categories/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/" style="background-color: hsl(59, 60%, 84%); color: hsl(59, 60%, 15%);">
+                神经网络
+            </a>
+        
     </header>
     
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/p/python%E6%96%87%E4%BB%B6%E4%B8%93%E9%A2%98/">Python文件专题</a>
+            <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/">深度学习07</a>
         </h2>
     
         
         <h3 class="article-subtitle">
-            本章节介绍Python与文件的交互操作
+            本章节介绍Transformer模型的结构与应用
         </h3>
         
     </div>
@@ -338,7 +367,7 @@
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published" datetime='2026-06-01T00:00:00Z'>2026-06-01</time>
+                <time class="article-time--published" datetime='2026-06-20T00:00:00Z'>2026-06-20</time>
             </div>
         
 
@@ -354,70 +383,181 @@
     <section class="article-content">
     
     
-    <h2 id="本期内容">本期内容
-</h2><ul>
-<li>文件的类型</li>
-<li>文件的打开与关闭</li>
-<li>文件内容读取</li>
-<li>文件数据写入</li>
-<li>文件夹操作</li>
-</ul>
-<h2 id="文件的类型">文件的类型
-</h2><h3 id="文件的定义">文件的定义
-</h3><p>文件是数据的抽象和集合，是辅助存储器上的数据序列。</p>
-<ul>
-<li>存储状态：数据存放在硬盘中。</li>
-<li>占用状态：程序对文件进行独占性处理。</li>
-</ul>
-<h3 id="文件的两种类型">文件的两种类型
-</h3><p>所有文件本质上均以二进制形式存储，仅展示方式不同。</p>
-<h4 id="文本文件">文本文件
+    <h2 id="深度学习第-14-讲注意力机制与-transformer">深度学习第 14 讲：注意力机制与 Transformer
+</h2><h3 id="一注意力机制attention-mechanism">一、注意力机制（Attention Mechanism）
+</h3><h4 id="1-核心直觉">1. 核心直觉
 </h4><ul>
-<li><strong>定义</strong>：由单一特定编码（如UTF-8、GBK）组成的文件。</li>
-<li><strong>本质</strong>：存储着的长字符串。</li>
-<li><strong>适用</strong>：<code>.txt</code>、<code>.py</code>、<code>.csv</code> 等。</li>
-</ul>
-<h4 id="二进制文件">二进制文件
-</h4><ul>
-<li><strong>定义</strong>：直接由比特0和1组成，没有统一的字符编码。</li>
-<li><strong>本质</strong>：具有特定的文件格式（如PNG的图像压缩规则）。</li>
-<li><strong>适用</strong>：<code>.png</code>、<code>.avi</code>、<code>.exe</code>、<code>.zip</code> 等。</li>
-</ul>
-<h4 id="核心区别">核心区别
-</h4><div class="table-wrapper"><table>
-	<thead>
-			<tr>
-					<th style="text-align: left">打开方式</th>
-					<th style="text-align: left">代码</th>
-					<th style="text-align: left">输出结果</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td style="text-align: left"><strong>文本模式</strong></td>
-					<td style="text-align: left"><code>open(&quot;f.txt&quot;, &quot;rt&quot;)</code></td>
-					<td style="text-align: left"><code>中国是个伟大的国家!</code></td>
-			</tr>
-			<tr>
-					<td style="text-align: left"><strong>二进制模式</strong></td>
-					<td style="text-align: left"><code>open(&quot;f.txt&quot;, &quot;rb&quot;)</code></td>
-					<td style="text-align: left"><code>b'\xd6\xd0\xb9\xfa...'</code></td>
-			</tr>
-	</tbody>
-</table></div>
-<h3 id="编码的作用">编码的作用
-</h3><p>编码是字符与二进制之间的翻译规则。</p>
+<li>人类视觉系统在处理海量信息时，会聚焦于最重要的部分。注意力机制模仿了这一过程。</li>
+<li><strong>Query-Key 比喻</strong>：
 <ul>
-<li>同字不同码：同一文本，使用不同编码，生成的二进制不同。
-<ul>
-<li>“哈”(UTF-8) → <code>E5 93 88</code></li>
-<li>“哈”(GBK) → <code>B9 FE</code></li>
+<li>Query（查询）：代表我们想找的目标。</li>
+<li>Key（键）：代表环境中各元素的标识。</li>
+<li>当 Query 与某个 Key 匹配时，注意力就聚焦到该位置。</li>
 </ul>
 </li>
-<li>同码不同文：同一二进制，使用不同编码解码，得到的文本不同（乱码根源）。</li>
 </ul>
-<h2 id="文件的打开与关闭">文件的打开与关闭
-</h2>
+<h4 id="2-在机器翻译中的应用早期经典">2. 在机器翻译中的应用（早期经典）
+</h4><ul>
+<li>解决了传统 Seq2Seq 模型将源句压缩成固定长度向量带来的信息瓶颈问题。</li>
+<li>核心机制：在生成每个目标词 $y_t$ 时，动态地&quot;关注&quot;源句中相关的部分。</li>
+<li>数学表达：
+<ul>
+<li>生成概率：
+$$p(y_t | y_1,...,y_{t-1}, x) = g(y_{t-1}, s_t, c_t)$$<ul>
+<li>$y_t$：当前输出的词</li>
+<li>$s_t$：解码器的当前隐藏状态</li>
+<li>$c_t$：当前时刻的上下文向量，是注意力机制的关键。</li>
+</ul>
+</li>
+<li>上下文向量 $c_t$ 的计算：
+<ul>
+<li>$c_t$ 是输入序列所有隐藏状态的加权平均：
+$$c_t = \sum_i \alpha_{t,i} h_i$$</li>
+<li>注意力权重 $\alpha_{t,i}$：衡量第 $i$ 个输入词对生成当前输出词的重要性。</li>
+<li>
+$$\alpha_{t,i} = \text{Softmax}(e_{t,i})$$</li>
+<li>
+$$e_{t,i} = a(s_{t-1}, h_i)$$是一个打分函数，其参数数量固定，与输入序列长度无关。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-常见的打分函数">3. 常见的打分函数
+</h4><ul>
+<li>加性模型：
+$$s(x, q) = v^\top \tanh(Wx + Uq)$$</li>
+<li>点积模型：
+$$s(x, q) = x^\top P q$$</li>
+<li>缩放点积模型：
+$$s(x, q) = x^\top q / \sqrt{D}$$（$D$是维度）</li>
+<li>双线性模型：
+$$s(x, q) = x^\top W q$$</li>
+</ul>
+<h3 id="二自注意力机制self-attention">二、自注意力机制（Self-Attention）
+</h3><h4 id="1-qkv-模式">1. QKV 模式
+</h4><ul>
+<li>注意力机制被抽象为三个角色：
+<ul>
+<li>Query（Q）：&ldquo;我想关注什么？&rdquo;</li>
+<li>Key（K）：&ldquo;我有什么信息？&rdquo;</li>
+<li>Value（V）：&ldquo;我提供什么内容？&rdquo;</li>
+</ul>
+</li>
+<li>注意力权重由 Query 和 Key 的相似度计算得出，然后用此权重对 Value 进行加权求和。</li>
+</ul>
+<h4 id="2-自注意力定义">2. 自注意力定义
+</h4><ul>
+<li>当 $Q$, $K$, $V$ 都来自同一个输入序列 $X$ 时，即为自注意力。</li>
+<li>意义：让序列内部的每个元素都能与其他所有元素建立依赖关系，实现真正的&quot;上下文理解&quot;。它建立了序列中所有位置对的高阶结构。</li>
+</ul>
+<h4 id="3-与传统模型的对比">3. 与传统模型的对比
+</h4><ul>
+<li>RNN/CNN：主要利用局部信息，难以捕捉长距离依赖。</li>
+<li>MLP：可以跨越长距离，但参数数量随输入长度变化。</li>
+<li>自注意力：是一种特殊的全连接层，其权重由内容（注意力）动态生成，参数数量固定，实现了连接模式与参数数量的解耦。</li>
+</ul>
+<h4 id="4-缩放点积注意力公式">4. 缩放点积注意力公式
+</h4><ul>
+<li>
+<p>映射：
+</p>
+$$Q = X W_Q$$<p>
+</p>
+$$K = X W_K$$<p>
+</p>
+$$V = X W_V$$</li>
+<li>
+<p>计算：
+</p>
+$$\text{Attn}(Q, K, V) = \text{Softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right) V$$<p>其中 $\sqrt{d_k}$ 是缩放因子，防止点积结果过大导致 Softmax 梯度消失。</p>
+</li>
+</ul>
+<h3 id="三transformer">三、Transformer
+</h3><h4 id="1-概述">1. 概述
+</h4><ul>
+<li>2017 年由论文《Attention is All You Need》提出，完全基于注意力机制的网络结构。</li>
+<li>已成为现代大语言模型（LLM）的基本构成单位。</li>
+</ul>
+<h4 id="2-架构类型">2. 架构类型
+</h4><ul>
+<li><strong>Encoder-Decoder（原始版）</strong>：编码器提取信息，解码器生成结果。</li>
+<li><strong>Decoder-only（主流）</strong>：专为自回归语言生成任务设计（如 GPT 系列）。本课重点介绍。</li>
+</ul>
+<h4 id="3-decoder-only-transformer-工作流程">3. Decoder-only Transformer 工作流程
+</h4><ol>
+<li>输入序列经过多个 Transformer 块，计算每个位置的隐藏表示。</li>
+<li>用最后一个位置的表示来预测下一个词元。</li>
+<li>将新词元加入序列，重复上述过程。</li>
+</ol>
+<h4 id="4-构建-transformer-块的核心组件">4. 构建 Transformer 块的核心组件
+</h4><ol>
+<li><strong>自注意力（Self-Attention）</strong>：通常是多头注意力（Multi-Head Attention），让模型从不同子空间学习信息。</li>
+<li><strong>前馈网络（FFN）</strong>：对每个位置的表示进行非线性变换，增加模型容量。</li>
+<li><strong>残差连接（Residual Connection）</strong>：缓解梯度消失，让网络学习&quot;增量&quot;，支持更深网络。</li>
+<li><strong>层归一化（Layer Normalization）</strong>：稳定训练过程，对序列长度变化不敏感。</li>
+</ol>
+<p>典型结构如下：</p>
+$$X' = \text{LayerNorm}(X + \text{Attention}(X))$$<p>
+</p>
+$$X'' = \text{LayerNorm}(X' + \text{FFN}(X'))$$<h4 id="5-解决的两个关键问题">5. 解决的两个关键问题
+</h4><ul>
+<li>
+<p><strong>问题 1：缺乏位置信息</strong></p>
+<ul>
+<li>自注意力是置换等变的，无法感知词的顺序。</li>
+<li><strong>解决方案</strong>：位置编码（Positional Encoding）
+<ul>
+<li>绝对位置编码：如正弦/余弦函数、可学习的向量。</li>
+<li>相对位置编码：关注位置间的相对距离。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>问题 2：破坏因果性</strong></p>
+<ul>
+<li>在预测 $w_t$ 时，不能&quot;偷看&quot;未来的词 $w_{t+1}$。</li>
+<li><strong>解决方案</strong>：因果掩码（Causal Mask）
+<ul>
+<li>在计算注意力分数时，将对未来位置的分数设为 $-\infty$，使 Softmax 后的权重为 0。</li>
+<li>
+$$A_{ij} = \begin{cases} Q_i K_j^\top / \sqrt{d_k}, & \text{若 } j \le i \\ -\infty, & \text{否则} \end{cases}$$</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="6-完整图景decoder-only">6. 完整图景（Decoder-only）
+</h4><ol>
+<li><strong>输入表示</strong>：词嵌入（Content Embedding）+ 位置编码（Positional Encoding）</li>
+<li><strong>多层 Transformer 块</strong>：
+<ul>
+<li>带因果掩码的多头自注意力</li>
+<li>前馈网络</li>
+<li>残差连接 &amp; 层归一化</li>
+</ul>
+</li>
+<li><strong>输出投影</strong>：将最后一层最后一个位置的表示映射为下一个词的概率分布。</li>
+</ol>
+<h4 id="7-成功原因">7. 成功原因
+</h4><ul>
+<li>
+<p><strong>架构优势</strong>：</p>
+<ul>
+<li>任意距离的直接交互，理论上支持长序列。</li>
+<li>易于堆叠和扩展参数量。</li>
+</ul>
+</li>
+<li>
+<p><strong>实践优势</strong>：</p>
+<ul>
+<li>训练阶段可并行计算，对 GPU 友好。</li>
+<li>在大规模数据上表现卓越，已被广泛验证。</li>
+</ul>
+</li>
+</ul>
+
 </section>
 
 
@@ -473,15 +613,15 @@
             
                 
 <article class="has-image">
-    <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/">
+    <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/">
         
         
             <div class="article-image">
-                <img src="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/Ruin.142265fb55dea43ae5144e2bd76415ed_hu_51ad5fcc096b5506.png" 
+                <img src="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/Ruin.142265fb55dea43ae5144e2bd76415ed_hu_51ad5fcc096b5506.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
-                        alt="Featured image of post 深度学习07"
+                        alt="Featured image of post 深度学习06"
                         
                         data-hash="md5-FCJl&#43;1XepDrlFE4r12QV7Q==">
                 
@@ -489,7 +629,7 @@
         
 
         <div class="article-details">
-            <h2 class="article-title">深度学习07</h2>
+            <h2 class="article-title">深度学习06</h2>
         </div>
     </a>
 </article>
@@ -497,23 +637,23 @@
             
                 
 <article class="has-image">
-    <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-08/">
+    <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/">
         
         
             <div class="article-image">
-                <img src="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-08/Mojo.7b1cda79110afd9caea5c356ff252b0e_hu_90d0654421629c30.png" 
+                <img src="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A005/Ruin.142265fb55dea43ae5144e2bd76415ed_hu_51ad5fcc096b5506.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
-                        alt="Featured image of post 分布式计算 08"
+                        alt="Featured image of post 深度学习05"
                         
-                        data-hash="md5-exzaeREK/ZyupcNW/yUrDg==">
+                        data-hash="md5-FCJl&#43;1XepDrlFE4r12QV7Q==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">分布式计算 08</h2>
+            <h2 class="article-title">深度学习05</h2>
         </div>
     </a>
 </article>
@@ -521,23 +661,23 @@
             
                 
 <article class="has-image">
-    <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%9709/">
+    <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A004/">
         
         
             <div class="article-image">
-                <img src="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%9709/Mojo.7b1cda79110afd9caea5c356ff252b0e_hu_90d0654421629c30.png" 
+                <img src="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A004/Ruin.142265fb55dea43ae5144e2bd76415ed_hu_51ad5fcc096b5506.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
-                        alt="Featured image of post 分布式计算09"
+                        alt="Featured image of post 深度学习04"
                         
-                        data-hash="md5-exzaeREK/ZyupcNW/yUrDg==">
+                        data-hash="md5-FCJl&#43;1XepDrlFE4r12QV7Q==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">分布式计算09</h2>
+            <h2 class="article-title">深度学习04</h2>
         </div>
     </a>
 </article>
@@ -545,23 +685,23 @@
             
                 
 <article class="has-image">
-    <a href="/p/python%E5%9F%BA%E7%A1%80-05/">
+    <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A003/">
         
         
             <div class="article-image">
-                <img src="/p/python%E5%9F%BA%E7%A1%80-05/Garden.0bd165c03c5668d4b969c19bc1b4e129_hu_a0b2ceacee7e64cf.png" 
+                <img src="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A003/Ruin.142265fb55dea43ae5144e2bd76415ed_hu_51ad5fcc096b5506.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
-                        alt="Featured image of post Python基础 05"
+                        alt="Featured image of post 深度学习03"
                         
-                        data-hash="md5-C9FlwDxWaNS5acGbwbThKQ==">
+                        data-hash="md5-FCJl&#43;1XepDrlFE4r12QV7Q==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">Python基础 05</h2>
+            <h2 class="article-title">深度学习03</h2>
         </div>
     </a>
 </article>
@@ -569,23 +709,23 @@
             
                 
 <article class="has-image">
-    <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/">
+    <a href="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-pytorch%E4%BB%8B%E7%BB%8D/">
         
         
             <div class="article-image">
-                <img src="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-07/Mojo.7b1cda79110afd9caea5c356ff252b0e_hu_90d0654421629c30.png" 
+                <img src="/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-pytorch%E4%BB%8B%E7%BB%8D/Ruin.142265fb55dea43ae5144e2bd76415ed_hu_51ad5fcc096b5506.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
-                        alt="Featured image of post 分布式计算 07"
+                        alt="Featured image of post 深度学习-Pytorch介绍"
                         
-                        data-hash="md5-exzaeREK/ZyupcNW/yUrDg==">
+                        data-hash="md5-FCJl&#43;1XepDrlFE4r12QV7Q==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">分布式计算 07</h2>
+            <h2 class="article-title">深度学习-Pytorch介绍</h2>
         </div>
     </a>
 </article>

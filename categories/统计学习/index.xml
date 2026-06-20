@@ -7,7 +7,189 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Wind Whistler</copyright>
-        <lastBuildDate>Sun, 10 May 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sat, 20 Jun 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>深度学习07</title>
+        <link>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/</link>
+        <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/</guid>
+        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/Ruin.png" alt="Featured image of post 深度学习07" /&gt;&lt;h2 id=&#34;深度学习第-14-讲注意力机制与-transformer&#34;&gt;深度学习第 14 讲：注意力机制与 Transformer
+&lt;/h2&gt;&lt;h3 id=&#34;一注意力机制attention-mechanism&#34;&gt;一、注意力机制（Attention Mechanism）
+&lt;/h3&gt;&lt;h4 id=&#34;1-核心直觉&#34;&gt;1. 核心直觉
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;人类视觉系统在处理海量信息时，会聚焦于最重要的部分。注意力机制模仿了这一过程。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Query-Key 比喻&lt;/strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;Query（查询）：代表我们想找的目标。&lt;/li&gt;
+&lt;li&gt;Key（键）：代表环境中各元素的标识。&lt;/li&gt;
+&lt;li&gt;当 Query 与某个 Key 匹配时，注意力就聚焦到该位置。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;2-在机器翻译中的应用早期经典&#34;&gt;2. 在机器翻译中的应用（早期经典）
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;解决了传统 Seq2Seq 模型将源句压缩成固定长度向量带来的信息瓶颈问题。&lt;/li&gt;
+&lt;li&gt;核心机制：在生成每个目标词 $y_t$ 时，动态地&amp;quot;关注&amp;quot;源句中相关的部分。&lt;/li&gt;
+&lt;li&gt;数学表达：
+&lt;ul&gt;
+&lt;li&gt;生成概率：
+$$p(y_t | y_1,...,y_{t-1}, x) = g(y_{t-1}, s_t, c_t)$$&lt;ul&gt;
+&lt;li&gt;$y_t$：当前输出的词&lt;/li&gt;
+&lt;li&gt;$s_t$：解码器的当前隐藏状态&lt;/li&gt;
+&lt;li&gt;$c_t$：当前时刻的上下文向量，是注意力机制的关键。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;上下文向量 $c_t$ 的计算：
+&lt;ul&gt;
+&lt;li&gt;$c_t$ 是输入序列所有隐藏状态的加权平均：
+$$c_t = \sum_i \alpha_{t,i} h_i$$&lt;/li&gt;
+&lt;li&gt;注意力权重 $\alpha_{t,i}$：衡量第 $i$ 个输入词对生成当前输出词的重要性。&lt;/li&gt;
+&lt;li&gt;
+$$\alpha_{t,i} = \text{Softmax}(e_{t,i})$$&lt;/li&gt;
+&lt;li&gt;
+$$e_{t,i} = a(s_{t-1}, h_i)$$是一个打分函数，其参数数量固定，与输入序列长度无关。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;3-常见的打分函数&#34;&gt;3. 常见的打分函数
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;加性模型：
+$$s(x, q) = v^\top \tanh(Wx + Uq)$$&lt;/li&gt;
+&lt;li&gt;点积模型：
+$$s(x, q) = x^\top P q$$&lt;/li&gt;
+&lt;li&gt;缩放点积模型：
+$$s(x, q) = x^\top q / \sqrt{D}$$（$D$是维度）&lt;/li&gt;
+&lt;li&gt;双线性模型：
+$$s(x, q) = x^\top W q$$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;二自注意力机制self-attention&#34;&gt;二、自注意力机制（Self-Attention）
+&lt;/h3&gt;&lt;h4 id=&#34;1-qkv-模式&#34;&gt;1. QKV 模式
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;注意力机制被抽象为三个角色：
+&lt;ul&gt;
+&lt;li&gt;Query（Q）：&amp;ldquo;我想关注什么？&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;Key（K）：&amp;ldquo;我有什么信息？&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;Value（V）：&amp;ldquo;我提供什么内容？&amp;rdquo;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;注意力权重由 Query 和 Key 的相似度计算得出，然后用此权重对 Value 进行加权求和。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;2-自注意力定义&#34;&gt;2. 自注意力定义
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;当 $Q$, $K$, $V$ 都来自同一个输入序列 $X$ 时，即为自注意力。&lt;/li&gt;
+&lt;li&gt;意义：让序列内部的每个元素都能与其他所有元素建立依赖关系，实现真正的&amp;quot;上下文理解&amp;quot;。它建立了序列中所有位置对的高阶结构。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;3-与传统模型的对比&#34;&gt;3. 与传统模型的对比
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;RNN/CNN：主要利用局部信息，难以捕捉长距离依赖。&lt;/li&gt;
+&lt;li&gt;MLP：可以跨越长距离，但参数数量随输入长度变化。&lt;/li&gt;
+&lt;li&gt;自注意力：是一种特殊的全连接层，其权重由内容（注意力）动态生成，参数数量固定，实现了连接模式与参数数量的解耦。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;4-缩放点积注意力公式&#34;&gt;4. 缩放点积注意力公式
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;映射：
+&lt;/p&gt;
+$$Q = X W_Q$$&lt;p&gt;
+&lt;/p&gt;
+$$K = X W_K$$&lt;p&gt;
+&lt;/p&gt;
+$$V = X W_V$$&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;计算：
+&lt;/p&gt;
+$$\text{Attn}(Q, K, V) = \text{Softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right) V$$&lt;p&gt;其中 $\sqrt{d_k}$ 是缩放因子，防止点积结果过大导致 Softmax 梯度消失。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;三transformer&#34;&gt;三、Transformer
+&lt;/h3&gt;&lt;h4 id=&#34;1-概述&#34;&gt;1. 概述
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;2017 年由论文《Attention is All You Need》提出，完全基于注意力机制的网络结构。&lt;/li&gt;
+&lt;li&gt;已成为现代大语言模型（LLM）的基本构成单位。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;2-架构类型&#34;&gt;2. 架构类型
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Encoder-Decoder（原始版）&lt;/strong&gt;：编码器提取信息，解码器生成结果。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Decoder-only（主流）&lt;/strong&gt;：专为自回归语言生成任务设计（如 GPT 系列）。本课重点介绍。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;3-decoder-only-transformer-工作流程&#34;&gt;3. Decoder-only Transformer 工作流程
+&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;输入序列经过多个 Transformer 块，计算每个位置的隐藏表示。&lt;/li&gt;
+&lt;li&gt;用最后一个位置的表示来预测下一个词元。&lt;/li&gt;
+&lt;li&gt;将新词元加入序列，重复上述过程。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;4-构建-transformer-块的核心组件&#34;&gt;4. 构建 Transformer 块的核心组件
+&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;自注意力（Self-Attention）&lt;/strong&gt;：通常是多头注意力（Multi-Head Attention），让模型从不同子空间学习信息。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;前馈网络（FFN）&lt;/strong&gt;：对每个位置的表示进行非线性变换，增加模型容量。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;残差连接（Residual Connection）&lt;/strong&gt;：缓解梯度消失，让网络学习&amp;quot;增量&amp;quot;，支持更深网络。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;层归一化（Layer Normalization）&lt;/strong&gt;：稳定训练过程，对序列长度变化不敏感。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;典型结构如下：&lt;/p&gt;
+$$X&#39; = \text{LayerNorm}(X + \text{Attention}(X))$$&lt;p&gt;
+&lt;/p&gt;
+$$X&#39;&#39; = \text{LayerNorm}(X&#39; + \text{FFN}(X&#39;))$$&lt;h4 id=&#34;5-解决的两个关键问题&#34;&gt;5. 解决的两个关键问题
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;问题 1：缺乏位置信息&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;自注意力是置换等变的，无法感知词的顺序。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：位置编码（Positional Encoding）
+&lt;ul&gt;
+&lt;li&gt;绝对位置编码：如正弦/余弦函数、可学习的向量。&lt;/li&gt;
+&lt;li&gt;相对位置编码：关注位置间的相对距离。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;问题 2：破坏因果性&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在预测 $w_t$ 时，不能&amp;quot;偷看&amp;quot;未来的词 $w_{t+1}$。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：因果掩码（Causal Mask）
+&lt;ul&gt;
+&lt;li&gt;在计算注意力分数时，将对未来位置的分数设为 $-\infty$，使 Softmax 后的权重为 0。&lt;/li&gt;
+&lt;li&gt;
+$$A_{ij} = \begin{cases} Q_i K_j^\top / \sqrt{d_k}, &amp; \text{若 } j \le i \\ -\infty, &amp; \text{否则} \end{cases}$$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;6-完整图景decoder-only&#34;&gt;6. 完整图景（Decoder-only）
+&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;输入表示&lt;/strong&gt;：词嵌入（Content Embedding）+ 位置编码（Positional Encoding）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;多层 Transformer 块&lt;/strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;带因果掩码的多头自注意力&lt;/li&gt;
+&lt;li&gt;前馈网络&lt;/li&gt;
+&lt;li&gt;残差连接 &amp;amp; 层归一化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;输出投影&lt;/strong&gt;：将最后一层最后一个位置的表示映射为下一个词的概率分布。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;7-成功原因&#34;&gt;7. 成功原因
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;架构优势&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;任意距离的直接交互，理论上支持长序列。&lt;/li&gt;
+&lt;li&gt;易于堆叠和扩展参数量。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;实践优势&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;训练阶段可并行计算，对 GPU 友好。&lt;/li&gt;
+&lt;li&gt;在大规模数据上表现卓越，已被广泛验证。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
         <title>深度学习06</title>
         <link>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A006/</link>
         <pubDate>Sun, 10 May 2026 00:00:00 +0000</pubDate>

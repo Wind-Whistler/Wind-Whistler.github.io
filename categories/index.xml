@@ -7,18 +7,34 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Wind Whistler</copyright>
-        <lastBuildDate>Sat, 20 Jun 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 23 Jun 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/categories/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>Python</title>
         <link>https://example.com/categories/python/</link>
-        <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
+        <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/categories/python/</guid>
         <description></description>
         </item>
         <item>
+        <title>Sklearn</title>
+        <link>https://example.com/categories/sklearn/</link>
+        <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/categories/sklearn/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>机器学习</title>
+        <link>https://example.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</link>
+        <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</guid>
+        <description></description>
+        </item>
+        <item>
         <title>计算机编程</title>
         <link>https://example.com/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BC%96%E7%A8%8B/</link>
-        <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
+        <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BC%96%E7%A8%8B/</guid>
         <description></description>

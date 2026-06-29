@@ -3875,6 +3875,7 @@ $$ \hat{m}^{(t)} = m^{(t)} / (1 - \beta_1^t), \quad \hat{v}^{(t)} = v^{(t)} / (1
 &lt;li&gt;时间序列的平稳性&lt;/li&gt;
 &lt;li&gt;协整检验与误差修正模型&lt;/li&gt;
 &lt;li&gt;格兰杰因果关系检验&lt;/li&gt;
+&lt;li&gt;代码演示&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;时间序列模型的序列相关性&#34;&gt;时间序列模型的序列相关性
 &lt;/h2&gt;&lt;h3 id=&#34;为什么会有序列相关性&#34;&gt;为什么会有序列相关性？
@@ -4295,6 +4296,55 @@ Y_t = \alpha_0 + \alpha_1 X_t + \mu_t
 &lt;p&gt;第二步，如果协整性存在，则以第一步求得的残差作为非均衡误差项，加入到误差修正模型中，并用OLS法估计相应参数。第二步中变量差分滞后项的多少，可以根据残差项序列是否存在自相关性来判断。如果存在自相关，则需要加入变量差分的滞后项。&lt;/p&gt;
 &lt;p&gt;需要注意的是，如果误差修正模型中误差修正项的参数估计值为正，模型肯定是错误的。因为误差修正机制要求偏离均衡时系统会向均衡方向回调，所以这个参数必须为负。&lt;/p&gt;
 &lt;h2 id=&#34;格兰杰因果关系检验&#34;&gt;格兰杰因果关系检验
+&lt;/h2&gt;&lt;h3 id=&#34;自回归模型与向量自回归模型&#34;&gt;自回归模型与向量自回归模型
+&lt;/h3&gt;&lt;h4 id=&#34;单变量自回归模型-arp&#34;&gt;单变量自回归模型 AR(p)
+&lt;/h4&gt;&lt;p&gt;p 阶自回归模型形式为：&lt;/p&gt;
+\[
+X_t = \phi_1 X_{t-1} + \phi_2 X_{t-2} + \cdots + \phi_p X_{t-p} + \mu_t,\quad \mu_t \sim WN(0,\sigma^2)
+\]&lt;p&gt;AR(p) 模型平稳的条件是特征方程 \(\det(I - \phi_1 z - \cdots - \phi_p z^p)=0\) 的根均在单位圆外（模大于1）。&lt;/p&gt;
+&lt;h4 id=&#34;自回归分布滞后模型-adlpq&#34;&gt;自回归分布滞后模型 ADL(p,q)
+&lt;/h4&gt;&lt;p&gt;引入其他变量的滞后项：&lt;/p&gt;
+\[
+Y_t = \phi_0 + \sum_{i=1}^p \phi_i Y_{t-i} + \sum_{j=0}^q \gamma_j X_{t-j} + \mu_t
+\]&lt;p&gt;若满足基本假设，OLS 估计量在大样本下一致。&lt;/p&gt;
+&lt;h4 id=&#34;向量自回归模型-varp&#34;&gt;向量自回归模型 VAR(p)
+&lt;/h4&gt;&lt;p&gt;将单变量 AR 扩展为多变量系统，k 个 I(0) 变量的 VAR(p)：&lt;/p&gt;
+\[
+\mathbf{Y}_t = \boldsymbol{\mu} + \mathbf{A}_1 \mathbf{Y}_{t-1} + \mathbf{A}_2 \mathbf{Y}_{t-2} + \cdots + \mathbf{A}_p \mathbf{Y}_{t-p} + \boldsymbol{\varepsilon}_t
+\]&lt;p&gt;其中 \(\mathbf{Y}_t = (Y_{1t}, Y_{2t}, \dots, Y_{kt})&#39;\)，每个方程可用 OLS 分别估计。滞后阶数 p 由 AIC、SC、LR 等信息准则确定。&lt;/p&gt;
+&lt;h3 id=&#34;格兰杰因果关系的思想&#34;&gt;格兰杰因果关系的思想
+&lt;/h3&gt;&lt;p&gt;若利用 X 的过去值能显著提高对 Y 当前值的预测精度（超过只用 Y 自身过去值），则称 X 是 Y 的格兰杰原因（Granger-cause Y）。注意这是统计意义上的&amp;quot;预测因果关系&amp;quot;，不等同于经济因果关系。&lt;/p&gt;
+&lt;p&gt;双向检验的两个辅助回归：&lt;/p&gt;
+\[
+Y_t = \sum_{i=1}^m \alpha_i X_{t-i} + \sum_{i=1}^m \beta_i Y_{t-i} + \mu_{1t}
+\]\[
+X_t = \sum_{i=1}^m \lambda_i X_{t-i} + \sum_{i=1}^m \delta_i Y_{t-i} + \mu_{2t}
+\]&lt;ul&gt;
+&lt;li&gt;X 是 Y 的格兰杰原因：\(\alpha_1 = \alpha_2 = \cdots = \alpha_m = 0\) 不成立&lt;/li&gt;
+&lt;li&gt;Y 是 X 的格兰杰原因：\(\delta_1 = \delta_2 = \cdots = \delta_m = 0\) 不成立&lt;/li&gt;
+&lt;li&gt;双向因果：两组约束均被拒绝&lt;/li&gt;
+&lt;li&gt;无因果：两组约束均不被拒绝&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;检验步骤与统计量&#34;&gt;检验步骤与统计量
+&lt;/h3&gt;&lt;p&gt;以检验&amp;quot;X 不是 Y 的格兰杰原因&amp;quot;为例：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;无约束模型（UR）：&lt;/strong&gt;
+&lt;/p&gt;
+\[
+Y_t = \sum_{i=1}^m \alpha_i X_{t-i} + \sum_{i=1}^m \beta_i Y_{t-i} + \mu_{1t}
+\]&lt;p&gt;&lt;strong&gt;受约束模型（R，去掉 X 的滞后项）：&lt;/strong&gt;
+&lt;/p&gt;
+\[
+Y_t = \sum_{i=1}^m \beta_i Y_{t-i} + \nu_t
+\]&lt;p&gt;原假设 \(H_0: \alpha_1 = \alpha_2 = \cdots = \alpha_m = 0\)，检验统计量为：&lt;/p&gt;
+\[
+F = \frac{(RSS_R - RSS_U)/m}{RSS_U/(n-k)} \stackrel{H_0}{\sim} F(m, n-k)
+\]&lt;p&gt;其中 \(RSS_R\) 为受限模型残差平方和，\(RSS_U\) 为无约束模型残差平方和，m 为滞后阶数，k 为无约束模型参数个数（含常数项）。若 F 值大于临界值则拒绝原假设，认为 X 是 Y 的格兰杰原因。&lt;/p&gt;
+&lt;p&gt;同理对称地检验 Y 是否是 X 的格兰杰原因。&lt;/p&gt;
+&lt;h3 id=&#34;应用中需注意的问题&#34;&gt;应用中需注意的问题
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;滞后阶数的选择：&lt;/strong&gt; 检验结果对滞后阶数敏感。通常以 VAR 模型中残差不存在序列相关、AIC/SC 最小为准则选定滞后阶数，再做格兰杰检验。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;非平稳序列：&lt;/strong&gt; 理论上要求序列平稳。若两变量同阶单整且存在协整关系，可直接对水平值做格兰杰因果检验（有文献支持其渐近性质）；若无协整的 I(1) 序列，应先差分再检验，但此时解释的是差分变量间的短期引导关系，经济含义发生变化。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;格兰杰因果的含义：&lt;/strong&gt; 通过检验只说明 X 的历史信息对预测 Y 有帮助，是经济因果关系的&lt;strong&gt;必要条件而非充分条件&lt;/strong&gt;——统计上显著不代表经济上存在真实因果，统计上不显著也不绝对排除经济因果（可能因样本或滞后设定不当）。&lt;/p&gt;
+&lt;h2 id=&#34;代码演示&#34;&gt;代码演示
 &lt;/h2&gt;</description>
         </item>
         <item>

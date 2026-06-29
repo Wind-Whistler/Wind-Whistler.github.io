@@ -348,7 +348,15 @@
         <li><a href="#应用中需注意的问题">应用中需注意的问题</a></li>
       </ol>
     </li>
-    <li><a href="#代码演示">代码演示</a></li>
+    <li><a href="#代码演示">代码演示</a>
+      <ol>
+        <li><a href="#平稳性检验">平稳性检验</a></li>
+        <li><a href="#单整性检验">单整性检验</a></li>
+        <li><a href="#格兰杰因果检验">格兰杰因果检验</a></li>
+        <li><a href="#协整分析">协整分析</a></li>
+        <li><a href="#误差修正模型ecm">误差修正模型ECM</a></li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -923,7 +931,341 @@ F = \frac{(RSS_R - RSS_U)/m}{RSS_U/(n-k)} \stackrel{H_0}{\sim} F(m, n-k)
 <p><strong>非平稳序列：</strong> 理论上要求序列平稳。若两变量同阶单整且存在协整关系，可直接对水平值做格兰杰因果检验（有文献支持其渐近性质）；若无协整的 I(1) 序列，应先差分再检验，但此时解释的是差分变量间的短期引导关系，经济含义发生变化。</p>
 <p><strong>格兰杰因果的含义：</strong> 通过检验只说明 X 的历史信息对预测 Y 有帮助，是经济因果关系的<strong>必要条件而非充分条件</strong>——统计上显著不代表经济上存在真实因果，统计上不显著也不绝对排除经济因果（可能因样本或滞后设定不当）。</p>
 <h2 id="代码演示">代码演示
-</h2>
+</h2><p>这里以李子奈《计量经济学:第五版》第五章课后习题第11题为例进行平稳性检验，协整分析以及格兰杰因果检验的代码实现。</p>
+<div align="center">
+  <img src="Q11.png" alt="例1" width="800">
+</div>
+<h3 id="平稳性检验">平稳性检验
+</h3><p>这里主要采用ADF检验来对序列平稳性进行检验。<br>
+ADF检验思路为先用模型3确定滞后阶数，然后用这个阶数检验模型3本身是否显著。如果模型3显著，则判定平稳，检验结束。如果模型3不显著，则换用模型2，重新确定滞后阶数，再用新阶数检验模型2是否显著。如果模型2仍不显著，再换用模型1，重新确定滞后阶数并检验。三个模型依次进行，每个模型都独立完成定阶和检验两步，直到某个模型显著为止；如果三个模型全部不显著，则判定序列非平稳。<br>
+下面给出代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 11.1
+</span></span><span class="line"><span class="cl">tsset 年份
+</span></span><span class="line"><span class="cl">display 12 * (_N / 100) ^ (1/4)  // 确定从滞后几阶开始尝试
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// 检验均衡的注意点
+</span></span><span class="line"><span class="cl">// Step1：确定正确阶数，具体做法是看最后一个滞后项是否显著
+</span></span><span class="line"><span class="cl">// Step2：确定结束后看单位根统计量的显著性，如果不显著就直接转下一个Model，显著就直接宣判平稳
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// X序列平稳
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(9) trend
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(8) trend
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(7) trend
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(6) trend
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(5) trend
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(4) trend
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(3) trend
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(2) trend
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(1) trend
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(0) trend
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(9)
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(8)
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(7)
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(6)
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(5)
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(4)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(9) nocon
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(8) nocon
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(7) nocon
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(6) nocon
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(5) nocon
+</span></span><span class="line"><span class="cl">dfuller lnX, reg lag(4) nocon
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// M序列平稳
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(9) trend
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(8) trend
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(7) trend
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(6) trend
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(5) trend
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(4) trend
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(3) trend
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(2) trend
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(1) trend
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(9)
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(8)
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(7)
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(6)
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(5)
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(4)
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(3)
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(2)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(9) nocon
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(8) nocon
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(7) nocon
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(6) nocon
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(5) nocon
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(4) nocon
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(3) nocon
+</span></span><span class="line"><span class="cl">dfuller lnM, reg lag(2) nocon
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里最终的结果是两个序列皆不平稳。</p>
+<h3 id="单整性检验">单整性检验
+</h3><p>但整形的检验和前面平稳性检验的思路一致，只是将检测的序列由原序列改为差分序列，下面给出代码示例。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 11.2
+</span></span><span class="line"><span class="cl">// D.X表示对序列X做差分
+</span></span><span class="line"><span class="cl">// D.X序列平稳
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(9) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(8) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(7) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(6) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(5) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(4) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(3) trend
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(9)
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(8)
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(7)
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(6)
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(5)
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(4)
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(3)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(9) nocon
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(8) nocon
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(7) nocon
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(6) nocon
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(5) nocon
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(4) nocon
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(3) nocon
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(2) nocon
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(1) nocon
+</span></span><span class="line"><span class="cl">dfuller D.lnX, reg lag(0) nocon
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// D.M序列平稳
+</span></span><span class="line"><span class="cl">dfuller D.lnM, reg lag(9) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnM, reg lag(8) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnM, reg lag(7) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnM, reg lag(6) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnM, reg lag(5) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnM, reg lag(4) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnM, reg lag(3) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnM, reg lag(2) trend
+</span></span><span class="line"><span class="cl">dfuller D.lnM, reg lag(1) trend
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里最终得到的结果是两个一阶差分序列皆平稳。</p>
+<h3 id="格兰杰因果检验">格兰杰因果检验
+</h3><p>进行格兰杰因果检验的思路是先确定向量自回归模型的最佳阶数，然后再进行格兰杰因果检验，否则错误的结束可能会影响结果的有效性，下面给出代码演示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">//</span> <span class="mf">11.3</span>
+</span></span><span class="line"><span class="cl"><span class="n">varsoc</span> <span class="n">lnM</span> <span class="n">lnX</span>  <span class="o">//</span> <span class="err">选择最佳阶数</span>
+</span></span><span class="line"><span class="cl"><span class="k">var</span> <span class="n">lnM</span> <span class="n">lnX</span><span class="p">,</span> <span class="n">lags</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">vargranger</span>  <span class="o">//</span> <span class="err">格兰杰因果检验</span>
+</span></span><span class="line"><span class="cl"><span class="n">varlmar</span><span class="p">,</span> <span class="n">mlag</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="o">//</span> <span class="n">VAR模型诊断</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>varsoc的结果如下图所示：</p>
+<div align="center">
+  <img src="varsoc.png" alt="例1" width="800">
+</div>
+这里其实可供选择的阶数有1，2，4，理论上应该对所有可能的阶数进行尝试，然后对相应模型进行检验，这里由于篇幅限制只展示1阶的情况。  
+<p>阶数为1时相应格兰杰因果检验结果如下：</p>
+<div align="center">
+  <img src="granger.png" alt="例1" width="800">
+</div>
+这表明lnM是lnX的格兰杰原因，而lnX不是lnM的格兰杰原因。  
+<p>模型检验结果如下：</p>
+<div align="center">
+  <img src="diag.png" alt="例1" width="800">
+</div>
+结果表明模型不存在序列相关性，因此可以接受模型设定，格兰杰因果检验有效。
+<h3 id="协整分析">协整分析
+</h3><p>对于协整分析，我们一般采用E-G两步法进行检验，代码示例如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 11.4
+</span></span><span class="line"><span class="cl">reg lnX lnM
+</span></span><span class="line"><span class="cl">predict e, residual
+</span></span><span class="line"><span class="cl">dfuller e, reg lag(3) trend
+</span></span><span class="line"><span class="cl">dfuller e, reg lag(2) trend
+</span></span><span class="line"><span class="cl">dfuller e, reg lag(1) trend
+</span></span><span class="line"><span class="cl">dfuller e, reg lag(0) trend
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dfuller e, reg lag(3) 
+</span></span><span class="line"><span class="cl">dfuller e, reg lag(2) 
+</span></span><span class="line"><span class="cl">dfuller e, reg lag(1) 
+</span></span><span class="line"><span class="cl">dfuller e, reg lag(0) 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dfuller e, reg lag(3) nocon
+</span></span><span class="line"><span class="cl">dfuller e, reg lag(2) nocon
+</span></span><span class="line"><span class="cl">dfuller e, reg lag(1) nocon
+</span></span><span class="line"><span class="cl">dfuller e, reg lag(0) nocon
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里对回归模型的残差序列进行平稳性检验，得到的结果如下：</p>
+<div align="center">
+  <img src="res.png" alt="例1" width="800">
+</div>
+值得注意的是因为这是协整分析的平稳性检验，因此ADF临界值要参考特定的协整分析ADF表格而非系统所显示的临界值。根据协整分析临界值表，残差序列平稳，因此认为lnX和lnM是协整的。
+<h3 id="误差修正模型ecm">误差修正模型ECM
+</h3><p>对于误差修正模型ECM，一种简单的理解方式是在差分模型的基础上加入协整模型中的残差项，注意这一残差项的回归系数一定为负数，否则说明模型设定有误。下面给出代码实例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 11.5  所谓误差修正模型ECM就是在差分模型的基础上加入协整方程的误差项
+</span></span><span class="line"><span class="cl">reg D.lnX D.lnM L.e
+</span></span><span class="line"><span class="cl">predict e1, residual
+</span></span><span class="line"><span class="cl">reg e1 D.lnM L.e1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>模型拟合结果如下：</p>
+<div align="center">
+  <img src="res2.png" alt="例1" width="800">
+</div>
+在此基础上，进一步进行序列相关性检测（GB Test），结果如下所示：
+<div align="center">
+  <img src="res3.png" alt="例1" width="800">
+</div>
+这里残差滞后项的回归系数不显著，说明不存在序列相关性，验证了所建立的ECM模型。
 </section>
 
 

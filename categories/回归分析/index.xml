@@ -459,7 +459,7 @@ BP检验显著，这表明模型存在异方差。
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;参数估计量是有偏的（小样本下）&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;OLS估计量 $\hat{\beta}$ 的期望 $E(\hat{\beta}) \ne \beta$。您的理解完全正确：在无偏性证明的关键步骤 $E(X^T\mu) = 0$ 不再成立，因为有 $Cov(X, \mu) \ne 0$。这使得OLS估计量&lt;strong&gt;系统地偏离&lt;/strong&gt;真实参数值。&lt;/li&gt;
+&lt;li&gt;OLS估计量 $\hat{\beta}$ 的期望 $E(\hat{\beta}) \ne \beta$。在无偏性证明的关键步骤 $E(X^T\mu) = 0$ 不再成立，因为有 $Cov(X, \mu) \ne 0$。这使得OLS估计量&lt;strong&gt;系统地偏离&lt;/strong&gt;真实参数值。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;
@@ -559,7 +559,7 @@ $$Y = \beta_0 + \beta_1 \hat{X} + \beta_2 Z + \epsilon$$
 &lt;li&gt;若 \( \delta \) 不显著（接受 \( H_0 \)）：说明 \( X \) 外生，可用普通OLS估计。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h5 id=&#34;hausman检验的本质&#34;&gt;Hausman检验的本质
-&lt;/h5&gt;&lt;p&gt;Hausman检验的核心是比较“一致但低效”的IV估计和**“有效但可能不一致”的OLS估计**的差异。若两者差异显著（即 \( \delta \) 显著），说明OLS不一致（因内生性），需用IV；若差异不显著，说明OLS一致，可用OLS。&lt;/p&gt;
+&lt;/h5&gt;&lt;p&gt;Hausman检验的核心是比较“一致但低效”的IV估计和“有效但可能不一致”的OLS估计的差异。若两者差异显著（即 \( \delta \) 显著），说明OLS不一致（因内生性），需用IV；若差异不显著，说明OLS一致，可用OLS。&lt;/p&gt;
 &lt;h4 id=&#34;过度识别检验&#34;&gt;过度识别检验
 &lt;/h4&gt;&lt;h5 id=&#34;检验前提与目标&#34;&gt;检验前提与目标
 &lt;/h5&gt;&lt;ul&gt;

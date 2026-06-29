@@ -850,7 +850,7 @@ BP检验显著，这表明模型存在异方差。
 <li>
 <p><strong>参数估计量是有偏的（小样本下）</strong></p>
 <ul>
-<li>OLS估计量 $\hat{\beta}$ 的期望 $E(\hat{\beta}) \ne \beta$。您的理解完全正确：在无偏性证明的关键步骤 $E(X^T\mu) = 0$ 不再成立，因为有 $Cov(X, \mu) \ne 0$。这使得OLS估计量<strong>系统地偏离</strong>真实参数值。</li>
+<li>OLS估计量 $\hat{\beta}$ 的期望 $E(\hat{\beta}) \ne \beta$。在无偏性证明的关键步骤 $E(X^T\mu) = 0$ 不再成立，因为有 $Cov(X, \mu) \ne 0$。这使得OLS估计量<strong>系统地偏离</strong>真实参数值。</li>
 </ul>
 </li>
 <li>
@@ -950,7 +950,7 @@ $$Y = \beta_0 + \beta_1 \hat{X} + \beta_2 Z + \epsilon$$
 <li>若 \( \delta \) 不显著（接受 \( H_0 \)）：说明 \( X \) 外生，可用普通OLS估计。</li>
 </ul>
 <h5 id="hausman检验的本质">Hausman检验的本质
-</h5><p>Hausman检验的核心是比较“一致但低效”的IV估计和**“有效但可能不一致”的OLS估计**的差异。若两者差异显著（即 \( \delta \) 显著），说明OLS不一致（因内生性），需用IV；若差异不显著，说明OLS一致，可用OLS。</p>
+</h5><p>Hausman检验的核心是比较“一致但低效”的IV估计和“有效但可能不一致”的OLS估计的差异。若两者差异显著（即 \( \delta \) 显著），说明OLS不一致（因内生性），需用IV；若差异不显著，说明OLS一致，可用OLS。</p>
 <h4 id="过度识别检验">过度识别检验
 </h4><h5 id="检验前提与目标">检验前提与目标
 </h5><ul>

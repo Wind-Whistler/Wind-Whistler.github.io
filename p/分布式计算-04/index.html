@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en-us" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本章节介绍如何使用分布式计算解决岭回归">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本章节介绍如何使用分布式计算解决回归与岭回归">
 <title>分布式计算 04</title>
 
 <link rel='canonical' href='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-04/'>
 
 <link rel="stylesheet" href="/scss/style.min.86591c898bd806857815fbb8c47e8d3fed97c133b78e83d9bfc27b164dd0aa2b.css"><meta property='og:title' content="分布式计算 04">
-<meta property='og:description' content="本章节介绍如何使用分布式计算解决岭回归">
+<meta property='og:description' content="本章节介绍如何使用分布式计算解决回归与岭回归">
 <meta property='og:url' content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-04/'>
 <meta property='og:site_name' content='Wind Whistler'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-04-09T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-04-09T00:00:00&#43;00:00'/><meta property='og:image' content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-04/Mojo.png' />
 <meta name="twitter:title" content="分布式计算 04">
-<meta name="twitter:description" content="本章节介绍如何使用分布式计算解决岭回归"><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="本章节介绍如何使用分布式计算解决回归与岭回归"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://example.com/p/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97-04/Mojo.png' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
@@ -226,7 +226,52 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#分布式线性回归">分布式线性回归</a>
+      <ol>
+        <li><a href="#实现思路">实现思路</a></li>
+        <li><a href="#代码演示">代码演示</a>
+          <ol>
+            <li><a href="#step1准备工作">Step1：准备工作</a></li>
+            <li><a href="#step2定义分布式函数">Step2：定义分布式函数</a></li>
+            <li><a href="#step3流式读取并发放任务">Step3：流式读取并发放任务</a></li>
+            <li><a href="#step4汇总结果并解方程">Step4：汇总结果并解方程</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#cg算法">CG算法</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -286,7 +331,7 @@
     
         
         <h3 class="article-subtitle">
-            本章节介绍如何使用分布式计算解决岭回归
+            本章节介绍如何使用分布式计算解决回归与岭回归
         </h3>
         
     </div>
@@ -323,7 +368,231 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>分布式线性回归</li>
+<li>CG算法</li>
+<li>分布式岭回归</li>
+</ul>
+<h2 id="分布式线性回归">分布式线性回归
+</h2><h3 id="实现思路">实现思路
+</h3><p><strong>前提</strong>：n &raquo; p，且 p 不太大时，\( X^T X \) 和 \( X^T Y \) 可以装入内存。</p>
+<p><strong>Step 1：分块</strong>
+将原始数据按行分成 k 个分块，每个分块包含对应的 X 和 Y（保持 X 和 Y 在同一分块内）。</p>
+<p><strong>Step 2：分布式计算</strong>
+每个节点在本地计算 \( X_i^T X_i \) 和 \( X_i^T Y_i \)，然后将结果传回主节点。</p>
+<p><strong>Step 3：汇总求解</strong>
+主节点将所有分块结果累加：
+</p>
+\[
+X^T X = \sum_{i=1}^k X_i^T X_i, \quad X^T Y = \sum_{i=1}^k X_i^T Y_i
+\]<p>
+最后解线性方程组 \((X^T X)\hat{\beta} = X^T Y\) 得到 OLS 估计值。</p>
+<h3 id="代码演示">代码演示
+</h3><h4 id="step1准备工作">Step1：准备工作
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ray</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">scipy</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">file_name</span> <span class="o">=</span> <span class="s2">&#34;ols_data.csv&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">n_obs</span> <span class="o">=</span> <span class="mi">50000</span>  <span class="c1"># 5万个观测</span>
+</span></span><span class="line"><span class="cl"><span class="n">p</span> <span class="o">=</span> <span class="mi">100</span>         <span class="c1"># 100个变量</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 设定一个真实的 beta（包含截距项，共101个参数）</span>
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">beta_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;正在生成 </span><span class="si">{</span><span class="n">n_obs</span><span class="si">}</span><span class="s2"> 行测试数据并写入 CSV...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 分块写入数据以防我们在生成数据时超出内存限制</span>
+</span></span><span class="line"><span class="cl"><span class="n">chunk_size_gen</span> <span class="o">=</span> <span class="mi">5000</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_obs</span> <span class="o">//</span> <span class="n">chunk_size_gen</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">X_chunk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">chunk_size_gen</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 计算 Y = beta0 + X * beta + noise</span>
+</span></span><span class="line"><span class="cl">    <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">chunk_size_gen</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y_chunk</span> <span class="o">=</span> <span class="n">beta_true</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">X_chunk</span> <span class="o">@</span> <span class="n">beta_true</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">noise</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 拼接并写入</span>
+</span></span><span class="line"><span class="cl">    <span class="n">data_chunk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">X_chunk</span><span class="p">,</span> <span class="n">y_chunk</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">df_chunk</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data_chunk</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">df_chunk</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&#34;a&#34;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;数据生成完毕！耗时: </span><span class="si">{</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> 秒。文件大小约为：</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> MB&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step2定义分布式函数">Step2：定义分布式函数
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@ray.remote</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">compute_ols_stats</span><span class="p">(</span><span class="n">chunk_data</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># chunk_data 是一个 numpy 矩阵，最后一列是 Y，前面是 X</span>
+</span></span><span class="line"><span class="cl">    <span class="n">X_chunk</span> <span class="o">=</span> <span class="n">chunk_data</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y_chunk</span> <span class="o">=</span> <span class="n">chunk_data</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">n_chunk</span> <span class="o">=</span> <span class="n">X_chunk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 在设计矩阵 X 前添加一列1向量，用于拟合截距项</span>
+</span></span><span class="line"><span class="cl">    <span class="n">intercept_col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_chunk</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">X_chunk_with_intercept</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">intercept_col</span><span class="p">,</span> <span class="n">X_chunk</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 计算局部充分统计量</span>
+</span></span><span class="line"><span class="cl">    <span class="n">XtX_partial</span> <span class="o">=</span> <span class="n">X_chunk_with_intercept</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X_chunk_with_intercept</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Xty_partial</span> <span class="o">=</span> <span class="n">X_chunk_with_intercept</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y_chunk</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">XtX_partial</span><span class="p">,</span> <span class="n">Xty_partial</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step3流式读取并发放任务">Step3：流式读取并发放任务
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">5000</span>
+</span></span><span class="line"><span class="cl"><span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;开始流式读取并分发 OLS 计算任务...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="n">chunk_size</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 将局部数据送入共享内存</span>
+</span></span><span class="line"><span class="cl">    <span class="n">chunk_id</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 派发计算任务</span>
+</span></span><span class="line"><span class="cl">    <span class="n">task</span> <span class="o">=</span> <span class="n">compute_ols_stats</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">chunk_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  已派发第 </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> 块数据...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;数据分发完毕，等待集群计算...&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step4汇总结果并解方程">Step4：汇总结果并解方程
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">results</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># results 是一个列表，里面包含了每个任务返回的元组 (XtX_partial, Xty_partial)</span>
+</span></span><span class="line"><span class="cl"><span class="n">XtX_global</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>  <span class="c1"># 这里用sum函数，不用np.sum</span>
+</span></span><span class="line"><span class="cl"><span class="n">Xty_global</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;正在通过 Cholesky 分解求解 beta_hat...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">cho_fac</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cho_factor</span><span class="p">(</span><span class="n">XtX_global</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">beta_hat</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cho_solve</span><span class="p">(</span><span class="n">cho_fac</span><span class="p">,</span> <span class="n">Xty_global</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 对比前10个参数（包含截距）</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">=== 参数对比 ===&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;参数</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">：真实值 = </span><span class="si">{</span><span class="n">beta_true</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;7.4f</span><span class="si">}</span><span class="s2">, 估计值 = </span><span class="si">{</span><span class="n">beta_hat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;7.4f</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>结果如下：</p>
+<div align="center">
+  <img src="Pic01.png" alt="梯度下降" width="800">
+</div>
+<h2 id="cg算法">CG算法
+</h2>
 </section>
 
 

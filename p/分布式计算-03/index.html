@@ -295,7 +295,17 @@
         </li>
       </ol>
     </li>
-    <li><a href="#pandas流式读取">Pandas流式读取</a></li>
+    <li><a href="#pandas流式读取">Pandas流式读取</a>
+      <ol>
+        <li><a href="#代码演示">代码演示</a>
+          <ol>
+            <li><a href="#step1生成数据-2">Step1:生成数据</a></li>
+            <li><a href="#step2定义分布式计算函数与迭代器">Step2:定义分布式计算函数与迭代器</a></li>
+            <li><a href="#step3流式读取与分布式计算">Step3:流式读取与分布式计算</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -729,7 +739,130 @@ X = \begin{bmatrix} X_1 \\ X_2 \end{bmatrix}, \quad X^T X = X_1^T X_1 + X_2^T X_
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="pandas流式读取">Pandas流式读取
-</h2>
+</h2><p>Pandas 的 <code>read_csv</code> 加上 <code>chunksize</code> 参数后，返回的是一个迭代器，每次迭代读入一个指定行数的 DataFrame，从而实现分块读取大文件、避免内存溢出。拿到每个分块后，可以通过 <code>.values</code> 将其转换为 NumPy 数组，方便后续的数值计算。接着把这个 NumPy 数组写入共享内存，就能将数据分发到多个工作进程中去并行处理，每个进程直接从共享内存读取自己负责的那部分数据，无需重复拷贝，大幅提升分布式计算的效率。</p>
+<h3 id="代码演示">代码演示
+</h3><h4 id="step1生成数据-2">Step1:生成数据
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">file_name</span> <span class="o">=</span> <span class="s2">&#34;large_matrix.csv&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">n_rows</span> <span class="o">=</span> <span class="mi">20000</span>
+</span></span><span class="line"><span class="cl"><span class="n">n_cols</span> <span class="o">=</span> <span class="mi">100</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;正在往硬盘写入 </span><span class="si">{</span><span class="n">n_rows</span><span class="si">}</span><span class="s2"> 行, </span><span class="si">{</span><span class="n">n_cols</span><span class="si">}</span><span class="s2"> 列的 CSV 文件...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 随机生成数据并保存为 CSV (为了节约演示时间，我们一次性生成，但假装它是早就存在硬盘里的)</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_rows</span><span class="p">,</span> <span class="n">n_cols</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">file_size_mb</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;文件写入完成！耗时: </span><span class="si">{</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> 秒。文件大小约为: </span><span class="si">{</span><span class="n">file_size_mb</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> MB&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step2定义分布式计算函数与迭代器">Step2:定义分布式计算函数与迭代器
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@ray.remote</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">compute_chunk_xtx</span><span class="p">(</span><span class="n">chunk_data</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 确保传入的是 NumPy 数组</span>
+</span></span><span class="line"><span class="cl">    <span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chunk_data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">mat</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">mat</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 每次只读入2000行</span>
+</span></span><span class="line"><span class="cl"><span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">2000</span>
+</span></span><span class="line"><span class="cl"><span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># pd.read_csv 加上 chunksize 参数后会变成一个可以 for 循环的迭代器</span>
+</span></span><span class="line"><span class="cl"><span class="n">pd_iter</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="n">chunk_size</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step3流式读取与分布式计算">Step3:流式读取与分布式计算
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;开始流式读取并分发计算任务...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="n">chunk_size</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 此时，内存中只有2000行数据</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># 1. 将这一小块数据推送到 Ray 集群的共享内存中</span>
+</span></span><span class="line"><span class="cl">    <span class="n">chunk_id</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># 2. 分发任务：让集群里的一台空闲机器去计算这个块的 X^T X</span>
+</span></span><span class="line"><span class="cl">    <span class="n">task</span> <span class="o">=</span> <span class="n">compute_chunk_xtx</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">chunk_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  已派发第 </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> 块任务...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;所有数据块读取完毕，正在等待集群计算...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 获取所有局部计算结果</span>
+</span></span><span class="line"><span class="cl"><span class="n">results</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 汇总求和</span>
+</span></span><span class="line"><span class="cl"><span class="n">final_XtX</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;计算完成！&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;最终矩阵维度: </span><span class="si">{</span><span class="n">final_XtX</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
 </section>
 
 

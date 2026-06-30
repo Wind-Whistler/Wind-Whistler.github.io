@@ -226,7 +226,85 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#矩阵乘法复杂度">矩阵乘法复杂度</a>
+      <ol>
+        <li><a href="#向量--向量点积">向量 × 向量（点积）</a></li>
+        <li><a href="#矩阵--向量gemv">矩阵 × 向量（GEMV）</a></li>
+        <li><a href="#矩阵--矩阵gemm">矩阵 × 矩阵（GEMM）</a></li>
+        <li><a href="#矩阵计算实用技巧">矩阵计算实用技巧</a>
+          <ol>
+            <li><a href="#优先计算维度较小的操作">优先计算维度较小的操作</a></li>
+            <li><a href="#不要算矩阵的逆">不要算矩阵的逆</a></li>
+            <li><a href="#利用特殊矩阵结构减少计算量">利用特殊矩阵结构减少计算量</a></li>
+            <li><a href="#将多个向量运算合并为矩阵运算">将多个向量运算合并为矩阵运算</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#线性方程组求解">线性方程组求解</a>
+      <ol>
+        <li><a href="#直接求逆的缺点">直接求逆的缺点</a></li>
+        <li><a href="#lu-分解">LU 分解</a></li>
+        <li><a href="#cholesky-分解">Cholesky 分解</a></li>
+        <li><a href="#qr-分解">QR 分解</a></li>
+        <li><a href="#总结">总结</a></li>
+        <li><a href="#代码实现">代码实现</a>
+          <ol>
+            <li><a href="#step1生成数据">Step1:生成数据</a></li>
+            <li><a href="#step2矩阵分解与方程组计算">Step2:矩阵分解与方程组计算</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#矩阵分块">矩阵分块</a>
+      <ol>
+        <li><a href="#为什么需要分块">为什么需要分块？</a></li>
+        <li><a href="#核心原理">核心原理</a></li>
+        <li><a href="#map-reduce-思想">Map-Reduce 思想</a></li>
+        <li><a href="#核心意义">核心意义</a></li>
+        <li><a href="#代码实现-1">代码实现</a>
+          <ol>
+            <li><a href="#step1生成数据-1">Step1:生成数据</a></li>
+            <li><a href="#step2定义分布式计算函数">Step2:定义分布式计算函数</a></li>
+            <li><a href="#step3分布式计算">Step3:分布式计算</a></li>
+            <li><a href="#step4验证结果">Step4:验证结果</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#pandas流式读取">Pandas流式读取</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -323,7 +401,335 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>矩阵乘法复杂度</li>
+<li>线性方程组求解</li>
+<li>矩阵分块</li>
+<li>Pandas流式读取</li>
+</ul>
+<h2 id="矩阵乘法复杂度">矩阵乘法复杂度
+</h2><h3 id="向量--向量点积">向量 × 向量（点积）
+</h3><ul>
+<li>计算 \( u^T v = \sum u_i v_i \)</li>
+<li><strong>时间复杂度：O(n)</strong></li>
+</ul>
+<h3 id="矩阵--向量gemv">矩阵 × 向量（GEMV）
+</h3><ul>
+<li>计算 \( y = A x \)，\( A \in \mathbb{R}^{m \times n} \)</li>
+<li>相当于 m 次长度为 n 的点积</li>
+<li><strong>时间复杂度：O(mn)</strong>，方阵时为 <strong>O(n²)</strong></li>
+</ul>
+<h3 id="矩阵--矩阵gemm">矩阵 × 矩阵（GEMM）
+</h3><ul>
+<li>计算 \( C = AB \)，\( A \in \mathbb{R}^{m \times k}, B \in \mathbb{R}^{k \times n} \)</li>
+<li>共 \( m \times n \) 个元素，每个元素需 k 次点积</li>
+<li><strong>时间复杂度：O(mnk)</strong>，方阵时为 <strong>O(n³)</strong></li>
+<li>若 n 扩大 10 倍，耗时变为 <strong>1000 倍</strong>——这是分布式计算的核心驱动力</li>
+</ul>
+<h3 id="矩阵计算实用技巧">矩阵计算实用技巧
+</h3><h4 id="优先计算维度较小的操作">优先计算维度较小的操作
+</h4><ul>
+<li>多个矩阵连乘时，先合并维度小的部分进行计算，可显著降低中间结果的规模。</li>
+<li>例：计算 \( ABC \)，若 B 维度远小于 A 和 C，先算 \( BC \) 再左乘 A，而非先算 \( AB \)。</li>
+</ul>
+<h4 id="不要算矩阵的逆">不要算矩阵的逆
+</h4><ul>
+<li>直接求逆存在两大问题：
+<ul>
+<li><strong>数值不稳定</strong>：容易放大舍入误差</li>
+<li><strong>计算效率低</strong>：O(n³) 且常数大，稀疏矩阵求逆后通常变稠密</li>
+</ul>
+</li>
+<li>正确做法：用矩阵分解 + 回代求解线性方程组。</li>
+</ul>
+<h4 id="利用特殊矩阵结构减少计算量">利用特殊矩阵结构减少计算量
+</h4><h5 id="对角矩阵">对角矩阵
+</h5><ul>
+<li><strong>左乘对角矩阵</strong>：\( WA \)，W 为 \( n \times n \) 对角矩阵
+<ul>
+<li>等价于将 W 的对角线元素逐列乘到 A 的对应行上</li>
+<li><strong>复杂度</strong>：O(np)，而非 O(n²p)</li>
+</ul>
+</li>
+<li><strong>右乘对角矩阵</strong>：\( AW \)，W 为 \( p \times p \) 对角矩阵
+<ul>
+<li>等价于将 W 的对角线元素逐行乘到 A 的对应列上</li>
+<li><strong>复杂度</strong>：O(np)</li>
+</ul>
+</li>
+</ul>
+<h5 id="其他特殊结构">其他特殊结构
+</h5><ul>
+<li>对称矩阵、三角矩阵、稀疏矩阵等均可利用其结构大幅压缩计算量。</li>
+</ul>
+<h4 id="将多个向量运算合并为矩阵运算">将多个向量运算合并为矩阵运算
+</h4><ul>
+<li>需要计算 \( Ax_1, Ax_2, \dots, Ax_p \) 时，先将所有向量拼成矩阵 \( X = [x_1 \, x_2 \, \dots \, x_p] \)，再统一计算 \( AX \)。</li>
+<li><strong>原理</strong>：理论复杂度相同，但软件层面对矩阵运算有高度优化（如 BLAS 库），实际速度远快于循环逐个计算。</li>
+<li>同理，求解 \( A^{-1}x_1, \dots, A^{-1}x_p \) 时，统一调用 <code>np.linalg.solve(A, X)</code>。</li>
+</ul>
+<h2 id="线性方程组求解">线性方程组求解
+</h2><h3 id="直接求逆的缺点">直接求逆的缺点
+</h3><p>求解线性方程组 \( Ax = b \) 时，理论上解为 \( x = A^{-1}b \)，但实际计算中应避免显式求逆：</p>
+<ol>
+<li><strong>数值不稳定性</strong>：矩阵求逆极易受浮点数舍入误差影响。若 \( A \) 条件数很大（如多重共线性），求逆会急剧放大误差。</li>
+<li><strong>计算效率低</strong>：求逆时间复杂度 \( O(n^3) \) 且常数很大。此外，稀疏矩阵的逆通常是稠密的，可能撑爆内存。</li>
+</ol>
+<p>因此，正确思路是<strong>先对 \( A \) 做矩阵分解，再通过前向/后向替换求解</strong>（替换步骤仅需 \( O(n^2) \)）。</p>
+<h3 id="lu-分解">LU 分解
+</h3><ul>
+<li><strong>适用场景</strong>：\( A \) 为一般的非奇异方阵</li>
+<li><strong>分解形式</strong>：\( A = LU \)（L 下三角，U 上三角）</li>
+<li><strong>求解过程</strong>：先解 \( Ly = b \)，再解 \( Ux = y \)</li>
+<li><strong>复杂度</strong>：约 \( \frac{2}{3}n^3 \) FLOPs</li>
+<li><strong>特点</strong>：通用性强，比直接求逆更高效稳定</li>
+</ul>
+<h3 id="cholesky-分解">Cholesky 分解
+</h3><ul>
+<li><strong>适用场景</strong>：\( A \) 对称正定，如 OLS 中的 \( X^T X \)</li>
+<li><strong>分解形式</strong>：\( A = LL^T \)（L 下三角）</li>
+<li><strong>求解过程</strong>：先解 \( Ly = b \)，再解 \( L^T x = y \)</li>
+<li><strong>复杂度</strong>：约 \( \frac{1}{3}n^3 \) FLOPs，是 LU 分解的一半</li>
+<li><strong>特点</strong>：利用对称性，效率更高</li>
+</ul>
+<h3 id="qr-分解">QR 分解
+</h3><ul>
+<li><strong>适用场景</strong>：OLS 回归等对精度要求高的场景</li>
+<li><strong>分解形式</strong>：\( X = QR \)，代入正规方程后可避开 \( X^T X \) 的计算</li>
+<li><strong>优势</strong>：完全避免计算 \( X^T X \)，避免条件数被平方放大，数值稳定性极高（R 语言 <code>lm()</code>、Python <code>scipy.linalg.lstsq</code> 底层使用）</li>
+<li><strong>代价</strong>：当 \( n \gg p \) 时，计算量约为 Cholesky 方案的 <strong>2 倍</strong></li>
+</ul>
+<h3 id="总结">总结
+</h3><div class="table-wrapper"><table>
+	<thead>
+			<tr>
+					<th>方案</th>
+					<th>速度</th>
+					<th>稳定性</th>
+					<th>推荐场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>LU 分解</td>
+					<td>中等</td>
+					<td>中等</td>
+					<td>一般方阵</td>
+			</tr>
+			<tr>
+					<td>Cholesky 分解</td>
+					<td>快</td>
+					<td>中等</td>
+					<td>对称正定矩阵（如大规模 ML）</td>
+			</tr>
+			<tr>
+					<td>QR 分解</td>
+					<td>较慢（约 2 倍）</td>
+					<td>最高</td>
+					<td>经典统计推断、精度优先</td>
+			</tr>
+	</tbody>
+</table></div>
+<h3 id="代码实现">代码实现
+</h3><h4 id="step1生成数据">Step1:生成数据
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">scipy</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">n</span> <span class="o">=</span> <span class="mi">2000</span>
+</span></span><span class="line"><span class="cl"><span class="n">p</span> <span class="o">=</span> <span class="mi">500</span>
+</span></span><span class="line"><span class="cl"><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">beta_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X</span><span class="p">)</span> <span class="o">@</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y</span>  <span class="c1"># 这个作为基准</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step2矩阵分解与方程组计算">Step2:矩阵分解与方程组计算
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">A</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># LU分解</span>
+</span></span><span class="line"><span class="cl"><span class="n">fac_lu</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lu_factor</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">beta_lu</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lu_solve</span><span class="p">(</span><span class="n">fac_lu</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># cholesky 分解</span>
+</span></span><span class="line"><span class="cl"><span class="n">fac_cho</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cho_factor</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">beta_cho</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cho_solve</span><span class="p">(</span><span class="n">fac_cho</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># QR 分解</span>
+</span></span><span class="line"><span class="cl"><span class="n">Q1</span><span class="p">,</span> <span class="n">R1</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&#34;economic&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">Qty</span> <span class="o">=</span> <span class="n">Q1</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y</span>
+</span></span><span class="line"><span class="cl"><span class="n">beta_qr</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve_triangular</span><span class="p">(</span><span class="n">R1</span><span class="p">,</span> <span class="n">Qty</span><span class="p">)</span>  <span class="c1"># QR分解最终是解R1*beta=Qty</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 结果展示</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;LU:&#34;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">beta_lu</span> <span class="o">-</span> <span class="n">beta_hat</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;CHO:&#34;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">beta_cho</span> <span class="o">-</span> <span class="n">beta_hat</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;QR:&#34;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">beta_qr</span> <span class="o">-</span> <span class="n">beta_hat</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>结果如下图所示：</p>
+<div align="center">
+  <img src="Pic01.png" alt="梯度下降" width="800">
+</div>
+<h2 id="矩阵分块">矩阵分块
+</h2><h3 id="为什么需要分块">为什么需要分块？
+</h3><p>当矩阵 \( X \) 过大（如 1TB）无法装入单机内存时，将其切成小块，分配给不同节点存储和计算。</p>
+<h3 id="核心原理">核心原理
+</h3><p>只要分块维度对齐，分块矩阵的加法和乘法与普通标量运算规则一致。</p>
+<p>以按行分块为例：</p>
+\[
+X = \begin{bmatrix} X_1 \\ X_2 \end{bmatrix}, \quad X^T X = X_1^T X_1 + X_2^T X_2
+\]<h3 id="map-reduce-思想">Map-Reduce 思想
+</h3><ul>
+<li><strong>Map</strong>：各节点在本地独立计算 \( X_i^T X_i \)</li>
+<li><strong>Reduce</strong>：主节点拉取各节点结果并求和</li>
+</ul>
+<h3 id="核心意义">核心意义
+</h3><p>将可能内存溢出的大矩阵乘法拆解为互不干扰的并行子任务，每台机器只处理自己的数据块，最后汇总小规模结果——这是分布式计算处理海量数据的基础。</p>
+<h3 id="代码实现-1">代码实现
+</h3><h4 id="step1生成数据-1">Step1:生成数据
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">n</span> <span class="o">=</span> <span class="mi">100000</span>
+</span></span><span class="line"><span class="cl"><span class="n">p</span> <span class="o">=</span> <span class="mi">500</span>
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 串行计算</span>
+</span></span><span class="line"><span class="cl"><span class="n">XtX_serial</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step2定义分布式计算函数">Step2:定义分布式计算函数
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 定义远程任务：计算子块的转置乘积</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ray</span>
+</span></span><span class="line"><span class="cl"><span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@ray.remote</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">compute_block_xtx</span><span class="p">(</span><span class="n">X_block</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">X_block</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X_block</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step3分布式计算">Step3:分布式计算
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">num_blocks</span> <span class="o">=</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl"><span class="n">block_size</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="n">num_blocks</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Map 阶段：切分矩阵并分发任务</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_blocks</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 计算起始和终止索引</span>
+</span></span><span class="line"><span class="cl">    <span class="n">start_idx</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">block_size</span>
+</span></span><span class="line"><span class="cl">    <span class="n">end_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">block_size</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">num_blocks</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">n</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># 提取子块</span>
+</span></span><span class="line"><span class="cl">    <span class="n">X_block</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">,</span> <span class="p">:]</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># 【工程细节】：将子块放入共享内存，避免任务分发时产生巨大的序列化网络传输</span>
+</span></span><span class="line"><span class="cl">    <span class="n">block_id</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">X_block</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># 异步分发计算任务</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compute_block_xtx</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">block_id</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 等待所有子任务完成</span>
+</span></span><span class="line"><span class="cl"><span class="n">block_results</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Reduce 阶段：在主节点汇总所有子块的结果</span>
+</span></span><span class="line"><span class="cl"><span class="n">XtX_ray</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">block_results</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="step4验证结果">Step4:验证结果
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 检查由于浮点数误差带来的差异</span>
+</span></span><span class="line"><span class="cl"><span class="n">is_close</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">XtX_serial</span><span class="p">,</span> <span class="n">XtX_ray</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">max_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">XtX_serial</span> <span class="o">-</span> <span class="n">XtX_ray</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;结果是否一致: </span><span class="si">{</span><span class="n">is_close</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>  <span class="c1"># True</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;最大绝对误差: </span><span class="si">{</span><span class="n">max_diff</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>  <span class="c1"># 2.04e-10</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="pandas流式读取">Pandas流式读取
+</h2>
 </section>
 
 

@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en-us" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本章节介绍Transformer模型的结构与应用">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本章节介绍深度学习的一些训练技巧">
 <title>深度学习07</title>
 
 <link rel='canonical' href='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/'>
 
 <link rel="stylesheet" href="/scss/style.min.86591c898bd806857815fbb8c47e8d3fed97c133b78e83d9bfc27b164dd0aa2b.css"><meta property='og:title' content="深度学习07">
-<meta property='og:description' content="本章节介绍Transformer模型的结构与应用">
+<meta property='og:description' content="本章节介绍深度学习的一些训练技巧">
 <meta property='og:url' content='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/'>
 <meta property='og:site_name' content='Wind Whistler'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-06-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-06-20T00:00:00&#43;00:00'/><meta property='og:image' content='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/Ruin.png' />
 <meta name="twitter:title" content="深度学习07">
-<meta name="twitter:description" content="本章节介绍Transformer模型的结构与应用"><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="本章节介绍深度学习的一些训练技巧"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A007/Ruin.png' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
@@ -248,36 +248,34 @@
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#深度学习第-14-讲注意力机制与-transformer">深度学习第 14 讲：注意力机制与 Transformer</a>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#数据预处理">数据预处理</a>
       <ol>
-        <li><a href="#一注意力机制attention-mechanism">一、注意力机制（Attention Mechanism）</a>
-          <ol>
-            <li><a href="#1-核心直觉">1. 核心直觉</a></li>
-            <li><a href="#2-在机器翻译中的应用早期经典">2. 在机器翻译中的应用（早期经典）</a></li>
-            <li><a href="#3-常见的打分函数">3. 常见的打分函数</a></li>
-          </ol>
-        </li>
-        <li><a href="#二自注意力机制self-attention">二、自注意力机制（Self-Attention）</a>
-          <ol>
-            <li><a href="#1-qkv-模式">1. QKV 模式</a></li>
-            <li><a href="#2-自注意力定义">2. 自注意力定义</a></li>
-            <li><a href="#3-与传统模型的对比">3. 与传统模型的对比</a></li>
-            <li><a href="#4-缩放点积注意力公式">4. 缩放点积注意力公式</a></li>
-          </ol>
-        </li>
-        <li><a href="#三transformer">三、Transformer</a>
-          <ol>
-            <li><a href="#1-概述">1. 概述</a></li>
-            <li><a href="#2-架构类型">2. 架构类型</a></li>
-            <li><a href="#3-decoder-only-transformer-工作流程">3. Decoder-only Transformer 工作流程</a></li>
-            <li><a href="#4-构建-transformer-块的核心组件">4. 构建 Transformer 块的核心组件</a></li>
-            <li><a href="#5-解决的两个关键问题">5. 解决的两个关键问题</a></li>
-            <li><a href="#6-完整图景decoder-only">6. 完整图景（Decoder-only）</a></li>
-            <li><a href="#7-成功原因">7. 成功原因</a></li>
-          </ol>
-        </li>
+        <li><a href="#标准化">标准化</a></li>
+        <li><a href="#数据增强">数据增强</a></li>
       </ol>
     </li>
+    <li><a href="#参数初始化">参数初始化</a>
+      <ol>
+        <li><a href="#核心问题">核心问题</a></li>
+      </ol>
+    </li>
+    <li><a href="#归一化技术">归一化技术</a>
+      <ol>
+        <li><a href="#批量归一化">批量归一化</a></li>
+        <li><a href="#层归一化">层归一化</a></li>
+      </ol>
+    </li>
+    <li><a href="#梯度裁剪">梯度裁剪</a></li>
+    <li><a href="#残差连接">残差连接</a></li>
+    <li><a href="#正则化与稳定性">正则化与稳定性</a>
+      <ol>
+        <li><a href="#权重衰减">权重衰减</a></li>
+        <li><a href="#提前停止">提前停止</a></li>
+        <li><a href="#dropout">Dropout</a></li>
+      </ol>
+    </li>
+    <li><a href="#学习率调度">学习率调度</a></li>
   </ol>
 </nav>
         </div>
@@ -346,7 +344,7 @@
     
         
         <h3 class="article-subtitle">
-            本章节介绍Transformer模型的结构与应用
+            本章节介绍深度学习的一些训练技巧
         </h3>
         
     </div>
@@ -383,177 +381,103 @@
     <section class="article-content">
     
     
-    <h2 id="深度学习第-14-讲注意力机制与-transformer">深度学习第 14 讲：注意力机制与 Transformer
-</h2><h3 id="一注意力机制attention-mechanism">一、注意力机制（Attention Mechanism）
-</h3><h4 id="1-核心直觉">1. 核心直觉
-</h4><ul>
-<li>人类视觉系统在处理海量信息时，会聚焦于最重要的部分。注意力机制模仿了这一过程。</li>
-<li><strong>Query-Key 比喻</strong>：
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>数据预处理</li>
+<li>参数初始化</li>
+<li>归一化技术</li>
+<li>梯度裁剪</li>
+<li>残差连接</li>
+<li>正则化与稳定性</li>
+<li>学习率调度</li>
+</ul>
+<h2 id="数据预处理">数据预处理
+</h2><h3 id="标准化">标准化
+</h3><ul>
+<li><strong>目的</strong>：消除不同特征间量纲差异，避免损失函数等高线过于狭长，导致梯度下降震荡。</li>
+<li><strong>操作</strong>：Z-score标准化，即减去均值除以标准差。</li>
+<li><strong>注意事项</strong>：均值和标准差必须<strong>仅从训练集</strong>计算，再应用到验证集和测试集，防止数据泄露。</li>
+</ul>
+<h3 id="数据增强">数据增强
+</h3><ul>
+<li><strong>目的</strong>：通过人为引入先验知识（如平移不变性）扩充样本空间，是防止过拟合的有效手段。</li>
+<li><strong>常见方法</strong>：
 <ul>
-<li>Query（查询）：代表我们想找的目标。</li>
-<li>Key（键）：代表环境中各元素的标识。</li>
-<li>当 Query 与某个 Key 匹配时，注意力就聚焦到该位置。</li>
-</ul>
-</li>
-</ul>
-<h4 id="2-在机器翻译中的应用早期经典">2. 在机器翻译中的应用（早期经典）
-</h4><ul>
-<li>解决了传统 Seq2Seq 模型将源句压缩成固定长度向量带来的信息瓶颈问题。</li>
-<li>核心机制：在生成每个目标词 $y_t$ 时，动态地&quot;关注&quot;源句中相关的部分。</li>
-<li>数学表达：
+<li><strong>基础增强</strong>：随机裁剪、水平翻转、随机旋转、色彩抖动、添加高斯噪声。</li>
+<li><strong>进阶增强</strong>：
 <ul>
-<li>生成概率：
-$$p(y_t | y_1,...,y_{t-1}, x) = g(y_{t-1}, s_t, c_t)$$<ul>
-<li>$y_t$：当前输出的词</li>
-<li>$s_t$：解码器的当前隐藏状态</li>
-<li>$c_t$：当前时刻的上下文向量，是注意力机制的关键。</li>
+<li><strong>Mixup</strong>：将两张图片及其标签按比例线性混合。</li>
+<li><strong>CutMix</strong>：将一张图片的局部区域剪切粘贴到另一张图片上，标签按面积比例混合，强制模型关注全局特征。</li>
 </ul>
 </li>
-<li>上下文向量 $c_t$ 的计算：
+</ul>
+</li>
+</ul>
+<h2 id="参数初始化">参数初始化
+</h2><h3 id="核心问题">核心问题
+</h3><ul>
+<li><strong>全零初始化</strong>：导致同一层神经元对称，无法学习到不同特征。</li>
+<li><strong>过大/过小初始化</strong>：导致前向输出和反向梯度随层数加深而指数级放大或缩小（梯度爆炸/消失）。</li>
+<li><strong>核心原则（方差一致性）</strong>：保持各层输入和输出的方差一致，保证信号在网络中稳定传播。</li>
+<li><strong>主流方法</strong>：
+<strong>Xavier初始化</strong>：适用于Tanh/Sigmoid等对称激活函数。方差为 <code>2/(n_in + n_out)</code>。
+<strong>Kaiming初始化</strong>：适用于ReLU及其变体。因ReLU会将负值清零导致方差减半，故方差需补偿为 <code>2/n_in</code>。</li>
+</ul>
+<h2 id="归一化技术">归一化技术
+</h2><h3 id="批量归一化">批量归一化
+</h3><ul>
+<li><strong>操作</strong>：在一个Mini-batch内，按特征维度（列）进行标准化，并引入可学习的缩放参数γ和平移参数β。</li>
+<li><strong>好处</strong>：平滑优化曲面，允许使用更大学习率；带来轻微随机噪声，有隐式正则化效果。</li>
+<li><strong>局限性</strong>：严重依赖Batch Size大小；难以处理变长序列（如RNN）。</li>
+<li><strong>预测阶段</strong>：使用训练时计算的滑动平均均值和方差，而非当前batch的统计量。需要通过<code>model.eval()</code>切换模式。</li>
+</ul>
+<h3 id="层归一化">层归一化
+</h3><ul>
+<li><strong>操作</strong>：对单个样本内部的所有特征（行）进行标准化。</li>
+<li><strong>优势</strong>：不受Batch Size影响，适合处理变长序列。</li>
+<li><strong>应用</strong>：Transformer等现代NLP架构的标准配置。</li>
+</ul>
+<h2 id="梯度裁剪">梯度裁剪
+</h2><ul>
+<li><strong>问题</strong>：极深网络中偶尔会产生巨大梯度，导致参数更新越界或数值溢出。</li>
+<li><strong>操作</strong>：在参数更新前，若梯度的L2范数超过预设阈值，则等比例缩放梯度。</li>
+<li><strong>作用</strong>：有效防止梯度爆炸，是训练大语言模型的常用技巧。</li>
+</ul>
+<h2 id="残差连接">残差连接
+</h2><ul>
+<li><strong>动机</strong>：解决深层网络出现的“网络退化”问题（更深网络训练误差反而更大）。</li>
+<li><strong>核心思想</strong>：学习目标函数与输入的差值（残差），即 <code>H(x) = x + F(x)</code>。</li>
+<li><strong>缓解梯度消失的原理</strong>：
 <ul>
-<li>$c_t$ 是输入序列所有隐藏状态的加权平均：
-$$c_t = \sum_i \alpha_{t,i} h_i$$</li>
-<li>注意力权重 $\alpha_{t,i}$：衡量第 $i$ 个输入词对生成当前输出词的重要性。</li>
-<li>
-$$\alpha_{t,i} = \text{Softmax}(e_{t,i})$$</li>
-<li>
-$$e_{t,i} = a(s_{t-1}, h_i)$$是一个打分函数，其参数数量固定，与输入序列长度无关。</li>
+<li>反向传播时，梯度包含一个常数项1（来自跳跃连接的恒等映射）。即使<code>∂F/∂x</code>趋近于0，梯度仍能通过常数项无损地传递到浅层，形成“梯度高速公路”。</li>
 </ul>
 </li>
 </ul>
-</li>
+<h2 id="正则化与稳定性">正则化与稳定性
+</h2><h3 id="权重衰减">权重衰减
+</h3><ul>
+<li><strong>本质</strong>：在损失函数中加入L2正则项，或在优化器中直接进行权重衰减。</li>
+<li><strong>AdamW</strong>：在Adam优化器中，为解决L2正则被自适应学习率削弱的问题，将权重衰减与梯度更新解耦。现已成为众多模型的默认优化器。</li>
 </ul>
-<h4 id="3-常见的打分函数">3. 常见的打分函数
-</h4><ul>
-<li>加性模型：
-$$s(x, q) = v^\top \tanh(Wx + Uq)$$</li>
-<li>点积模型：
-$$s(x, q) = x^\top P q$$</li>
-<li>缩放点积模型：
-$$s(x, q) = x^\top q / \sqrt{D}$$（$D$是维度）</li>
-<li>双线性模型：
-$$s(x, q) = x^\top W q$$</li>
+<h3 id="提前停止">提前停止
+</h3><ul>
+<li><strong>操作</strong>：监控验证集性能，当验证集误差不再下降时停止训练。</li>
+<li><strong>作用</strong>：一种有效的隐式正则化方法，防止过拟合。</li>
 </ul>
-<h3 id="二自注意力机制self-attention">二、自注意力机制（Self-Attention）
-</h3><h4 id="1-qkv-模式">1. QKV 模式
-</h4><ul>
-<li>注意力机制被抽象为三个角色：
+<h3 id="dropout">Dropout
+</h3><ul>
+<li><strong>操作</strong>：训练时以概率p随机将部分神经元输出置零。</li>
+<li><strong>作用</strong>：
+1.  <strong>打破共适应</strong>：迫使每个神经元学习更鲁棒的特征。
+2.  <strong>模型集成</strong>：相当于训练了多个共享权重的子网络。</li>
+<li><strong>注意事项</strong>：训练和预测阶段行为不同。训练时输出会被缩放以保持期望值不变，需通过<code>model.eval()</code>切换模式。</li>
+</ul>
+<h2 id="学习率调度">学习率调度
+</h2><ul>
+<li><strong>策略</strong>：通常采用 <strong>Warmup + Cosine Annealing</strong> 策略。
 <ul>
-<li>Query（Q）：&ldquo;我想关注什么？&rdquo;</li>
-<li>Key（K）：&ldquo;我有什么信息？&rdquo;</li>
-<li>Value（V）：&ldquo;我提供什么内容？&rdquo;</li>
-</ul>
-</li>
-<li>注意力权重由 Query 和 Key 的相似度计算得出，然后用此权重对 Value 进行加权求和。</li>
-</ul>
-<h4 id="2-自注意力定义">2. 自注意力定义
-</h4><ul>
-<li>当 $Q$, $K$, $V$ 都来自同一个输入序列 $X$ 时，即为自注意力。</li>
-<li>意义：让序列内部的每个元素都能与其他所有元素建立依赖关系，实现真正的&quot;上下文理解&quot;。它建立了序列中所有位置对的高阶结构。</li>
-</ul>
-<h4 id="3-与传统模型的对比">3. 与传统模型的对比
-</h4><ul>
-<li>RNN/CNN：主要利用局部信息，难以捕捉长距离依赖。</li>
-<li>MLP：可以跨越长距离，但参数数量随输入长度变化。</li>
-<li>自注意力：是一种特殊的全连接层，其权重由内容（注意力）动态生成，参数数量固定，实现了连接模式与参数数量的解耦。</li>
-</ul>
-<h4 id="4-缩放点积注意力公式">4. 缩放点积注意力公式
-</h4><ul>
-<li>
-<p>映射：
-</p>
-$$Q = X W_Q$$<p>
-</p>
-$$K = X W_K$$<p>
-</p>
-$$V = X W_V$$</li>
-<li>
-<p>计算：
-</p>
-$$\text{Attn}(Q, K, V) = \text{Softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right) V$$<p>其中 $\sqrt{d_k}$ 是缩放因子，防止点积结果过大导致 Softmax 梯度消失。</p>
-</li>
-</ul>
-<h3 id="三transformer">三、Transformer
-</h3><h4 id="1-概述">1. 概述
-</h4><ul>
-<li>2017 年由论文《Attention is All You Need》提出，完全基于注意力机制的网络结构。</li>
-<li>已成为现代大语言模型（LLM）的基本构成单位。</li>
-</ul>
-<h4 id="2-架构类型">2. 架构类型
-</h4><ul>
-<li><strong>Encoder-Decoder（原始版）</strong>：编码器提取信息，解码器生成结果。</li>
-<li><strong>Decoder-only（主流）</strong>：专为自回归语言生成任务设计（如 GPT 系列）。本课重点介绍。</li>
-</ul>
-<h4 id="3-decoder-only-transformer-工作流程">3. Decoder-only Transformer 工作流程
-</h4><ol>
-<li>输入序列经过多个 Transformer 块，计算每个位置的隐藏表示。</li>
-<li>用最后一个位置的表示来预测下一个词元。</li>
-<li>将新词元加入序列，重复上述过程。</li>
-</ol>
-<h4 id="4-构建-transformer-块的核心组件">4. 构建 Transformer 块的核心组件
-</h4><ol>
-<li><strong>自注意力（Self-Attention）</strong>：通常是多头注意力（Multi-Head Attention），让模型从不同子空间学习信息。</li>
-<li><strong>前馈网络（FFN）</strong>：对每个位置的表示进行非线性变换，增加模型容量。</li>
-<li><strong>残差连接（Residual Connection）</strong>：缓解梯度消失，让网络学习&quot;增量&quot;，支持更深网络。</li>
-<li><strong>层归一化（Layer Normalization）</strong>：稳定训练过程，对序列长度变化不敏感。</li>
-</ol>
-<p>典型结构如下：</p>
-$$X' = \text{LayerNorm}(X + \text{Attention}(X))$$<p>
-</p>
-$$X'' = \text{LayerNorm}(X' + \text{FFN}(X'))$$<h4 id="5-解决的两个关键问题">5. 解决的两个关键问题
-</h4><ul>
-<li>
-<p><strong>问题 1：缺乏位置信息</strong></p>
-<ul>
-<li>自注意力是置换等变的，无法感知词的顺序。</li>
-<li><strong>解决方案</strong>：位置编码（Positional Encoding）
-<ul>
-<li>绝对位置编码：如正弦/余弦函数、可学习的向量。</li>
-<li>相对位置编码：关注位置间的相对距离。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><strong>问题 2：破坏因果性</strong></p>
-<ul>
-<li>在预测 $w_t$ 时，不能&quot;偷看&quot;未来的词 $w_{t+1}$。</li>
-<li><strong>解决方案</strong>：因果掩码（Causal Mask）
-<ul>
-<li>在计算注意力分数时，将对未来位置的分数设为 $-\infty$，使 Softmax 后的权重为 0。</li>
-<li>
-$$A_{ij} = \begin{cases} Q_i K_j^\top / \sqrt{d_k}, & \text{若 } j \le i \\ -\infty, & \text{否则} \end{cases}$$</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h4 id="6-完整图景decoder-only">6. 完整图景（Decoder-only）
-</h4><ol>
-<li><strong>输入表示</strong>：词嵌入（Content Embedding）+ 位置编码（Positional Encoding）</li>
-<li><strong>多层 Transformer 块</strong>：
-<ul>
-<li>带因果掩码的多头自注意力</li>
-<li>前馈网络</li>
-<li>残差连接 &amp; 层归一化</li>
-</ul>
-</li>
-<li><strong>输出投影</strong>：将最后一层最后一个位置的表示映射为下一个词的概率分布。</li>
-</ol>
-<h4 id="7-成功原因">7. 成功原因
-</h4><ul>
-<li>
-<p><strong>架构优势</strong>：</p>
-<ul>
-<li>任意距离的直接交互，理论上支持长序列。</li>
-<li>易于堆叠和扩展参数量。</li>
-</ul>
-</li>
-<li>
-<p><strong>实践优势</strong>：</p>
-<ul>
-<li>训练阶段可并行计算，对 GPU 友好。</li>
-<li>在大规模数据上表现卓越，已被广泛验证。</li>
+<li><strong>预热</strong>：训练初期，学习率从0线性增长到最大值，防止初始大梯度破坏随机初始化的网络。</li>
+<li><strong>余弦退火</strong>：预热后，学习率按余弦曲线缓慢下降。前期高学习率有助于跳出局部最优，后期低学习率有助于精细收敛。</li>
 </ul>
 </li>
 </ul>

@@ -254,7 +254,7 @@
       <ol>
         <li><a href="#n-gram-模型">n-gram 模型</a></li>
         <li><a href="#经典时间序列模型var">经典时间序列模型（VAR）</a></li>
-        <li><a href="#尝试三神经概率语言模型bengio-2003">尝试三：神经概率语言模型（Bengio, 2003）</a></li>
+        <li><a href="#神经概率语言模型bengio-2003">神经概率语言模型（Bengio, 2003）</a></li>
         <li><a href="#循环神经网络rnn">循环神经网络（RNN）</a></li>
       </ol>
     </li>
@@ -393,7 +393,7 @@ $$\hat{p}(w_t \mid w_{t-n+1}, \ldots, w_{t-1}) = \frac{\text{count}(w_{t-n+1}, \
 </h3><p><strong>方法</strong>：向量自回归模型，假设当前值是过去 \( p \) 个值的线性组合加噪声。</p>
 $$Y_t = c + A_1 Y_{t-1} + A_2 Y_{t-2} + \cdots + A_p Y_{t-p} + \varepsilon_t$$<p><strong>本质</strong>：这是一个参数化版本的 (p+1)-gram 模型。若假设 \( \varepsilon_t \sim N(0, \sigma^2 I) \)，则条件分布为：</p>
 $$Y_t \mid Y_{t-p}, \ldots, Y_{t-1} \sim N(c + A_1 Y_{t-1} + \cdots + A_p Y_{t-p}, \sigma^2 I)$$<p><strong>启示</strong>：VAR 的限制在于线性结构。若将线性函数替换为参数化的非线性函数（如神经网络），即可克服缺陷。这正是 Bengio 2003 年工作的核心思路。</p>
-<h3 id="尝试三神经概率语言模型bengio-2003">尝试三：神经概率语言模型（Bengio, 2003）
+<h3 id="神经概率语言模型bengio-2003">神经概率语言模型（Bengio, 2003）
 </h3><p><strong>方法</strong>：使用前馈神经网络进行非线性建模，但仍采用固定窗宽的 n-gram 假设。</p>
 <p><strong>关键创新</strong>：引入词嵌入，将每个词元映射为稠密向量，所有词嵌入构成一个可学习的参数矩阵。</p>
 <p><strong>输出</strong>：神经网络的输出经 Softmax 变换后得到词表上的概率分布。</p>

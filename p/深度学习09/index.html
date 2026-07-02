@@ -226,7 +226,52 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#为何引入注意力机制">为何引入注意力机制</a>
+      <ol>
+        <li><a href="#rnn局限">RNN局限</a></li>
+        <li><a href="#注意力机制雏形">注意力机制雏形</a></li>
+      </ol>
+    </li>
+    <li><a href="#自注意力">自注意力</a>
+      <ol>
+        <li><a href="#scaled-dot-product-attention">Scaled Dot-Product Attention</a></li>
+        <li><a href="#多头注意力">多头注意力</a></li>
+      </ol>
+    </li>
+    <li><a href="#decoder-only-transformer的关键组件">Decoder-only Transformer的关键组件</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -323,7 +368,135 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>为何引入注意力机制</li>
+<li>自注意力</li>
+<li>Decoder-only Transformer的关键组件</li>
+<li>总结</li>
+</ul>
+<h2 id="为何引入注意力机制">为何引入注意力机制
+</h2><h3 id="rnn局限">RNN局限
+</h3><p>在Transformer出现之前，循环神经网络（RNN）是处理序列数据的主流方法。但它存在一个根本性的缺陷：</p>
+<ul>
+<li><strong>信息瓶颈</strong>：RNN需要将整个输入序列（比如一句话）压缩成一个固定长度的向量（最后一个隐藏状态），才能开始生成输出（比如翻译）。当输入序列很长时，这个固定长度的向量无法承载全部信息，导致早期的重要信息丢失。</li>
+<li><strong>难以并行</strong>：RNN的计算是串行的，必须等前一个词处理完才能处理后一个词，这使得它在GPU上的训练效率较低。</li>
+</ul>
+<p><strong>注意力机制的核心思想</strong>：不再试图将整个输入压缩成一个向量，而是在生成每一个输出词时，都能“回头”去看一遍整个输入序列，并动态地决定哪些输入词更重要。</p>
+<h3 id="注意力机制雏形">注意力机制雏形
+</h3><p>以下介绍注意力机制的早期经典形式，主要用于机器翻译。</p>
+<ol>
+<li>
+<p><strong>核心概念</strong>：</p>
+<ul>
+<li><strong>Query (查询)</strong>：当前解码器的状态 <code>s_{t-1}</code>，代表“我现在想翻译什么”。</li>
+<li><strong>Key (键)</strong>：编码器中每个输入词的隐藏状态 <code>h_i</code>，代表“我（这个词）有什么信息”。</li>
+<li><strong>Value (值)</strong>：同样也是编码器的隐藏状态 <code>h_i</code>，代表“我（这个词）的实际内容”。</li>
+</ul>
+</li>
+<li>
+<p><strong>工作流程</strong>：</p>
+<ul>
+<li><strong>计算权重</strong>：计算Query和每个Key的匹配程度，得到一个分数 <code>e_{t,i}</code>。
+
+$$e_{t,i} = a(s_{t-1}, h_i)$$
+其中 <code>a()</code> 是一个<strong>打分函数</strong>，其参数数量固定，不随输入序列长度改变。</li>
+<li><strong>归一化</strong>：对这些分数进行Softmax操作，得到最终的注意力权重 <code>α_{t,i}</code>。
+
+$$\alpha_{t, i} = \frac{\exp(e_{t, i})}{\sum_{j=1}^{T}\exp(e_{t, j})}$$</li>
+<li><strong>加权求和</strong>：用这些权重对所有Value进行加权平均，得到当前时刻的<strong>上下文向量</strong> <code>c_t</code>。
+
+$$c_t = \sum_{i=1}^T \alpha_{t,i} h_i$$</li>
+</ul>
+</li>
+<li>
+<p><strong>常见打分函数</strong>：</p>
+<ul>
+<li><strong>加性模型</strong>：<code>s(x,q) = v^T tanh(Wx + Uq)</code></li>
+<li><strong>点积模型</strong>：<code>s(x,q) = x^T q</code></li>
+<li><strong>缩放点积模型</strong>：<code>s(x,q) = (x^T q) / sqrt(D)</code> （Transformer中使用）</li>
+</ul>
+</li>
+</ol>
+<h2 id="自注意力">自注意力
+</h2><p>上述注意力机制发生在编码器和解码器之间。而<strong>自注意力</strong>则更进一步，让序列自己和自己做注意力计算。</p>
+<ul>
+<li><strong>定义</strong>：当Query、Key、Value都来自同一个输入序列时，就是自注意力。</li>
+<li><strong>作用</strong>：它允许序列中的每个词，都能直接与序列中的所有其他词建立联系，从而捕捉长距离的依赖关系，实现真正的“上下文理解”。</li>
+</ul>
+<h3 id="scaled-dot-product-attention">Scaled Dot-Product Attention
+</h3><p>这是Transformer中最核心的注意力计算公式。</p>
+<ol>
+<li>
+<p><strong>QKV模式</strong>：
+输入序列 <code>X</code> 通过三个不同的权重矩阵进行线性变换，得到Q、K、V：
+</p>
+$$Q = X W_Q, \quad K = X W_K, \quad V = X W_V$$</li>
+<li>
+<p><strong>核心公式</strong>：
+</p>
+$$ \text{Attention}(Q, K, V) = \text{Softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right) V $$<ul>
+<li><code>Q</code> (Query)：<code>N x d_k</code> 矩阵</li>
+<li><code>K</code> (Key)：<code>N x d_k</code> 矩阵</li>
+<li><code>V</code> (Value)：<code>N x d_v</code> 矩阵</li>
+<li><code>N</code>：序列长度</li>
+<li><code>d_k</code>：Query和Key的维度</li>
+<li><strong>除以 <code>√d_k</code></strong>：防止点积结果过大，导致Softmax梯度消失。</li>
+</ul>
+</li>
+<li>
+<p><strong>直观理解</strong>：</p>
+<ul>
+<li><strong><code>Q K^T</code></strong>：计算一个<code>N x N</code>的<strong>相似度矩阵</strong>（也叫注意力矩阵）。</li>
+<li><strong><code>Softmax</code></strong>：对相似度矩阵的每一行进行归一化，让每一行的权重之和为1。</li>
+<li><strong>乘以 <code>V</code></strong>：根据权重，将所有Value进行加权求和，得到最终的输出。这个过程相当于用相似度矩阵对V进行了一次“更新”。</li>
+</ul>
+</li>
+</ol>
+<h3 id="多头注意力">多头注意力
+</h3><p>为了从不同的角度捕捉信息，Transformer使用了多头注意力。</p>
+<ul>
+<li><strong>原理</strong>：不使用单一的 <code>Q、K、V</code> 集合，而是将它们分别通过多个不同的线性变换，得到多组 <code>Q_i, K_i, V_i</code>。</li>
+<li><strong>过程</strong>：
+<ol>
+<li>对每组 <code>Q_i, K_i, V_i</code> 独立执行缩放点积注意力。</li>
+<li>将多个头的输出拼接在一起。</li>
+<li>通过一个额外的线性变换，得到最终输出。</li>
+</ol>
+</li>
+<li><strong>作用</strong>：让模型能同时关注来自不同位置的不同表示子空间的信息。</li>
+</ul>
+<h2 id="decoder-only-transformer的关键组件">Decoder-only Transformer的关键组件
+</h2><p>以GPT系列为代表的Decoder-only架构是当前大语言模型的主流。</p>
+<p><strong>位置编码 (Positional Encoding)</strong>：
+-   <strong>问题</strong>：自注意力本身是<strong>置换等变</strong>的，即打乱输入顺序，输出也会相应打乱，但它无法感知词语的顺序。“V我50”和“我V50”对它来说一样。
+-   <strong>解决方案</strong>：在输入Embedding中加入位置信息，可以是固定的三角函数编码，也可以是可学习的向量。</p>
+<p><strong>因果掩码 (Causal Masking)</strong>：
+-   <strong>问题</strong>：在预测第 <code>t</code> 个词时，模型不能“偷看”到第 <code>t+1</code> 个及之后的词，否则就是作弊。
+-   <strong>解决方案</strong>：在计算注意力分数时，将对未来位置的分数设置为<strong>负无穷大</strong>，这样经过Softmax后，它们的权重就会变为0。
+</p>
+$$A_{ij} = \begin{cases} Q_i K_j^T / \sqrt{d_k}, & j \le i \\ -\infty, & j > i \end{cases}$$<p><strong>Transformer Block结构</strong>：
+一个标准的Transformer Block由以下几个部分组成，它们通过残差连接和层归一化组合在一起：
+-   <strong>掩码多头自注意力</strong> (Masked Multi-Head Self-Attention)
+-   <strong>前馈网络</strong> (Feed-Forward Network, FFN)：对每个位置的表示进行独立的非线性变换，增加模型的容量。
+-   <strong>残差连接</strong> (Residual Connection)：<code>X' = X + Attention(X)</code>，帮助梯度流动，训练更深网络。
+-   <strong>层归一化</strong> (Layer Normalization)：稳定训练过程。</p>
+<p><strong>完整Block公式</strong>：
+</p>
+$$X' = \text{LayerNorm}(X + \text{Attention}(X))$$<p>  </p>
+$$X'' = \text{LayerNorm}(X' + \text{FFN}(X'))$$<h2 id="总结">总结
+</h2><p>下面总结Transformer成功的原因：</p>
+<ul>
+<li><strong>架构优势</strong>：
+<ul>
+<li><strong>全局交互</strong>：任意两个位置的词都可以直接交互，解决了长距离依赖问题。</li>
+<li><strong>高度并行</strong>：整个序列可以同时进行计算，非常适合GPU加速。</li>
+<li><strong>易于扩展</strong>：结构模块化，可以通过堆叠更多层、增加隐层维度等方式轻松扩大模型规模。</li>
+</ul>
+</li>
+<li><strong>实践优势</strong>：在大规模数据上表现卓越，已被无数研究和应用所验证，成为现代深度学习（尤其是NLP和多模态领域）的基石。</li>
+</ul>
+
 </section>
 
 

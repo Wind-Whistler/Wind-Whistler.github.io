@@ -25,7 +25,135 @@
         <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A009/</guid>
-        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A009/Ruin.png" alt="Featured image of post 深度学习09" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A009/Ruin.png" alt="Featured image of post 深度学习09" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;为何引入注意力机制&lt;/li&gt;
+&lt;li&gt;自注意力&lt;/li&gt;
+&lt;li&gt;Decoder-only Transformer的关键组件&lt;/li&gt;
+&lt;li&gt;总结&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;为何引入注意力机制&#34;&gt;为何引入注意力机制
+&lt;/h2&gt;&lt;h3 id=&#34;rnn局限&#34;&gt;RNN局限
+&lt;/h3&gt;&lt;p&gt;在Transformer出现之前，循环神经网络（RNN）是处理序列数据的主流方法。但它存在一个根本性的缺陷：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;信息瓶颈&lt;/strong&gt;：RNN需要将整个输入序列（比如一句话）压缩成一个固定长度的向量（最后一个隐藏状态），才能开始生成输出（比如翻译）。当输入序列很长时，这个固定长度的向量无法承载全部信息，导致早期的重要信息丢失。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;难以并行&lt;/strong&gt;：RNN的计算是串行的，必须等前一个词处理完才能处理后一个词，这使得它在GPU上的训练效率较低。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;注意力机制的核心思想&lt;/strong&gt;：不再试图将整个输入压缩成一个向量，而是在生成每一个输出词时，都能“回头”去看一遍整个输入序列，并动态地决定哪些输入词更重要。&lt;/p&gt;
+&lt;h3 id=&#34;注意力机制雏形&#34;&gt;注意力机制雏形
+&lt;/h3&gt;&lt;p&gt;以下介绍注意力机制的早期经典形式，主要用于机器翻译。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;核心概念&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Query (查询)&lt;/strong&gt;：当前解码器的状态 &lt;code&gt;s_{t-1}&lt;/code&gt;，代表“我现在想翻译什么”。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Key (键)&lt;/strong&gt;：编码器中每个输入词的隐藏状态 &lt;code&gt;h_i&lt;/code&gt;，代表“我（这个词）有什么信息”。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Value (值)&lt;/strong&gt;：同样也是编码器的隐藏状态 &lt;code&gt;h_i&lt;/code&gt;，代表“我（这个词）的实际内容”。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;工作流程&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;计算权重&lt;/strong&gt;：计算Query和每个Key的匹配程度，得到一个分数 &lt;code&gt;e_{t,i}&lt;/code&gt;。
+
+$$e_{t,i} = a(s_{t-1}, h_i)$$
+其中 &lt;code&gt;a()&lt;/code&gt; 是一个&lt;strong&gt;打分函数&lt;/strong&gt;，其参数数量固定，不随输入序列长度改变。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;归一化&lt;/strong&gt;：对这些分数进行Softmax操作，得到最终的注意力权重 &lt;code&gt;α_{t,i}&lt;/code&gt;。
+
+$$\alpha_{t, i} = \frac{\exp(e_{t, i})}{\sum_{j=1}^{T}\exp(e_{t, j})}$$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;加权求和&lt;/strong&gt;：用这些权重对所有Value进行加权平均，得到当前时刻的&lt;strong&gt;上下文向量&lt;/strong&gt; &lt;code&gt;c_t&lt;/code&gt;。
+
+$$c_t = \sum_{i=1}^T \alpha_{t,i} h_i$$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;常见打分函数&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;加性模型&lt;/strong&gt;：&lt;code&gt;s(x,q) = v^T tanh(Wx + Uq)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;点积模型&lt;/strong&gt;：&lt;code&gt;s(x,q) = x^T q&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;缩放点积模型&lt;/strong&gt;：&lt;code&gt;s(x,q) = (x^T q) / sqrt(D)&lt;/code&gt; （Transformer中使用）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;自注意力&#34;&gt;自注意力
+&lt;/h2&gt;&lt;p&gt;上述注意力机制发生在编码器和解码器之间。而&lt;strong&gt;自注意力&lt;/strong&gt;则更进一步，让序列自己和自己做注意力计算。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;定义&lt;/strong&gt;：当Query、Key、Value都来自同一个输入序列时，就是自注意力。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;作用&lt;/strong&gt;：它允许序列中的每个词，都能直接与序列中的所有其他词建立联系，从而捕捉长距离的依赖关系，实现真正的“上下文理解”。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;scaled-dot-product-attention&#34;&gt;Scaled Dot-Product Attention
+&lt;/h3&gt;&lt;p&gt;这是Transformer中最核心的注意力计算公式。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;QKV模式&lt;/strong&gt;：
+输入序列 &lt;code&gt;X&lt;/code&gt; 通过三个不同的权重矩阵进行线性变换，得到Q、K、V：
+&lt;/p&gt;
+$$Q = X W_Q, \quad K = X W_K, \quad V = X W_V$$&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;核心公式&lt;/strong&gt;：
+&lt;/p&gt;
+$$ \text{Attention}(Q, K, V) = \text{Softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right) V $$&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Q&lt;/code&gt; (Query)：&lt;code&gt;N x d_k&lt;/code&gt; 矩阵&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;K&lt;/code&gt; (Key)：&lt;code&gt;N x d_k&lt;/code&gt; 矩阵&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;V&lt;/code&gt; (Value)：&lt;code&gt;N x d_v&lt;/code&gt; 矩阵&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;N&lt;/code&gt;：序列长度&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;d_k&lt;/code&gt;：Query和Key的维度&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;除以 &lt;code&gt;√d_k&lt;/code&gt;&lt;/strong&gt;：防止点积结果过大，导致Softmax梯度消失。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;直观理解&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;Q K^T&lt;/code&gt;&lt;/strong&gt;：计算一个&lt;code&gt;N x N&lt;/code&gt;的&lt;strong&gt;相似度矩阵&lt;/strong&gt;（也叫注意力矩阵）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;Softmax&lt;/code&gt;&lt;/strong&gt;：对相似度矩阵的每一行进行归一化，让每一行的权重之和为1。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;乘以 &lt;code&gt;V&lt;/code&gt;&lt;/strong&gt;：根据权重，将所有Value进行加权求和，得到最终的输出。这个过程相当于用相似度矩阵对V进行了一次“更新”。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;多头注意力&#34;&gt;多头注意力
+&lt;/h3&gt;&lt;p&gt;为了从不同的角度捕捉信息，Transformer使用了多头注意力。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;原理&lt;/strong&gt;：不使用单一的 &lt;code&gt;Q、K、V&lt;/code&gt; 集合，而是将它们分别通过多个不同的线性变换，得到多组 &lt;code&gt;Q_i, K_i, V_i&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;过程&lt;/strong&gt;：
+&lt;ol&gt;
+&lt;li&gt;对每组 &lt;code&gt;Q_i, K_i, V_i&lt;/code&gt; 独立执行缩放点积注意力。&lt;/li&gt;
+&lt;li&gt;将多个头的输出拼接在一起。&lt;/li&gt;
+&lt;li&gt;通过一个额外的线性变换，得到最终输出。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;作用&lt;/strong&gt;：让模型能同时关注来自不同位置的不同表示子空间的信息。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;decoder-only-transformer的关键组件&#34;&gt;Decoder-only Transformer的关键组件
+&lt;/h2&gt;&lt;p&gt;以GPT系列为代表的Decoder-only架构是当前大语言模型的主流。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;位置编码 (Positional Encoding)&lt;/strong&gt;：
+-   &lt;strong&gt;问题&lt;/strong&gt;：自注意力本身是&lt;strong&gt;置换等变&lt;/strong&gt;的，即打乱输入顺序，输出也会相应打乱，但它无法感知词语的顺序。“V我50”和“我V50”对它来说一样。
+-   &lt;strong&gt;解决方案&lt;/strong&gt;：在输入Embedding中加入位置信息，可以是固定的三角函数编码，也可以是可学习的向量。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;因果掩码 (Causal Masking)&lt;/strong&gt;：
+-   &lt;strong&gt;问题&lt;/strong&gt;：在预测第 &lt;code&gt;t&lt;/code&gt; 个词时，模型不能“偷看”到第 &lt;code&gt;t+1&lt;/code&gt; 个及之后的词，否则就是作弊。
+-   &lt;strong&gt;解决方案&lt;/strong&gt;：在计算注意力分数时，将对未来位置的分数设置为&lt;strong&gt;负无穷大&lt;/strong&gt;，这样经过Softmax后，它们的权重就会变为0。
+&lt;/p&gt;
+$$A_{ij} = \begin{cases} Q_i K_j^T / \sqrt{d_k}, &amp; j \le i \\ -\infty, &amp; j &gt; i \end{cases}$$&lt;p&gt;&lt;strong&gt;Transformer Block结构&lt;/strong&gt;：
+一个标准的Transformer Block由以下几个部分组成，它们通过残差连接和层归一化组合在一起：
+-   &lt;strong&gt;掩码多头自注意力&lt;/strong&gt; (Masked Multi-Head Self-Attention)
+-   &lt;strong&gt;前馈网络&lt;/strong&gt; (Feed-Forward Network, FFN)：对每个位置的表示进行独立的非线性变换，增加模型的容量。
+-   &lt;strong&gt;残差连接&lt;/strong&gt; (Residual Connection)：&lt;code&gt;X&#39; = X + Attention(X)&lt;/code&gt;，帮助梯度流动，训练更深网络。
+-   &lt;strong&gt;层归一化&lt;/strong&gt; (Layer Normalization)：稳定训练过程。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;完整Block公式&lt;/strong&gt;：
+&lt;/p&gt;
+$$X&#39; = \text{LayerNorm}(X + \text{Attention}(X))$$&lt;p&gt;  &lt;/p&gt;
+$$X&#39;&#39; = \text{LayerNorm}(X&#39; + \text{FFN}(X&#39;))$$&lt;h2 id=&#34;总结&#34;&gt;总结
+&lt;/h2&gt;&lt;p&gt;下面总结Transformer成功的原因：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;架构优势&lt;/strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;全局交互&lt;/strong&gt;：任意两个位置的词都可以直接交互，解决了长距离依赖问题。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;高度并行&lt;/strong&gt;：整个序列可以同时进行计算，非常适合GPU加速。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;易于扩展&lt;/strong&gt;：结构模块化，可以通过堆叠更多层、增加隐层维度等方式轻松扩大模型规模。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;实践优势&lt;/strong&gt;：在大规模数据上表现卓越，已被无数研究和应用所验证，成为现代深度学习（尤其是NLP和多模态领域）的基石。&lt;/li&gt;
+&lt;/ul&gt;
+</description>
         </item>
         <item>
         <title>深度学习08</title>
@@ -55,7 +183,7 @@ $$\hat{p}(w_t \mid w_{t-n+1}, \ldots, w_{t-1}) = \frac{\text{count}(w_{t-n+1}, \
 &lt;/h3&gt;&lt;p&gt;&lt;strong&gt;方法&lt;/strong&gt;：向量自回归模型，假设当前值是过去 \( p \) 个值的线性组合加噪声。&lt;/p&gt;
 $$Y_t = c + A_1 Y_{t-1} + A_2 Y_{t-2} + \cdots + A_p Y_{t-p} + \varepsilon_t$$&lt;p&gt;&lt;strong&gt;本质&lt;/strong&gt;：这是一个参数化版本的 (p+1)-gram 模型。若假设 \( \varepsilon_t \sim N(0, \sigma^2 I) \)，则条件分布为：&lt;/p&gt;
 $$Y_t \mid Y_{t-p}, \ldots, Y_{t-1} \sim N(c + A_1 Y_{t-1} + \cdots + A_p Y_{t-p}, \sigma^2 I)$$&lt;p&gt;&lt;strong&gt;启示&lt;/strong&gt;：VAR 的限制在于线性结构。若将线性函数替换为参数化的非线性函数（如神经网络），即可克服缺陷。这正是 Bengio 2003 年工作的核心思路。&lt;/p&gt;
-&lt;h3 id=&#34;尝试三神经概率语言模型bengio-2003&#34;&gt;尝试三：神经概率语言模型（Bengio, 2003）
+&lt;h3 id=&#34;神经概率语言模型bengio-2003&#34;&gt;神经概率语言模型（Bengio, 2003）
 &lt;/h3&gt;&lt;p&gt;&lt;strong&gt;方法&lt;/strong&gt;：使用前馈神经网络进行非线性建模，但仍采用固定窗宽的 n-gram 假设。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;关键创新&lt;/strong&gt;：引入词嵌入，将每个词元映射为稠密向量，所有词嵌入构成一个可学习的参数矩阵。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;输出&lt;/strong&gt;：神经网络的输出经 Softmax 变换后得到词表上的概率分布。&lt;/p&gt;

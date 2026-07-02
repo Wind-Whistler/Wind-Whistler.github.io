@@ -261,7 +261,12 @@
         <li><a href="#多头注意力">多头注意力</a></li>
       </ol>
     </li>
-    <li><a href="#decoder-only-transformer的关键组件">Decoder-only Transformer的关键组件</a></li>
+    <li><a href="#decoder-only-transformer">Decoder-only Transformer</a>
+      <ol>
+        <li><a href="#工作流程">工作流程</a></li>
+        <li><a href="#关键组件">关键组件</a></li>
+      </ol>
+    </li>
     <li><a href="#总结">总结</a></li>
   </ol>
 </nav>
@@ -466,9 +471,29 @@ $$ \text{Attention}(Q, K, V) = \text{Softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\righ
 </li>
 <li><strong>作用</strong>：让模型能同时关注来自不同位置的不同表示子空间的信息。</li>
 </ul>
-<h2 id="decoder-only-transformer的关键组件">Decoder-only Transformer的关键组件
+<h2 id="decoder-only-transformer">Decoder-only Transformer
 </h2><p>以GPT系列为代表的Decoder-only架构是当前大语言模型的主流。</p>
-<p><strong>位置编码 (Positional Encoding)</strong>：
+<h3 id="工作流程">工作流程
+</h3><p>对于输入序列 $w_1, \dots, w_t$，模型的工作流程是一个不断循环的过程：</p>
+<ol>
+<li>
+<p><strong>编码与计算</strong>：
+通过 Transformer 块（包含掩码多头自注意力、前馈网络等）计算每个位置的隐藏表示。此时得到的矩阵包含了所有历史信息。</p>
+</li>
+<li>
+<p><strong>预测下一个</strong>：
+取出<strong>最后一个位置</strong>（$w_t$）的隐藏表示 $h_t$。
+通过输出投影层（线性层）将其映射到词汇表维度，再经过 Softmax 得到概率分布 $P(w_{t+1} | w_1, \dots, w_t)$。
+选择概率最高的词（或采样）作为预测结果 $w_{t+1}$。</p>
+</li>
+<li>
+<p><strong>循环迭代</strong>：
+将新生成的 $w_{t+1}$ 加入序列末尾，形成新的输入序列 $w_1, \dots, w_t, w_{t+1}$，重复步骤 1 和 2。</p>
+</li>
+</ol>
+<p><strong>直观理解</strong>：这就是一个“接龙”游戏。模型每走一步，都要回头看看自己走了多远（因果掩码），然后决定下一步踩在哪里。</p>
+<h3 id="关键组件">关键组件
+</h3><p><strong>位置编码 (Positional Encoding)</strong>：
 -   <strong>问题</strong>：自注意力本身是<strong>置换等变</strong>的，即打乱输入顺序，输出也会相应打乱，但它无法感知词语的顺序。“V我50”和“我V50”对它来说一样。
 -   <strong>解决方案</strong>：在输入Embedding中加入位置信息，可以是固定的三角函数编码，也可以是可学习的向量。</p>
 <p><strong>因果掩码 (Causal Masking)</strong>：

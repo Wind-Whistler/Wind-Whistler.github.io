@@ -123,9 +123,29 @@ $$ \text{Attention}(Q, K, V) = \text{Softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\righ
 &lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;作用&lt;/strong&gt;：让模型能同时关注来自不同位置的不同表示子空间的信息。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;decoder-only-transformer的关键组件&#34;&gt;Decoder-only Transformer的关键组件
+&lt;h2 id=&#34;decoder-only-transformer&#34;&gt;Decoder-only Transformer
 &lt;/h2&gt;&lt;p&gt;以GPT系列为代表的Decoder-only架构是当前大语言模型的主流。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;位置编码 (Positional Encoding)&lt;/strong&gt;：
+&lt;h3 id=&#34;工作流程&#34;&gt;工作流程
+&lt;/h3&gt;&lt;p&gt;对于输入序列 $w_1, \dots, w_t$，模型的工作流程是一个不断循环的过程：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;编码与计算&lt;/strong&gt;：
+通过 Transformer 块（包含掩码多头自注意力、前馈网络等）计算每个位置的隐藏表示。此时得到的矩阵包含了所有历史信息。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;预测下一个&lt;/strong&gt;：
+取出&lt;strong&gt;最后一个位置&lt;/strong&gt;（$w_t$）的隐藏表示 $h_t$。
+通过输出投影层（线性层）将其映射到词汇表维度，再经过 Softmax 得到概率分布 $P(w_{t+1} | w_1, \dots, w_t)$。
+选择概率最高的词（或采样）作为预测结果 $w_{t+1}$。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;循环迭代&lt;/strong&gt;：
+将新生成的 $w_{t+1}$ 加入序列末尾，形成新的输入序列 $w_1, \dots, w_t, w_{t+1}$，重复步骤 1 和 2。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;直观理解&lt;/strong&gt;：这就是一个“接龙”游戏。模型每走一步，都要回头看看自己走了多远（因果掩码），然后决定下一步踩在哪里。&lt;/p&gt;
+&lt;h3 id=&#34;关键组件&#34;&gt;关键组件
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;位置编码 (Positional Encoding)&lt;/strong&gt;：
 -   &lt;strong&gt;问题&lt;/strong&gt;：自注意力本身是&lt;strong&gt;置换等变&lt;/strong&gt;的，即打乱输入顺序，输出也会相应打乱，但它无法感知词语的顺序。“V我50”和“我V50”对它来说一样。
 -   &lt;strong&gt;解决方案&lt;/strong&gt;：在输入Embedding中加入位置信息，可以是固定的三角函数编码，也可以是可学习的向量。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;因果掩码 (Causal Masking)&lt;/strong&gt;：

@@ -226,7 +226,55 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#语言建模的两条公理">语言建模的两条“公理”</a></li>
+    <li><a href="#序列数据的统计建模">序列数据的统计建模</a>
+      <ol>
+        <li><a href="#n-gram-模型">n-gram 模型</a></li>
+        <li><a href="#经典时间序列模型var">经典时间序列模型（VAR）</a></li>
+        <li><a href="#尝试三神经概率语言模型bengio-2003">尝试三：神经概率语言模型（Bengio, 2003）</a></li>
+        <li><a href="#循环神经网络rnn">循环神经网络（RNN）</a></li>
+      </ol>
+    </li>
+    <li><a href="#rnn序列生成代码演示">RNN序列生成代码演示</a>
+      <ol>
+        <li><a href="#step1-数据预处理">Step1: 数据预处理</a></li>
+        <li><a href="#step2-模型定义">Step2: 模型定义</a></li>
+        <li><a href="#step3-训练">Step3: 训练</a></li>
+        <li><a href="#step4-测试">Step4: 测试</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -323,7 +371,430 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>语言建模的两条“公理”</li>
+<li>序列数据的统计建模</li>
+<li>RNN序列生成代码演示</li>
+</ul>
+<h2 id="语言建模的两条公理">语言建模的两条“公理”
+</h2><p><strong>公理1</strong>：语言的生成是随机的，其内容具有统计学规律。</p>
+<p><strong>公理2</strong>：语言的基本单元按照自回归的形式生成。</p>
+<p><strong>核心推论</strong>：结合公理1和公理2，利用概率链式法则，序列生成问题转化为逐词元预测问题：</p>
+$$p(y_1, y_2, \ldots, y_m \mid x) = \prod_{i=1}^m p(y_i \mid x, y_1, \ldots, y_{i-1})$$<p><strong>现代语言建模核心任务</strong>：下一词元预测，即建模 \( p(w_{t+1} \mid w_1, \ldots, w_t) \)。</p>
+<h2 id="序列数据的统计建模">序列数据的统计建模
+</h2><p><strong>核心矛盾</strong>：需要建模的条件概率 \( p(w_{t+1} \mid w_1, \ldots, w_t) \) 中，上下文 \( t \) 可以是任意长度，但模型的参数数量必须固定有限。</p>
+<h3 id="n-gram-模型">n-gram 模型
+</h3><p><strong>方法</strong>：引入马尔可夫假设，假设一个词只依赖于前面有限的 \( n-1 \) 个词。</p>
+$$p(w_t \mid w_1, \ldots, w_{t-1}) \approx p(w_t \mid w_{t-n+1}, \ldots, w_{t-1})$$<p><strong>参数估计</strong>：直接通过计数获得。</p>
+$$\hat{p}(w_t \mid w_{t-n+1}, \ldots, w_{t-1}) = \frac{\text{count}(w_{t-n+1}, \ldots, w_t)}{\text{count}(w_{t-n+1}, \ldots, w_{t-1})}$$<p><strong>问题</strong>：数据稀疏性。词汇量 10,000 时，n=2 的组合数为 1 亿，n=3 时为 1 万亿，大部分组合在训练集中从未出现。需引入平滑技术（加一平滑、回退、插值）来处理零概率问题。</p>
+<p><strong>本质</strong>：非参数方法，每个 n-gram 独立估计，缺乏泛化能力。</p>
+<h3 id="经典时间序列模型var">经典时间序列模型（VAR）
+</h3><p><strong>方法</strong>：向量自回归模型，假设当前值是过去 \( p \) 个值的线性组合加噪声。</p>
+$$Y_t = c + A_1 Y_{t-1} + A_2 Y_{t-2} + \cdots + A_p Y_{t-p} + \varepsilon_t$$<p><strong>本质</strong>：这是一个参数化版本的 (p+1)-gram 模型。若假设 \( \varepsilon_t \sim N(0, \sigma^2 I) \)，则条件分布为：</p>
+$$Y_t \mid Y_{t-p}, \ldots, Y_{t-1} \sim N(c + A_1 Y_{t-1} + \cdots + A_p Y_{t-p}, \sigma^2 I)$$<p><strong>启示</strong>：VAR 的限制在于线性结构。若将线性函数替换为参数化的非线性函数（如神经网络），即可克服缺陷。这正是 Bengio 2003 年工作的核心思路。</p>
+<h3 id="尝试三神经概率语言模型bengio-2003">尝试三：神经概率语言模型（Bengio, 2003）
+</h3><p><strong>方法</strong>：使用前馈神经网络进行非线性建模，但仍采用固定窗宽的 n-gram 假设。</p>
+<p><strong>关键创新</strong>：引入词嵌入，将每个词元映射为稠密向量，所有词嵌入构成一个可学习的参数矩阵。</p>
+<p><strong>输出</strong>：神经网络的输出经 Softmax 变换后得到词表上的概率分布。</p>
+<p><strong>贡献</strong>：证明神经网络在语言建模中的潜力，词嵌入思想沿用至今。</p>
+<p><strong>不足</strong>：仍是“暴力”截断序列，无法让 \( w_t \) 直接依赖过去所有元素。</p>
+<h3 id="循环神经网络rnn">循环神经网络（RNN）
+</h3><p><strong>方法</strong>：维护一个隐藏状态 \( h_t \)，汇总整个历史的信息。</p>
+$$h_t = f(W_{hh} h_{t-1} + W_{xh} w_t + b)$$$$p(w_{t+1} \mid \text{历史}) = g(W_{hy} h_t)$$<p><strong>思维突破</strong>：用固定参数处理任意长度序列，实现参数共享，理论上支持长序列建模。</p>
+<p><strong>改进（LSTM/GRU）</strong>：引入门控机制（输入门、遗忘门、输出门），让模型能选择性地记住重要信息、忽略噪声，缓解梯度消失问题。</p>
+<p><strong>仍存在的问题</strong>：</p>
+<ol>
+<li>顺序处理导致无法并行计算，训练速度慢。</li>
+<li>长程依赖仍然困难，信息随距离衰减。</li>
+<li>隐藏状态维度固定，但不同时刻需要记忆的信息量差异很大。</li>
+<li>缺乏显式的上下文关注机制，依赖强度是隐式学习的。</li>
+</ol>
+<h2 id="rnn序列生成代码演示">RNN序列生成代码演示
+</h2><h3 id="step1-数据预处理">Step1: 数据预处理
+</h3><p>首先加载相应库，并读取已有数据集</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">itertools</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">collections</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Read in data</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&#34;English_Cn_Name_Corpus（48W）.txt&#34;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;name&#34;</span><span class="p">],</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">names</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&#34;name&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Compute character frequency</span>
+</span></span><span class="line"><span class="cl"><span class="n">chars</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">chars_flatten</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">chars</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">freq</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">chars_flatten</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">freq</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;char&#34;</span><span class="p">,</span> <span class="s2">&#34;freq&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">freq</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&#34;freq&#34;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Frequency distribution</span>
+</span></span><span class="line"><span class="cl"><span class="n">char_rank</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">char_freq</span> <span class="o">=</span> <span class="n">freq</span><span class="p">[</span><span class="s2">&#34;freq&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">char_rank</span><span class="p">,</span> <span class="n">char_freq</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>之后构建字典并定义转换函数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Prepare data</span>
+</span></span><span class="line"><span class="cl"><span class="n">dict_size</span> <span class="o">=</span> <span class="mi">50</span>
+</span></span><span class="line"><span class="cl"><span class="n">charset_size</span> <span class="o">=</span> <span class="n">dict_size</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># for EOS 注意这一点</span>
+</span></span><span class="line"><span class="cl"><span class="nb">dict</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">freq</span><span class="p">[</span><span class="s2">&#34;char&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="n">dict_size</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">dict_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">dat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">name</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">dict_set</span><span class="p">),</span> <span class="n">names</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># One-hot encoding</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">char2index</span><span class="p">(</span><span class="n">char</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nb">dict</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">name2index</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">[</span><span class="n">char2index</span><span class="p">(</span><span class="n">char</span><span class="p">)</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">name</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">char2tensor</span><span class="p">(</span><span class="n">char</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">charset_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tensor</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">char2index</span><span class="p">(</span><span class="n">char</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">tensor</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">name2tensor</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">charset_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">char</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tensor</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">char2index</span><span class="p">(</span><span class="n">char</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">tensor</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">names2tensor</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">lens</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">max_len</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">lens</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_len</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">charset_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">target</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_len</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="o">+</span> <span class="n">charset_size</span> <span class="o">-</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">name</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>             <span class="c1"># the i-th name</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)):</span>  <span class="c1"># the j-th character in the name</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tensor</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">char2index</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="n">j</span><span class="p">])]</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">target</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">char2index</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lens</span><span class="p">),</span> <span class="n">target</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="step2-模型定义">Step2: 模型定义
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Build model</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">RNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">(</span><span class="n">RNN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">i2h</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">input_size</span> <span class="o">+</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">i2o</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">input_size</span> <span class="o">+</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">input_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">o2o</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span> <span class="o">+</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">input_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">logsoftmax</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">input_combined</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl">        <span class="n">hidden</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i2h</span><span class="p">(</span><span class="n">input_combined</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i2o</span><span class="p">(</span><span class="n">input_combined</span><span class="p">))</span>  <span class="c1"># 初步output</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output_combined</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">hidden</span><span class="p">,</span> <span class="n">output</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">o2o</span><span class="p">(</span><span class="n">output_combined</span><span class="p">)</span>  <span class="c1"># output再更新</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>  <span class="c1"># Dropout 层，概率设为 0.1。在训练时随机将 10% 的神经元输出置为 0，防止过拟合。在推理时不起作用。形状不变</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logsoftmax</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>  <span class="c1"># 先用 Softmax 将它们转为概率分布, 再取对数</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">init_hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">n_hidden</span> <span class="o">=</span> <span class="mi">64</span>
+</span></span><span class="line"><span class="cl"><span class="n">rnn</span> <span class="o">=</span> <span class="n">RNN</span><span class="p">(</span><span class="n">charset_size</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="step3-训练">Step3: 训练
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># device = torch.device(&#34;cuda&#34;)</span>
+</span></span><span class="line"><span class="cl"><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&#34;cpu&#34;</span><span class="p">)</span>  <span class="c1"># If no GPU on the machine</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># train_id = np.random.choice(len(dat), 10000)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># train = [dat[i] for i in train_id]</span>
+</span></span><span class="line"><span class="cl"><span class="n">train</span> <span class="o">=</span> <span class="n">dat</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">n_hidden</span> <span class="o">=</span> <span class="mi">256</span>
+</span></span><span class="line"><span class="cl"><span class="n">nepoch</span> <span class="o">=</span> <span class="mi">100</span>
+</span></span><span class="line"><span class="cl"><span class="n">bs</span> <span class="o">=</span> <span class="mi">256</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">rnn</span> <span class="o">=</span> <span class="n">RNN</span><span class="p">(</span><span class="n">charset_size</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">rnn</span> <span class="o">=</span> <span class="n">rnn</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">rnn</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">train_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">lossfn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">NLLLoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&#34;none&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nepoch</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">train_ind</span><span class="p">)</span>  <span class="c1"># 打乱序号</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Update on mini-batches</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Create mini-batch</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ind</span> <span class="o">=</span> <span class="n">train_ind</span><span class="p">[</span><span class="n">j</span><span class="p">:(</span><span class="n">j</span> <span class="o">+</span> <span class="n">bs</span><span class="p">)]</span>  <span class="c1"># 抽取随机序号</span>
+</span></span><span class="line"><span class="cl">        <span class="n">mb</span> <span class="o">=</span> <span class="p">[</span><span class="n">train</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">]</span>  <span class="c1"># 根据抽取的序号获取样本</span>
+</span></span><span class="line"><span class="cl">        <span class="n">mb_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mb</span><span class="p">)</span>  <span class="c1"># 批量大小</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">input</span><span class="p">,</span> <span class="n">actual_len</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">names2tensor</span><span class="p">(</span><span class="n">mb</span><span class="p">)</span>  <span class="c1"># 获取输入张量、实际长度和目标张量</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">max_len</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">hidden</span> <span class="o">=</span> <span class="n">rnn</span><span class="o">.</span><span class="n">init_hidden</span><span class="p">(</span><span class="n">mb_size</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_len</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">rnn</span><span class="p">(</span><span class="nb">input</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="n">hidden</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl">            <span class="n">loss_s</span> <span class="o">=</span> <span class="n">lossfn</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">[</span><span class="n">s</span><span class="p">])</span>  <span class="c1"># 这里要计算每一个字符的损失</span>
+</span></span><span class="line"><span class="cl">            <span class="n">valid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="n">s</span> <span class="o">&lt;</span> <span class="n">actual_len</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>  <span class="c1"># 如果当前长度小于实际长度，则为有效字符，否则为无效字符</span>
+</span></span><span class="line"><span class="cl">            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span> <span class="o">+</span> <span class="n">loss_s</span> <span class="o">*</span> <span class="n">valid</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">loss</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">actual_len</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">j</span> <span class="o">//</span> <span class="n">bs</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;epoch </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">, batch </span><span class="si">{</span><span class="n">j</span> <span class="o">//</span> <span class="n">bs</span><span class="si">}</span><span class="s2">, loss = </span><span class="si">{</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">losses</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="step4-测试">Step4: 测试
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">family_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">dat</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">random_family_name</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">family_names</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">random_name</span><span class="p">(</span><span class="n">max_len</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rnn</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>  <span class="c1"># 有dropout层时，推理时要设置为eval模式，否则会随机丢弃一些神经元，导致输出不稳定</span>
+</span></span><span class="line"><span class="cl">    <span class="n">family_name</span> <span class="o">=</span> <span class="n">random_family_name</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">input</span> <span class="o">=</span> <span class="n">char2tensor</span><span class="p">(</span><span class="n">family_name</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">char_ind</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">hidden</span> <span class="o">=</span> <span class="n">rnn</span><span class="o">.</span><span class="n">init_hidden</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">rnn</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ind</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">ind</span> <span class="o">==</span> <span class="n">charset_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">        <span class="n">char_ind</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">input</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">char_ind</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ind</span> <span class="o">=</span> <span class="n">random_name</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">torch</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ind</span> <span class="o">=</span> <span class="n">random_name</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">names</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行结果：</p>
+<div align="center">
+  <img src="Pic08.png" alt="封面" width="800">
+</div>
 </section>
 
 

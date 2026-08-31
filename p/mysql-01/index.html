@@ -226,7 +226,51 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#本期内容">本期内容</a></li>
+    <li><a href="#sql的定位">SQL的定位</a></li>
+    <li><a href="#sql语法">SQL语法</a>
+      <ol>
+        <li><a href="#sql入门知识">SQL入门知识</a>
+          <ol>
+            <li><a href="#database">Database</a></li>
+            <li><a href="#table">Table</a></li>
+          </ol>
+        </li>
+        <li><a href="#sql存录删除更新">SQL存录，删除，更新</a></li>
+        <li><a href="#sql查询">SQL查询</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
@@ -309,7 +353,148 @@
     <section class="article-content">
     
     
-    
+    <h2 id="本期内容">本期内容
+</h2><ul>
+<li>SQL的定位</li>
+<li>SQL语法</li>
+</ul>
+<h2 id="sql的定位">SQL的定位
+</h2><h2 id="sql语法">SQL语法
+</h2><h3 id="sql入门知识">SQL入门知识
+</h3><h4 id="database">Database
+</h4><p>数据库（Database）是数据库管理系统（Database Management System，DBMS）的基本单元。<br>
+这里首先介绍如何使用SQL语句创建或删除一个数据库，以及如何查看已有数据库信息，具体代码如下。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">db_name</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 创建一个数据库
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">DROP</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">db_name</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 删除一个数据库
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">USE</span><span class="w"> </span><span class="n">db_name</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 使用一个数据库
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">SHOW</span><span class="w"> </span><span class="n">DATABASES</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 查看所有数据库
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>在MySQL中查看所有数据库结果如下：</p>
+<div align="center">
+  <img src="res01.png" alt="封面" width="800">
+</div>
+使用SQL语句可以查询到目前已有的数据库信息。
+<h4 id="table">Table
+</h4><p>表（Table）数据库的下一级单位，是数据库中存储数据的核心单元。表的每一行被称为记录（Record），每一列被称为字段（Field）。下面首先介绍常用的字段类型。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="nb">INT</span><span class="w"> </span><span class="c1">-- 整数
+</span></span></span><span class="line"><span class="cl"><span class="nb">VARCHAR</span><span class="p">(</span><span class="k">size</span><span class="p">)</span><span class="w">  </span><span class="c1">-- 字符串类型，size为字符串长度
+</span></span></span><span class="line"><span class="cl"><span class="nb">DATE</span><span class="w"> </span><span class="c1">-- 日期类型
+</span></span></span><span class="line"><span class="cl"><span class="k">TIMESTAMP</span><span class="w"> </span><span class="c1">-- 时间戳类型
+</span></span></span><span class="line"><span class="cl"><span class="nb">BOOLEAN</span><span class="w"> </span><span class="c1">-- 布尔类型
+</span></span></span><span class="line"><span class="cl"><span class="nb">DECIMAL</span><span class="p">(</span><span class="k">precision</span><span class="p">,</span><span class="w"> </span><span class="k">scale</span><span class="p">)</span><span class="w"> </span><span class="c1">-- 浮点数类型，precision为精度，scale为小数位数
+</span></span></span><span class="line"><span class="cl"><span class="nb">BLOB</span><span class="w"> </span><span class="c1">-- 二进制 large object
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后介绍表中比较特殊的字段类型。</p>
+<ul>
+<li><strong>PRIMARY KEY 主键</strong>
+是用于唯一标识表中每一行数据的字段或字段组合，其值必须唯一且不能为空。</li>
+<li><strong>FOREIGN KEY 外键</strong>
+是用于建立和强制表与表之间关联关系的字段，它指向另一张表的主键，确保数据引用的完整性。</li>
+</ul>
+<p>接下来介绍如何使用SQL语句创建或删除一个表，以及如何查看已有表信息，具体代码如下。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">table_name</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">field_name1</span><span class="w"> </span><span class="n">field_type1</span><span class="p">,</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">-- 字段后面还可以加一些关键词来进行修饰
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">-- UNIQUE 唯一
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">-- NOT NULL 不能为空
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">-- AUTO_INCREMENT 自增
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">-- DEFAULT 默认值
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">field_name2</span><span class="w"> </span><span class="n">field_type2</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">field_name3</span><span class="w"> </span><span class="n">field_type3</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">field_name1</span><span class="p">)</span><span class="w">  </span><span class="c1">-- 设置主键,也可为组合主键
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">field_name2</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">another_table</span><span class="p">(</span><span class="n">field_name</span><span class="o">?</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">)</span><span class="w">  </span><span class="c1">-- 创建一个表
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">table_name</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 删除一个表
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">SHOW</span><span class="w"> </span><span class="n">TABLES</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 查看所有表
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">DESCRIBE</span><span class="w"> </span><span class="k">table_name</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 查看表结构
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">Alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="k">table_name</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">field_name</span><span class="w"> </span><span class="n">field_type</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 添加字段
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">Alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="k">table_name</span><span class="w"> </span><span class="k">drop</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">field_name</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 删除字段
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里展示查看所有表结构结果：</p>
+<div align="center">
+  <img src="res02.png" alt="封面" width="800">
+</div>
+<h3 id="sql存录删除更新">SQL存录，删除，更新
+</h3><p>接下来展示如何使用SQL语句进行数据存储，删除，更新，具体代码如下。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">table_name</span><span class="w"> </span><span class="p">(</span><span class="n">field_name1</span><span class="p">,</span><span class="w"> </span><span class="n">field_name2</span><span class="p">,</span><span class="w"> </span><span class="n">field_name3</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="n">value1</span><span class="p">,</span><span class="w"> </span><span class="n">value2</span><span class="p">,</span><span class="w"> </span><span class="n">value3</span><span class="p">);</span><span class="w">  </span><span class="c1">-- 插入数据
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">DELETE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">field_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 删除数据
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">UPDATE</span><span class="w"> </span><span class="k">table_name</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">field_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">field_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 更新数据
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="sql查询">SQL查询
+</h3>
 </section>
 
 

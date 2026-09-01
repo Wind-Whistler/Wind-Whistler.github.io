@@ -8,7 +8,16 @@
     <loc>https://example.com/categories/</loc>
     <lastmod>2026-09-01T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://example.com/p/mysql-02/</loc>
+    <lastmod>2026-09-01T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://example.com/post/</loc>
+    <lastmod>2026-09-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://example.com/categories/sql/</loc>
+    <lastmod>2026-09-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://example.com/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
     <lastmod>2026-09-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://example.com/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/</loc>
@@ -18,12 +27,6 @@
     <lastmod>2026-09-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://example.com/p/mysql-01/</loc>
-    <lastmod>2026-08-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://example.com/categories/sql/</loc>
-    <lastmod>2026-08-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://example.com/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
     <lastmod>2026-08-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://example.com/categories/python/</loc>

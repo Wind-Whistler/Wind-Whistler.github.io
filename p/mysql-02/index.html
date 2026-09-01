@@ -389,6 +389,29 @@
 </span></span></span><span class="line"><span class="cl"><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">a1</span><span class="p">.</span><span class="n">machine_id</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
+</div><p><strong>Q12:笛卡尔积与连接顺序：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">students</span><span class="p">.</span><span class="n">student_id</span><span class="p">,</span><span class="w"> </span><span class="n">student_name</span><span class="p">,</span><span class="n">Subjects</span><span class="p">.</span><span class="n">subject_name</span><span class="p">,</span><span class="k">count</span><span class="p">(</span><span class="n">Examinations</span><span class="p">.</span><span class="n">subject_name</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">attended_exams</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="n">Subjects</span><span class="w"> </span><span class="k">CROSS</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">students</span><span class="w">  </span><span class="c1">-- CROSS JOIN 相当于笛卡尔积
+</span></span></span><span class="line"><span class="cl"><span class="k">Left</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">Examinations</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">ON</span><span class="w"> </span><span class="n">Subjects</span><span class="p">.</span><span class="n">subject_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Examinations</span><span class="p">.</span><span class="n">subject_name</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">AND</span><span class="w"> </span><span class="n">Examinations</span><span class="p">.</span><span class="n">student_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">students</span><span class="p">.</span><span class="n">student_id</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- 这里的连接逻辑是先产生所有学生与所有科目的笛卡尔积，然后根据条件为对应条目添加考试记录
+</span></span></span><span class="line"><span class="cl"><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">students</span><span class="p">.</span><span class="n">student_id</span><span class="p">,</span><span class="n">Subjects</span><span class="p">.</span><span class="n">subject_name</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">student_id</span><span class="p">,</span><span class="n">subject_name</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
 </div>
 </section>
 

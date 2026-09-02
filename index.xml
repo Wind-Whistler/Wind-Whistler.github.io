@@ -177,6 +177,25 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;IF&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;非零&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;零&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-- 返回 &amp;#39;零&amp;#39;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Q16:判定日期介于之间&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;Write&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;your&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;MySQL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;query&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;statement&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;below&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IFNULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ROUND&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;units&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;price&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;units&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;average_price&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Prices&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;LEFT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;JOIN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;UnitsSold&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;ON&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;purchase_date&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;BETWEEN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;start_date&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;AND&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;end_date&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-- 判断日期介于之间
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;AND&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;GROUP&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;BY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
 &lt;/div&gt;</description>
         </item>
         <item>
@@ -185,7 +204,69 @@
         <pubDate>Tue, 01 Sep 2026 00:00:00 +0000</pubDate>
         
         <guid>https://example.com/p/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F01/</guid>
-        <description>&lt;img src="https://example.com/p/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F01/hope.JPG" alt="Featured image of post 推荐系统01" /&gt;</description>
+        <description>&lt;img src="https://example.com/p/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F01/hope.JPG" alt="Featured image of post 推荐系统01" /&gt;&lt;h2 id=&#34;本期内容&#34;&gt;本期内容
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;推荐系统概述&lt;/li&gt;
+&lt;li&gt;推荐系统评价体系&lt;/li&gt;
+&lt;li&gt;推荐系统的基本构成&lt;/li&gt;
+&lt;li&gt;A/B 测试&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;推荐系统概述&#34;&gt;推荐系统概述
+&lt;/h2&gt;&lt;p&gt;推荐系统是一种自动化的工具，它的核心任务是在&lt;strong&gt;信息过载&lt;/strong&gt;的环境中联系用户和物品。在信息匮乏的时代，用户很容易自己找到想要的东西，但互联网时代下，商品、视频、新闻的数量爆炸式增长，用户陷入了&amp;quot;选择困难&amp;quot;。推荐系统正是在这个背景下诞生的：它不需要用户提供明确的需求关键词，而是通过分析用户的历史行为来建模用户的兴趣，从而主动给用户推荐他们可能感兴趣的内容，帮助用户从海量信息中发现有价值的东西。&lt;/p&gt;
+&lt;h2 id=&#34;推荐系统评价体系&#34;&gt;推荐系统评价体系
+&lt;/h2&gt;&lt;h3 id=&#34;常见指标&#34;&gt;常见指标
+&lt;/h3&gt;&lt;p&gt;好的推荐系统不仅要准确命中用户已有的兴趣，还要能帮助用户发掘新的兴趣，避免用户陷入&amp;quot;信息茧房&amp;quot;。因此，评价推荐系统不能只看单一维度，常见的评价指标包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;准确性&lt;/strong&gt;：推荐结果与用户实际偏好的匹配程度，常用指标如：
+&lt;/p&gt;
+\[
+  \text{Precision} = \frac{\text{推荐且用户喜欢的物品数}}{\text{推荐的总物品数}}
+  \]&lt;p&gt;
+&lt;/p&gt;
+\[
+  \text{Recall} = \frac{\text{推荐且用户喜欢的物品数}}{\text{用户实际喜欢的物品总数}}
+  \]&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;覆盖率&lt;/strong&gt;：推荐系统能够覆盖到的物品占全部物品的比例，反映系统发掘长尾的能力：
+&lt;/p&gt;
+\[
+  \text{Coverage} = \frac{|\text{被推荐的物品集合}|}{|\text{全部物品集合}|}
+  \]&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;多样性&lt;/strong&gt;：推荐列表中物品之间的相似度越低，多样性越高，避免推荐结果过于同质化。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;新颖性与惊喜度&lt;/strong&gt;：新颖性指推荐用户未曾接触过的物品，惊喜度则更进一步——推荐用户没想到但确实会喜欢的内容。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;北极星指标&#34;&gt;北极星指标
+&lt;/h3&gt;&lt;p&gt;指标过多会导致团队目标分散，不同部门各自优化自己的指标，反而难以形成合力。因此，不同行业通常会根据自身业务特点选择一个&lt;strong&gt;北极星指标&lt;/strong&gt;作为最高指导原则：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;短视频平台&lt;/strong&gt;：总用户使用时长（广告收入依赖时长）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;电商平台&lt;/strong&gt;：GMV（成交总额，直接对应营收）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;内容社区&lt;/strong&gt;：活跃创作者数量或内容互动量（维持供需平衡）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;音乐流媒体&lt;/strong&gt;：收听时长或付费转化率（取决于增长阶段）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;北极星指标具有唯一性、可量化、长期导向的特点，确保整个团队朝同一个方向努力。&lt;/p&gt;
+&lt;h3 id=&#34;评价流程&#34;&gt;评价流程
+&lt;/h3&gt;&lt;p&gt;在实际工业环境中，推荐系统的效果评估通常遵循&lt;strong&gt;离线测试 → 小规模在线A/B测试 → 全量上线&lt;/strong&gt;的渐进流程：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;离线测试&lt;/strong&gt;：利用历史数据集模拟推荐效果，计算各项指标。优点是速度快、成本低，缺点是离线环境与真实用户行为存在偏差。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;小规模A/B测试&lt;/strong&gt;：将一小部分真实用户流量分为实验组（新算法）和对照组（旧算法），对比两组用户的北极星指标及相关辅助指标。这一步能暴露离线测试无法发现的线上问题。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;逐步扩量&lt;/strong&gt;：如果小规模测试结果正向且显著，逐步扩大实验流量比例，同时持续监控指标变化和潜在风险，最终决定是否全量上线。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div align=&#34;center&#34;&gt;
+  &lt;img src=&#34;Pic01.png&#34; alt=&#34;封面&#34; width=&#34;800&#34;&gt;
+&lt;/div&gt;
+&lt;h2 id=&#34;推荐系统的基本构成&#34;&gt;推荐系统的基本构成
+&lt;/h2&gt;</description>
         </item>
         <item>
         <title>MySQL 01</title>

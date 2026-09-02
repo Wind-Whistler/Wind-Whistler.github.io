@@ -473,6 +473,25 @@
 </span></span></span><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="k">IF</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;非零&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;零&#39;</span><span class="p">);</span><span class="w">          </span><span class="c1">-- 返回 &#39;零&#39;
 </span></span></span></code></pre></td></tr></table>
 </div>
+</div><p><strong>Q16:判定日期介于之间</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="o">#</span><span class="w"> </span><span class="k">Write</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">MySQL</span><span class="w"> </span><span class="n">query</span><span class="w"> </span><span class="k">statement</span><span class="w"> </span><span class="n">below</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">product_id</span><span class="p">,</span><span class="w"> </span><span class="n">IFNULL</span><span class="p">(</span><span class="n">ROUND</span><span class="p">(</span><span class="k">sum</span><span class="p">(</span><span class="n">units</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">price</span><span class="p">)</span><span class="o">/</span><span class="k">sum</span><span class="p">(</span><span class="n">units</span><span class="p">),</span><span class="mi">2</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">average_price</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="n">Prices</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">UnitsSold</span><span class="w"> </span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">ON</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">purchase_date</span><span class="w"> </span><span class="k">BETWEEN</span><span class="w"> </span><span class="n">start_date</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">end_date</span><span class="w"> </span><span class="c1">-- 判断日期介于之间
+</span></span></span><span class="line"><span class="cl"><span class="k">AND</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">product_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">product_id</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">product_id</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
 </div>
 </section>
 

@@ -7,7 +7,23 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Wind Whistler</copyright>
-        <lastBuildDate>Tue, 01 Sep 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Mon, 14 Sep 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Agent</title>
+        <link>https://example.com/categories/agent/</link>
+        <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/categories/agent/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>AI</title>
+        <link>https://example.com/categories/ai/</link>
+        <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://example.com/categories/ai/</guid>
+        <description></description>
+        </item>
+        <item>
         <title>SQL</title>
         <link>https://example.com/categories/sql/</link>
         <pubDate>Tue, 01 Sep 2026 00:00:00 +0000</pubDate>

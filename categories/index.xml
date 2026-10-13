@@ -168,30 +168,6 @@
         <description></description>
         </item>
         <item>
-        <title>Emotion</title>
-        <link>https://example.com/categories/emotion/</link>
-        <pubDate>Sun, 22 Oct 2023 00:00:00 +0000</pubDate>
-        
-        <guid>https://example.com/categories/emotion/</guid>
-        <description></description>
-        </item>
-        <item>
-        <title>Journey</title>
-        <link>https://example.com/categories/journey/</link>
-        <pubDate>Sun, 22 Oct 2023 00:00:00 +0000</pubDate>
-        
-        <guid>https://example.com/categories/journey/</guid>
-        <description></description>
-        </item>
-        <item>
-        <title>Pr</title>
-        <link>https://example.com/categories/pr/</link>
-        <pubDate>Sun, 22 Oct 2023 00:00:00 +0000</pubDate>
-        
-        <guid>https://example.com/categories/pr/</guid>
-        <description></description>
-        </item>
-        <item>
         <title>Test</title>
         <link>https://example.com/categories/test/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

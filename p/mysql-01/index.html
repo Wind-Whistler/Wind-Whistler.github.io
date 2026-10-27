@@ -267,6 +267,7 @@
             <li><a href="#wildcard">Wildcard</a></li>
             <li><a href="#子查询">子查询</a></li>
             <li><a href="#join">Join</a></li>
+            <li><a href="#窗口函数">窗口函数</a></li>
           </ol>
         </li>
       </ol>
@@ -653,6 +654,84 @@
 </span></span></span><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">table_name1</span><span class="w"> </span><span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">table_name2</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">table_name1</span><span class="p">.</span><span class="n">field_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">table_name2</span><span class="p">.</span><span class="n">field_name</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 左外连接
 </span></span></span><span class="line"><span class="cl"><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">table_name1</span><span class="w"> </span><span class="k">RIGHT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">table_name2</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">table_name1</span><span class="p">.</span><span class="n">field_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">table_name2</span><span class="p">.</span><span class="n">field_name</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 右外连接
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="窗口函数">窗口函数
+</h4><p>窗口函数通过 <code>OVER</code> 子句定义计算范围，聚合类（如 <code>SUM</code>）与排名类（如 <code>RANK</code>）在参数上略有不同。聚合函数常配合分区、排序与窗口帧实现累计或滑动计算；排名函数则依赖分区与排序决定名次，通常无需窗口帧。以下示例整合了各类常见参数与替代写法（见注释）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- 1. 聚合函数 SUM OVER 示例
+</span></span></span><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">payment_date</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="n">QUARTER</span><span class="p">(</span><span class="n">payment_date</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">quarter_</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="n">amount</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="k">SUM</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="n">OVER</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">           </span><span class="n">PARTITION</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">QUARTER</span><span class="p">(</span><span class="n">payment_date</span><span class="p">)</span><span class="w">  </span><span class="c1">-- 按季度分区，可替换为：PARTITION BY YEAR(payment_date), QUARTER(payment_date)
+</span></span></span><span class="line"><span class="cl"><span class="w">           </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">payment_date</span><span class="w">               </span><span class="c1">-- 决定累计方向；若省略则对整个分区求和（非逐行累计）
+</span></span></span><span class="line"><span class="cl"><span class="w">           </span><span class="cm">/* 窗口帧参数（仅聚合常用）：
+</span></span></span><span class="line"><span class="cl"><span class="cm">              ROWS/RANGE BETWEEN 
+</span></span></span><span class="line"><span class="cl"><span class="cm">                UNBOUNDED PRECEDING  -- 分区第一行（当前写法）
+</span></span></span><span class="line"><span class="cl"><span class="cm">                | CURRENT ROW        -- 当前行（当前写法结尾）
+</span></span></span><span class="line"><span class="cl"><span class="cm">                | N PRECEDING        -- 如前1行：1 PRECEDING
+</span></span></span><span class="line"><span class="cl"><span class="cm">                | N FOLLOWING        -- 如后1行：1 FOLLOWING
+</span></span></span><span class="line"><span class="cl"><span class="cm">                | UNBOUNDED FOLLOWING-- 分区最后一行
+</span></span></span><span class="line"><span class="cl"><span class="cm">              AND 
+</span></span></span><span class="line"><span class="cl"><span class="cm">                CURRENT ROW          -- 当前行（当前写法）
+</span></span></span><span class="line"><span class="cl"><span class="cm">                | UNBOUNDED FOLLOWING
+</span></span></span><span class="line"><span class="cl"><span class="cm">                | N PRECEDING/FOLLOWING
+</span></span></span><span class="line"><span class="cl"><span class="cm">              注：ROWS按物理行，RANGE按逻辑值（如相同排序值同框）
+</span></span></span><span class="line"><span class="cl"><span class="cm">              常见简写：默认等价于 RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+</span></span></span><span class="line"><span class="cl"><span class="cm">           */</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">           </span><span class="k">ROWS</span><span class="w"> </span><span class="k">BETWEEN</span><span class="w"> </span><span class="n">UNBOUNDED</span><span class="w"> </span><span class="n">PRECEDING</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="k">CURRENT</span><span class="w"> </span><span class="k">ROW</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">running_total</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- 2. 排名函数 RANK OVER 示例
+</span></span></span><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">QUARTER</span><span class="p">(</span><span class="n">payment_date</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">quarter_</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="k">SUM</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">sum_amount</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="n">RANK</span><span class="p">()</span><span class="w"> </span><span class="n">OVER</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">           </span><span class="c1">-- PARTITION BY 某列  -- 可选：如 PARTITION BY YEAR(payment_date) 则各年内排名；省略则全局排名
+</span></span></span><span class="line"><span class="cl"><span class="w">           </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">DESC</span><span class="w">  </span><span class="c1">-- 按总额降序（必须），可加 NULLS FIRST/LAST 控制空值
+</span></span></span><span class="line"><span class="cl"><span class="w">           </span><span class="c1">-- 排名函数通常不加 ROWS/RANGE
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">sale_rank</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">QUARTER</span><span class="p">(</span><span class="n">payment_date</span><span class="p">);</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>以上就是SQL语句的详细内容，希望对大家有所帮助。</p>
